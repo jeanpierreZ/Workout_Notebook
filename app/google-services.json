@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "105035858170",
+    "firebase_url": "https://p11-workout-notebook.firebaseio.com",
+    "project_id": "p11-workout-notebook",
+    "storage_bucket": "p11-workout-notebook.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105035858170:android:ac7624de7336c0637e8943",
+        "android_client_info": {
+          "package_name": "com.jpz.workoutnotebook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "105035858170-65f72gbbhonsmq9754s0fjns1locgdik.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jpz.workoutnotebook",
+            "certificate_hash": "d376dae83ac24ad058dfb2877551d32ec4acd4dd"
+          }
+        },
+        {
+          "client_id": "105035858170-37c1il7ankja72osq4ojajp7bjnpr3ir.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXRvCUygk6y4uLM5bnsWaOnXvSIK_QMrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "105035858170-37c1il7ankja72osq4ojajp7bjnpr3ir.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
