@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Workout Notebook</string>
+
+    <string name="splash_subtitle">Note and track your training</string>
 </resources>
