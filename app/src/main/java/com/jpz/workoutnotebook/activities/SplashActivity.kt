@@ -25,7 +25,9 @@ class SplashActivity : AppCompatActivity() {
 
     // Authentication providers
     private val providers = arrayListOf(
-        AuthUI.IdpConfig.EmailBuilder().build()
+        AuthUI.IdpConfig.EmailBuilder().build(),
+        AuthUI.IdpConfig.GoogleBuilder().build(),
+        AuthUI.IdpConfig.FacebookBuilder().build()
     )
 
     @SuppressLint("SwitchIntDef")
