@@ -4,23 +4,28 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
 class SplashActivity : AppCompatActivity() {
 
     companion object {
-        const val RC_SIGN_IN: Int = 100
+        private const val RC_SIGN_IN: Int = 100
+        private val TAG = SplashActivity::class.java.simpleName
     }
 
+    private val firebaseUtils = FirebaseUtils()
     private val myUtils = MyUtils()
 
     // Authentication providers
@@ -29,6 +34,23 @@ class SplashActivity : AppCompatActivity() {
         AuthUI.IdpConfig.GoogleBuilder().build(),
         AuthUI.IdpConfig.FacebookBuilder().build()
     )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash)
+        GlobalScope.launch {
+            delay(3000L)
+            if (firebaseUtils.isCurrentUserLogged()) {
+                Log.i(TAG, "user logged = " + firebaseUtils.isCurrentUserLogged())
+                myUtils.startMainActivity(this@SplashActivity)
+                finish()
+            } else {
+                startSignInActivity()
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------------------
 
     @SuppressLint("SwitchIntDef")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -41,6 +63,7 @@ class SplashActivity : AppCompatActivity() {
                     splashActivityCoordinatorLayout,
                     R.string.authentication_succeed
                 )
+                myUtils.startMainActivity(this)
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
@@ -66,14 +89,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
-        GlobalScope.launch {
-            delay(3000L)
-            startSignInActivity()
-        }
-    }
+    //--------------------------------------------------------------------------------------
 
     // Method to launch Sign-In Activity
     private fun startSignInActivity() {
