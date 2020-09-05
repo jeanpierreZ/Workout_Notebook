@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter.Companion.ARG_OBJECT
 import com.jpz.workoutnotebook.utils.FirebaseUtils
+import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
@@ -25,8 +27,21 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.apply {
-            profileFragmentText.text =
+
+            Glide.with(view)
+                .load(firebaseUtils.getCurrentUser()?.photoUrl)
+                .circleCrop()
+                .into(profileFragmentImage)
+
+            profileFragmentNickname.text = firebaseUtils.getCurrentUser()?.displayName
+
+            profileFragmentSports.text =
                 "page = " + getInt(ARG_OBJECT).toString() + " user email = " + firebaseUtils.getCurrentUser()?.email
+        }
+
+        profileFragmentFAB.setOnClickListener {
+            val myUtils = MyUtils()
+            myUtils.showSnackBar(coordinator, R.string.app_name)
         }
     }
 

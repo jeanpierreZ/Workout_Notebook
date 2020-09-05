@@ -39,7 +39,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         GlobalScope.launch {
-            delay(3000L)
+            delay(2000L)
             if (firebaseUtils.isCurrentUserLogged()) {
                 Log.i(TAG, "user logged = " + firebaseUtils.isCurrentUserLogged())
                 myUtils.startMainActivity(this@SplashActivity)

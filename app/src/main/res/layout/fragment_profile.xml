@@ -1,13 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.ProfileFragment">
 
-    <TextView
-        android:id="@+id/profileFragmentText"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/profileFragmentGuidelineStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/profileFragmentGuidelineEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+        <ImageView
+            android:id="@+id/profileFragmentImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:layout_constraintBottom_toTopOf="@+id/profileFragmentNickname"
+            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/profileFragmentNickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/profileFragmentName"
+            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/profileFragmentImage" />
+
+        <TextView
+            android:id="@+id/profileFragmentName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/profileFragmentFirstName"
+            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/profileFragmentNickname" />
+
+        <TextView
+            android:id="@+id/profileFragmentFirstName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/profileFragmentAge"
+            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/profileFragmentName" />
+
+        <TextView
+            android:id="@+id/profileFragmentAge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/profileFragmentSports"
+            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/profileFragmentFirstName" />
+
+        <TextView
+            android:id="@+id/profileFragmentSports"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/profileFragmentAge" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/profileFragmentFAB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        app:srcCompat="@drawable/ic_baseline_edit_24" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
