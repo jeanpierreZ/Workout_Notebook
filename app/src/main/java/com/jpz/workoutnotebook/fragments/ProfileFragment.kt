@@ -9,7 +9,6 @@ import com.bumptech.glide.Glide
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter.Companion.ARG_OBJECT
 import com.jpz.workoutnotebook.utils.FirebaseUtils
-import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 
@@ -37,11 +36,6 @@ class ProfileFragment : Fragment() {
 
             profileFragmentSports.text =
                 "page = " + getInt(ARG_OBJECT).toString() + " user email = " + firebaseUtils.getCurrentUser()?.email
-        }
-
-        profileFragmentFAB.setOnClickListener {
-            val myUtils = MyUtils()
-            myUtils.showSnackBar(coordinator, R.string.app_name)
         }
     }
 

@@ -13,6 +13,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_splash.*
+import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,6 +39,9 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        configureToolbar()
+
         GlobalScope.launch {
             delay(2000L)
             if (firebaseUtils.isCurrentUserLogged()) {
@@ -97,13 +101,18 @@ class SplashActivity : AppCompatActivity() {
         startActivityForResult(
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
-                .setTheme(R.style.AppTheme)
+                .setTheme(R.style.AppThemeFirebaseAuth)
                 .setAvailableProviders(providers)
                 .setIsSmartLockEnabled(false, true)
                 .setLogo(R.drawable.ic_launcher_background)
                 .build(),
             RC_SIGN_IN
         )
+    }
+
+    private fun configureToolbar() {
+        // Get the toolbar view inside the activity layout
+        setSupportActionBar(toolbar)
     }
 
 }
