@@ -14,6 +14,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="titleTextColor">@color/colorTextPrimary</item>
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">false</item>
     </style>

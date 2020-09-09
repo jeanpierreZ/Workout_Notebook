@@ -5,12 +5,15 @@
     <string name="facebook_application_id" translatable="false">1132242497170089</string>
     <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb1132242497170089</string>
 
-    <!--Splash Activity -->
+    <!--Connection Activity -->
     <string name="splash_subtitle">Note and track your training</string>
     <string name="authentication_succeed">Successful authentication</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="error_no_internet">No internet connection</string>
     <string name="error_unknown_error">An unknown error has occurred</string>
     <string name="connection_failure">Connection failure</string>
+
+    <!--Profile Fragment -->
+    <string name="user_data_recovery_error">User data recovery error</string>
 
 </resources>
