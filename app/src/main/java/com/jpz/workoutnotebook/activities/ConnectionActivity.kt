@@ -6,13 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.injections.Injection
-import com.jpz.workoutnotebook.injections.ViewModelFactory
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
@@ -22,6 +19,7 @@ import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ConnectionActivity : AppCompatActivity() {
@@ -34,7 +32,7 @@ class ConnectionActivity : AppCompatActivity() {
     private val firebaseUtils = FirebaseUtils()
     private val myUtils = MyUtils()
 
-    private lateinit var userViewModel: UserViewModel
+    private val userViewModel: UserViewModel by viewModel()
 
     // Authentication providers
     private val providers = arrayListOf(
@@ -48,7 +46,6 @@ class ConnectionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_connection)
 
         configureToolbar()
-        configureViewModel()
 
         GlobalScope.launch {
             delay(2000L)
@@ -128,12 +125,6 @@ class ConnectionActivity : AppCompatActivity() {
 
     //--------------------------------------------------------------------------------------
 
-        private fun configureViewModel() {
-        val viewModelFactory: ViewModelFactory = Injection.provideViewModelFactory(application)
-            // Use the ViewModelProvider to associate the ViewModel with Activity
-            userViewModel = ViewModelProvider(this, viewModelFactory).get(UserViewModel::class.java)
-    }
-
     // Create the current user in Room when he is identified
     private fun createUser() {
         if (firebaseUtils.getCurrentUser() != null) {
@@ -147,5 +138,4 @@ class ConnectionActivity : AppCompatActivity() {
             Log.w(TAG, "user = $user")
         }
     }
-
 }

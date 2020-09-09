@@ -6,17 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter.Companion.ARG_OBJECT
-import com.jpz.workoutnotebook.injections.Injection
-import com.jpz.workoutnotebook.injections.ViewModelFactory
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ProfileFragment : Fragment() {
@@ -24,7 +22,7 @@ class ProfileFragment : Fragment() {
     private val firebaseUtils = FirebaseUtils()
     private val myUtils = MyUtils()
 
-    private var userViewModel: UserViewModel? = null
+    private val userViewModel: UserViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,15 +35,13 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.apply {
 
-            configureViewModel()
-
             val userId = firebaseUtils.getCurrentUser()?.uid
 
             // Get data from the connected user
             if (userId != null) {
                 Log.i("PROFILE", "user = $userId")
 
-                userViewModel?.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
+                userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
 
                     val user: User? = documentSnapshot.toObject(User::class.java)
 
@@ -69,15 +65,5 @@ class ProfileFragment : Fragment() {
                     }
             }
         }
-    }
-
-    //--------------------------------------------------------------------------------------
-
-    private fun configureViewModel() {
-        val viewModelFactory: ViewModelFactory? =
-            activity?.application?.let { Injection.provideViewModelFactory(it) }
-        // Use the ViewModelProvider to associate the ViewModel with Activity
-        userViewModel =
-            viewModelFactory?.let { ViewModelProvider(this, it).get(UserViewModel::class.java) }
     }
 }
