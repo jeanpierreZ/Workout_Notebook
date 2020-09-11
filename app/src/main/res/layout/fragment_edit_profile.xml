@@ -5,6 +5,7 @@
     android:id="@+id/editProfileFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background_profile"
     tools:context=".fragments.EditProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,7 +39,6 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editProfileFragmentNickname"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/nick_name"
@@ -52,13 +52,13 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxLength="25" />
+                android:maxLength="25"
+                android:textColor="@color/colorTextSecondary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editProfileFragmentName"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/name"
@@ -72,13 +72,13 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxLength="25" />
+                android:maxLength="25"
+                android:textColor="@color/colorTextSecondary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editProfileFragmentFirstName"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/first_name"
@@ -92,13 +92,13 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxLength="25" />
+                android:maxLength="25"
+                android:textColor="@color/colorTextSecondary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editProfileFragmentAge"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/age"
@@ -113,13 +113,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="number"
-                android:maxLength="3" />
+                android:maxLength="3"
+                android:textColor="@color/colorTextSecondary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editProfileFragmentSports"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/sports_practiced"
@@ -133,7 +133,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:maxLength="25" />
+                android:maxLength="25"
+                android:textColor="@color/colorTextSecondary" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

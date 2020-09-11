@@ -10,7 +10,6 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
@@ -110,7 +109,6 @@ class ConnectionActivity : AppCompatActivity() {
                 .setTheme(R.style.AppThemeFirebaseAuth)
                 .setAvailableProviders(providers)
                 .setIsSmartLockEnabled(false, true)
-                .setLogo(R.drawable.ic_launcher_background)
                 .build(),
             RC_SIGN_IN
         )
@@ -130,17 +128,12 @@ class ConnectionActivity : AppCompatActivity() {
 
     //--------------------------------------------------------------------------------------
 
-    // Create the current user in Room when he is identified
+    // Create the user in Firestore when he is identified
     private fun createUser() {
         if (firebaseUtils.getCurrentUser() != null) {
             val userId: String = firebaseUtils.getCurrentUser()!!.uid
-            val nickName: String? = firebaseUtils.getCurrentUser()!!.displayName
-            val urlPhoto: String? = firebaseUtils.getCurrentUser()!!.photoUrl.toString()
-
-            // Set data. By default firstName, name, sports, iFollow, followers are null and age = 0.
-            val user = User(userId, nickName, null, null, 0, urlPhoto, null, null, null)
-            userViewModel.createUser(user)
-            Log.w(TAG, "user = $user")
+            val data = hashMapOf("userId" to userId)
+            userViewModel.createUser(userId, data)
         }
     }
 }

@@ -12,9 +12,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- CREATE ---
 
-    fun createUser(user: User) = userHelper.createUser(user)?.addOnFailureListener { e ->
-        Log.e("createUser", "Error writing document", e)
-    }
+    fun createUser(userId: String, data: HashMap<String, String>) =
+        userHelper.createUser(userId, data)?.addOnFailureListener { e ->
+            Log.e("createUser", "Error writing document", e)
+        }
 
     // --- READ ---
 
@@ -32,5 +33,4 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun updateUser(user: User) = userHelper.updateUser(user)?.addOnFailureListener { e ->
         Log.e("updateUser", "Error updating document", e)
     }
-
 }

@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                     mainActivityCoordinatorLayout, R.string.user_data_updated
                 )
                 RESULT_CANCELED -> myUtils.showSnackBar(
-                    mainActivityCoordinatorLayout, R.string.user_data_recovery_error
+                    mainActivityCoordinatorLayout, R.string.update_data_cancel
                 )
             }
         }
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun disconnectCurrentUser() {
         // Create an alert dialog to prevent the user
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
         builder.setMessage(R.string.disconnect)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 AuthUI.getInstance().signOut(this).addOnSuccessListener {

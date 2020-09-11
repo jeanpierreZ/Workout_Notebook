@@ -4,6 +4,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.jpz.workoutnotebook.models.User
@@ -20,8 +21,9 @@ class UserHelper {
 
     // --- CREATE ---
 
-    fun createUser(user: User): Task<Void>? {
-        return getUsersCollection()?.document(user.userId)?.set(user)
+    // Creating the document if it does not already exist or update the userId (which is the same that auth.uid).
+    fun createUser(userId: String, data: HashMap<String, String>): Task<Void>? {
+        return getUsersCollection()?.document(userId)?.set(data, SetOptions.merge())
     }
 
     // --- READ ---
@@ -40,5 +42,4 @@ class UserHelper {
     fun updateUser(user: User): Task<Void>? {
         return getUsersCollection()?.document(user.userId)?.set(user)
     }
-
 }

@@ -15,6 +15,7 @@
 
     <!--Main Activity -->
     <string name="disconnect">Sign out?</string>
+    <string name="update_data_cancel">Update data cancel</string>
 
     <!--Profile Fragment -->
     <string name="nick_name">Nickname</string>
