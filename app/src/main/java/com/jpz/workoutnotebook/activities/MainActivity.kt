@@ -1,17 +1,22 @@
 package com.jpz.workoutnotebook.activities
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
-import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val EDIT = "EDIT"
+    }
 
     private var fabSelected = 0
 
@@ -22,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         configureViewPagerAdapter()
         configureTabLayout()
         animateFAB()
-        showMessage()
+        clickOnFAB()
     }
 
     //--------------------------------------------------------------------------------------
@@ -69,10 +74,15 @@ class MainActivity : AppCompatActivity() {
 
     //--------------------------------------------------------------------------------------
 
-    private fun showMessage() {
+    private fun clickOnFAB() {
         mainActivityFAB.setOnClickListener {
-            val myUtils = MyUtils()
-            myUtils.showSnackBar(mainActivityCoordinatorLayout, R.string.app_name)
+            val myFragment =
+                supportFragmentManager.findFragmentByTag("f" + mainActivityViewPager.currentItem)
+            if (myFragment is ProfileFragment) {
+                val intent = Intent(this, EditActivity::class.java)
+                intent.putExtra(EDIT, ProfileFragment::class.java.name)
+                startActivity(intent)
+            }
         }
     }
 

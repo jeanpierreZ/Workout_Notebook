@@ -17,6 +17,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getUser(userId: String) = userHelper.getUser(userId)
 
+    // --- QUERY ---
+
+    // Recover data from user in real-time
+    fun getCurrentUser(userId: String) = userHelper.getCurrentUser(userId)
+
     // --- UPDATE ---
 
     fun updateUser(user: User) = userHelper.updateUser(user)

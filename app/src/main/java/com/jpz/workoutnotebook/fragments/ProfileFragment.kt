@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.DocumentChange
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.adapters.ViewPagerAdapter.Companion.ARG_OBJECT
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
@@ -18,6 +18,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class ProfileFragment : Fragment() {
+
+    companion object {
+        private val TAG = ProfileFragment::class.java.simpleName
+    }
 
     private val firebaseUtils = FirebaseUtils()
     private val myUtils = MyUtils()
@@ -33,36 +37,61 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.apply {
+        val userId = firebaseUtils.getCurrentUser()?.uid
+        Log.d(TAG, "uid = $userId")
+        if (userId != null) {
+            getCurrentUserInRealTime(userId)
+        }
+    }
 
-            val userId = firebaseUtils.getCurrentUser()?.uid
+    private fun getUser(userId: String) {
+        // Get data from the connected user
+        Log.i("PROFILE", "user = $userId")
+        userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
+            val user: User? = documentSnapshot.toObject(User::class.java)
+            view?.let {
+                Glide.with(it)
+                    .load(user?.photo)
+                    .circleCrop()
+                    .into(profileFragmentImage)
+            }
+            profileFragmentNickname.editText?.setText(user?.nickName)
+            profileFragmentName.editText?.setText(user?.name)
+            profileFragmentFirstName.editText?.setText(user?.firstName)
+            profileFragmentAge.editText?.setText(user?.age.toString())
+            profileFragmentSports.editText?.setText(user?.sports)
+        }
+            ?.addOnFailureListener { _ ->
+                myUtils.showSnackBar(
+                    profileFragmentCoordinatorLayout,
+                    R.string.user_data_recovery_error
+                )
+            }
+    }
 
-            // Get data from the connected user
-            if (userId != null) {
-                Log.i("PROFILE", "user = $userId")
-
-                userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
-
-                    val user: User? = documentSnapshot.toObject(User::class.java)
-
-                    Glide.with(view)
-                        .load(user?.photo)
-                        .circleCrop()
-                        .into(profileFragmentImage)
-
-                    profileFragmentNickname.text = user?.nickName
-                    profileFragmentName.text = user?.name
-                    profileFragmentAge.text = user?.age.toString()
-
-                    profileFragmentSports.text =
-                        "page = " + getInt(ARG_OBJECT).toString() + " user email = " + firebaseUtils.getCurrentUser()?.email
-                }
-                    ?.addOnFailureListener { _ ->
-                        myUtils.showSnackBar(
-                            profileFragmentCoordinator,
-                            R.string.user_data_recovery_error
-                        )
+    private fun getCurrentUserInRealTime(userId: String) {
+        userViewModel.getCurrentUser(userId)?.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "listen:error", e)
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                for (dc in snapshot.documentChanges) {
+                    if (dc.type == DocumentChange.Type.ADDED || dc.type == DocumentChange.Type.MODIFIED) {
+                        val user: User? = dc.document.toObject(User::class.java)
+                        view?.let {
+                            Glide.with(it)
+                                .load(user?.photo)
+                                .circleCrop()
+                                .into(profileFragmentImage)
+                        }
+                        profileFragmentNickname.editText?.setText(user?.nickName)
+                        profileFragmentName.editText?.setText(user?.name)
+                        profileFragmentFirstName.editText?.setText(user?.firstName)
+                        profileFragmentAge.editText?.setText(user?.age.toString())
+                        profileFragmentSports.editText?.setText(user?.sports)
                     }
+                }
             }
         }
     }

@@ -2,129 +2,134 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/profileFragmentCoordinatorLayout"
+    android:id="@+id/editProfileFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ProfileFragment">
+    tools:context=".fragments.EditProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/editProfileFragmentConstraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/profileFragmentGuidelineStart"
+            android:id="@+id/editProfileFragmentGuidelineStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.2" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/profileFragmentGuidelineEnd"
+            android:id="@+id/editProfileFragmentGuidelineEnd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.8" />
 
         <ImageView
-            android:id="@+id/profileFragmentImage"
+            android:id="@+id/editProfileFragmentImage"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            app:layout_constraintBottom_toTopOf="@+id/profileFragmentNickname"
-            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
+            app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentNickname"
+            app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/profileFragmentNickname"
+            android:id="@+id/editProfileFragmentNickname"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/nick_name"
-            app:layout_constraintBottom_toTopOf="@+id/profileFragmentName"
-            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/profileFragmentImage">
+            app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentName"
+            app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentImage">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:enabled="false" />
+                android:layout_height="match_parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/profileFragmentName"
+            android:id="@+id/editProfileFragmentName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/name"
-            app:layout_constraintBottom_toTopOf="@+id/profileFragmentFirstName"
-            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/profileFragmentNickname">
+            app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentFirstName"
+            app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentNickname">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:enabled="false" />
+                android:layout_height="match_parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/profileFragmentFirstName"
+            android:id="@+id/editProfileFragmentFirstName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/first_name"
-            app:layout_constraintBottom_toTopOf="@+id/profileFragmentAge"
-            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/profileFragmentName">
+            app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentAge"
+            app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentName">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:enabled="false" />
+                android:layout_height="match_parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/profileFragmentAge"
+            android:id="@+id/editProfileFragmentAge"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/age"
-            app:layout_constraintBottom_toTopOf="@+id/profileFragmentSports"
-            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/profileFragmentFirstName">
+            app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentSports"
+            app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentFirstName">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="false" />
+                android:inputType="number" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/profileFragmentSports"
+            android:id="@+id/editProfileFragmentSports"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/sports_practiced"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/profileFragmentGuidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/profileFragmentGuidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/profileFragmentAge">
+            app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentAge">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:enabled="false" />
+                android:layout_height="match_parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/editProfileFragmentFABSave"
+        layout="@layout/fab_save" />
+
+    <include
+        android:id="@+id/editProfileFragmentFABCancel"
+        layout="@layout/fab_cancel" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
