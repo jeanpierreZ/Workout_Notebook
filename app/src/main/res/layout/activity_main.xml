@@ -30,7 +30,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/mainActivityFAB"
+        android:id="@+id/mainActivityFABEditProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
@@ -38,5 +38,15 @@
         app:layout_anchor="@id/mainActivityViewPager"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_baseline_edit_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mainActivityFABDisconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_anchor="@id/mainActivityViewPager"
+        app:layout_anchorGravity="bottom|start"
+        app:srcCompat="@drawable/ic_baseline_not_interested_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

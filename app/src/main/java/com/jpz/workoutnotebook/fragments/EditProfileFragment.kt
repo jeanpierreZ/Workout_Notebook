@@ -1,11 +1,11 @@
 package com.jpz.workoutnotebook.fragments
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -105,9 +105,13 @@ class EditProfileFragment : Fragment() {
         }
         if (user != null) {
             Log.d(TAG, "user = $user")
-            userViewModel.updateUser(user)
-            Toast.makeText(activity, R.string.user_data_updated, Toast.LENGTH_SHORT).show()
+            userViewModel.updateUser(user)?.addOnSuccessListener {
+                activity?.setResult(Activity.RESULT_OK)
+                activity?.finish()
+            }?.addOnFailureListener {
+                activity?.setResult(Activity.RESULT_CANCELED)
+                activity?.finish()
+            }
         }
-        activity?.finish()
     }
 }

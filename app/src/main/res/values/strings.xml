@@ -13,6 +13,9 @@
     <string name="error_unknown_error">An unknown error has occurred</string>
     <string name="connection_failure">Connection failure</string>
 
+    <!--Main Activity -->
+    <string name="disconnect">Sign out?</string>
+
     <!--Profile Fragment -->
     <string name="nick_name">Nickname</string>
     <string name="name">Name</string>

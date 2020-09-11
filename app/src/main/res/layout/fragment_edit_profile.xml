@@ -42,6 +42,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/nick_name"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
             app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentName"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
@@ -49,7 +51,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:maxLength="25" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,6 +62,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/name"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
             app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentFirstName"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
@@ -66,7 +71,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:maxLength="25" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,6 +82,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/first_name"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
             app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentAge"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
@@ -83,7 +91,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:maxLength="25" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,6 +102,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/age"
+            app:counterEnabled="true"
+            app:counterMaxLength="3"
             app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentSports"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
@@ -101,7 +112,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="number" />
+                android:inputType="number"
+                android:maxLength="3" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,6 +123,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/sports_practiced"
+            app:counterEnabled="true"
+            app:counterMaxLength="25"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
@@ -118,7 +132,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:maxLength="25" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

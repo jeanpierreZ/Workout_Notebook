@@ -51,7 +51,7 @@ class ConnectionActivity : AppCompatActivity() {
             delay(2000L)
             if (firebaseUtils.isCurrentUserLogged()) {
                 Log.i(TAG, "user logged = " + firebaseUtils.isCurrentUserLogged())
-                myUtils.startMainActivity(this@ConnectionActivity)
+                startMainActivity()
                 finish()
             } else {
                 startSignInActivity()
@@ -73,7 +73,7 @@ class ConnectionActivity : AppCompatActivity() {
                     R.string.authentication_succeed
                 )
                 createUser()
-                myUtils.startMainActivity(this)
+                startMainActivity()
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
@@ -121,6 +121,11 @@ class ConnectionActivity : AppCompatActivity() {
     private fun configureToolbar() {
         // Get the toolbar view inside the activity layout
         setSupportActionBar(toolbar)
+    }
+
+    private fun startMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
 
     //--------------------------------------------------------------------------------------

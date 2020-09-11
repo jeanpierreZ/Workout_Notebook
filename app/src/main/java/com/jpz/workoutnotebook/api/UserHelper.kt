@@ -3,8 +3,9 @@ package com.jpz.workoutnotebook.api
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.jpz.workoutnotebook.models.User
 
 
@@ -14,7 +15,7 @@ class UserHelper {
         private const val COLLECTION_NAME = "users"
         private const val FIELD_USER_ID = "userId"
         fun getUsersCollection(): CollectionReference? =
-            FirebaseFirestore.getInstance().collection(COLLECTION_NAME)
+            Firebase.firestore.collection(COLLECTION_NAME)
     }
 
     // --- CREATE ---
