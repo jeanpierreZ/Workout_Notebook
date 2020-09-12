@@ -25,13 +25,12 @@
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="titleTextColor">@color/colorTextPrimary</item>
         <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <!-- AlertDialog theme -->
-    <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
-        <item name="colorPrimary">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="AlertDialogDisconnectTheme" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/colorAccentLight</item>
     </style>
 
     <!-- TextInputLayout theme -->

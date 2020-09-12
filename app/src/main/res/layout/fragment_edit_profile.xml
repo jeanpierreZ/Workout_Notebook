@@ -28,14 +28,14 @@
             app:layout_constraintGuide_percent="0.8" />
 
         <ImageView
-            android:id="@+id/editProfileFragmentImage"
+            android:id="@+id/editProfileFragmentPhoto"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:contentDescription="@string/profile_photo"
             app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentNickname"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/editProfileFragmentNickname"
@@ -47,7 +47,7 @@
             app:layout_constraintBottom_toTopOf="@+id/editProfileFragmentName"
             app:layout_constraintEnd_toEndOf="@id/editProfileFragmentGuidelineEnd"
             app:layout_constraintStart_toStartOf="@id/editProfileFragmentGuidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentImage">
+            app:layout_constraintTop_toBottomOf="@id/editProfileFragmentPhoto">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

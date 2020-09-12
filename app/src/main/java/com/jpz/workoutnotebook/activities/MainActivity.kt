@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun disconnectCurrentUser() {
         // Create an alert dialog to prevent the user
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this, R.style.AlertDialogTheme)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this, R.style.AlertDialogDisconnectTheme)
         builder.setMessage(R.string.disconnect)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 AuthUI.getInstance().signOut(this).addOnSuccessListener {
@@ -126,6 +126,6 @@ class MainActivity : AppCompatActivity() {
             }
             .setNegativeButton(android.R.string.cancel) { _, _ ->
             }
-        builder.show()
+            .show()
     }
 }
