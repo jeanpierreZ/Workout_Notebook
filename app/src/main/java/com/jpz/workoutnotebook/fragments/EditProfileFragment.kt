@@ -3,7 +3,10 @@ package com.jpz.workoutnotebook.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
@@ -27,11 +32,14 @@ class EditProfileFragment : Fragment() {
 
     companion object {
         private val TAG = EditProfileFragment::class.java.simpleName
+        const val RC_CHOOSE_PHOTO = 300
     }
 
     private val userViewModel: UserViewModel by viewModel()
     private val myUtils = MyUtils()
+    private var uriPictureSelected: Uri? = null
 
+    private var userId: String? = null
     private var nickName: String? = null
     private var name: String? = null
     private var firstName: String? = null
@@ -51,7 +59,7 @@ class EditProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val firebaseUtils = FirebaseUtils()
-        val userId = firebaseUtils.getCurrentUser()?.uid
+        userId = firebaseUtils.getCurrentUser()?.uid
 
         displayUserData(userId)
         onChangeData()
@@ -63,8 +71,24 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == RC_CHOOSE_PHOTO) {
+            // Uri of picture selected by user
+            uriPictureSelected = data?.data
+            // Create the user photo with data
+            photo = uriPictureSelected.toString()
+            view?.let {
+                Glide.with(it)
+                    .load(photo)
+                    .circleCrop()
+                    .into(editProfileFragmentPhoto)
+            }
+        }
+    }
+
     //--------------------------------------------------------------------------------------
-    // Display the user data from Firestore
+    // Display the user data from Firebase
 
     private fun displayUserData(userId: String?) {
         if (userId != null) {
@@ -125,12 +149,37 @@ class EditProfileFragment : Fragment() {
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun addPhoto() {
-        // todo choose photo from phone
-        myUtils.showSnackBar(editProfileFragmentCoordinatorLayout, R.string.app_name)
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, RC_CHOOSE_PHOTO)
+    }
+
+    private fun uploadPhotoInFirebase() {
+        // Instance of FirebaseStorage with point to the root reference
+        val storageRef = Firebase.storage.reference
+        // Use variables to create child values
+        // Points to "photos/userID"
+        val photosRef = storageRef.child("photos")
+        val fileName = userId
+        val spaceRef = fileName?.let { photosRef.child(it) }
+        // Upload the picture local file chosen by the user
+        val uploadTask = uriPictureSelected?.let { spaceRef?.putFile(it) }
+        uploadTask
+            ?.addOnSuccessListener { taskSnapshot ->
+                Log.d(TAG, "Upload Storage successful")
+                taskSnapshot?.storage?.downloadUrl?.addOnCompleteListener {
+                    // Set photo data with storage path
+                    photo = uploadTask.result.toString()
+                }
+            }
+            ?.addOnFailureListener { e ->
+                Log.e(TAG, "Upload Storage failed = $e")
+            }
     }
 
     private fun saveUpdatedData(userId: String?) {
         // Update data
+        uploadPhotoInFirebase()
+        // todo : wait for photo complete listener before update user ?
         val user = userId?.let { it1 ->
             User(it1, nickName, name, firstName, age, photo, sports, iFollow, followers)
         }

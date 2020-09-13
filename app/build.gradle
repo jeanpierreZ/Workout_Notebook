@@ -62,6 +62,9 @@ dependencies {
     // Firebase Firestore
     implementation 'com.google.firebase:firebase-firestore-ktx:21.6.0'
 
+    // Firebase Storage
+    implementation 'com.google.firebase:firebase-storage-ktx:19.2.0'
+
     // Facebook login support for Auth
     implementation 'com.facebook.android:facebook-android-sdk:5.5.1'
 
