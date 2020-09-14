@@ -15,8 +15,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
@@ -37,14 +37,19 @@ class EditProfileFragment : Fragment() {
 
     private val userViewModel: UserViewModel by viewModel()
     private val myUtils = MyUtils()
+
+    // Uri used to locate the device picture
     private var uriPictureSelected: Uri? = null
+
+    // Used if the user has chosen a photo
+    private var newPhotoAdded: Boolean = false
 
     private var userId: String? = null
     private var nickName: String? = null
     private var name: String? = null
     private var firstName: String? = null
     private var age: Int? = null
-    private var photo: String? = null
+    private var photo: Boolean = false
     private var sports: String? = null
     private var iFollow: ArrayList<String>? = null
     private var followers: ArrayList<String>? = null
@@ -64,7 +69,7 @@ class EditProfileFragment : Fragment() {
         displayUserData(userId)
         onChangeData()
         editProfileFragmentFABSave.setOnClickListener {
-            saveUpdatedData(userId)
+            saveUpdatedData()
         }
         editProfileFragmentFABCancel.setOnClickListener {
             activity?.finish()
@@ -76,14 +81,14 @@ class EditProfileFragment : Fragment() {
         if (resultCode == Activity.RESULT_OK && requestCode == RC_CHOOSE_PHOTO) {
             // Uri of picture selected by user
             uriPictureSelected = data?.data
-            // Create the user photo with data
-            photo = uriPictureSelected.toString()
+            // Display the user photo with data
             view?.let {
                 Glide.with(it)
-                    .load(photo)
+                    .load(uriPictureSelected)
                     .circleCrop()
                     .into(editProfileFragmentPhoto)
             }
+            newPhotoAdded = true
         }
     }
 
@@ -95,15 +100,30 @@ class EditProfileFragment : Fragment() {
             userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
                 val user: User? = documentSnapshot.toObject(User::class.java)
                 user?.let {
+                    // Retrieve data user
                     photo = user.photo
                     iFollow = user.iFollow
                     followers = user.followers
                     view?.let {
-                        if (photo != null) {
-                            Glide.with(it)
-                                .load(photo)
-                                .circleCrop()
-                                .into(editProfileFragmentPhoto)
+                        // Download the photo if it exists
+                        if (user.photo) {
+                            // Instance of FirebaseStorage with point to the root reference
+                            val storageRef = FirebaseStorage.getInstance().reference
+                            // Use variables to create child values
+                            // Points to "photos/userID"
+                            val photosRef = storageRef.child("photos")
+                            val fileName = user.userId
+                            val spaceRef = photosRef.child(fileName)
+                            // Download the photo from Firebase Storage
+                            spaceRef.downloadUrl.addOnSuccessListener { uri ->
+                                activity?.let { it1 ->
+                                    Glide.with(it1)
+                                        .load(uri)
+                                        .circleCrop()
+                                        .into(editProfileFragmentPhoto)
+                                }
+                            }
+                            // Else display an icon for the photo
                         } else {
                             editProfileFragmentPhoto.background =
                                 activity?.let { activity ->
@@ -153,33 +173,31 @@ class EditProfileFragment : Fragment() {
         startActivityForResult(intent, RC_CHOOSE_PHOTO)
     }
 
-    private fun uploadPhotoInFirebase() {
+    private fun uploadPhotoInFirebaseAndUpdateUser() {
         // Instance of FirebaseStorage with point to the root reference
-        val storageRef = Firebase.storage.reference
+        val storageRef = FirebaseStorage.getInstance().reference
         // Use variables to create child values
         // Points to "photos/userID"
         val photosRef = storageRef.child("photos")
         val fileName = userId
         val spaceRef = fileName?.let { photosRef.child(it) }
+
         // Upload the picture local file chosen by the user
         val uploadTask = uriPictureSelected?.let { spaceRef?.putFile(it) }
-        uploadTask
-            ?.addOnSuccessListener { taskSnapshot ->
-                Log.d(TAG, "Upload Storage successful")
-                taskSnapshot?.storage?.downloadUrl?.addOnCompleteListener {
-                    // Set photo data with storage path
-                    photo = uploadTask.result.toString()
-                }
-            }
-            ?.addOnFailureListener { e ->
-                Log.e(TAG, "Upload Storage failed = $e")
-            }
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask?.addOnFailureListener { exception ->
+            val errorCode = (exception as StorageException).errorCode
+            val errorMessage = exception.message
+            Log.e(TAG, "Unsuccessful upload: $errorCode $errorMessage")
+        }?.addOnSuccessListener { taskSnapshot ->
+            Log.i(TAG, "Successful upload: ${taskSnapshot.totalByteCount}")
+            // If a new photo is added, set boolean photo to true then update user data
+            photo = true
+            updateUser()
+        }
     }
 
-    private fun saveUpdatedData(userId: String?) {
-        // Update data
-        uploadPhotoInFirebase()
-        // todo : wait for photo complete listener before update user ?
+    private fun updateUser() {
         val user = userId?.let { it1 ->
             User(it1, nickName, name, firstName, age, photo, sports, iFollow, followers)
         }
@@ -192,6 +210,15 @@ class EditProfileFragment : Fragment() {
                 activity?.setResult(Activity.RESULT_CANCELED)
                 activity?.finish()
             }
+        }
+    }
+
+    // Update data
+    private fun saveUpdatedData() {
+        if (newPhotoAdded) {
+            uploadPhotoInFirebaseAndUpdateUser()
+        } else {
+            updateUser()
         }
     }
 

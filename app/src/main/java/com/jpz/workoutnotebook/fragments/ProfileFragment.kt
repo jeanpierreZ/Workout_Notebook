@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.storage.FirebaseStorage
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.FirebaseUtils
@@ -54,20 +55,33 @@ class ProfileFragment : Fragment() {
                     if (dc.type == DocumentChange.Type.ADDED || dc.type == DocumentChange.Type.MODIFIED) {
                         val user: User? = dc.document.toObject(User::class.java)
                         user?.let {
-                            view?.let {
-                                if (user.photo != null) {
-                                    Glide.with(it)
-                                        .load(user.photo)
-                                        .circleCrop()
-                                        .into(profileFragmentPhoto)
-                                } else {
-                                    profileFragmentPhoto.background =
-                                        activity?.let { activity ->
-                                            ContextCompat.getDrawable(
-                                                activity, R.drawable.ic_baseline_person_pin_24
-                                            )
-                                        }
+                            Log.i(TAG, "User photo = ${user.photo}")
+                            // Download the photo if it exists
+                            if (user.photo) {
+                                // Instance of FirebaseStorage with point to the root reference
+                                val storageRef = FirebaseStorage.getInstance().reference
+                                // Use variables to create child values
+                                // Points to "photos/userID"
+                                val photosRef = storageRef.child("photos")
+                                val fileName = user.userId
+                                val spaceRef = photosRef.child(fileName)
+                                // Download the photo from Firebase Storage
+                                spaceRef.downloadUrl.addOnSuccessListener { uri ->
+                                    activity?.let { it1 ->
+                                        Glide.with(it1)
+                                            .load(uri)
+                                            .circleCrop()
+                                            .into(profileFragmentPhoto)
+                                    }
                                 }
+                                // Else display an icon for the photo
+                            } else {
+                                profileFragmentPhoto.background =
+                                    activity?.let { activity ->
+                                        ContextCompat.getDrawable(
+                                            activity, R.drawable.ic_baseline_person_pin_24
+                                        )
+                                    }
                             }
                             profileFragmentNickname.editText?.setText(user.nickName)
                             profileFragmentName.editText?.setText(user.name)
