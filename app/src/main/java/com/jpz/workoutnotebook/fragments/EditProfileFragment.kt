@@ -236,8 +236,8 @@ class EditProfileFragment : Fragment() {
 
     @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun showRationaleForReadExternalStorage(request: PermissionRequest) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        builder.setTitle(R.string.permission_needed)
+        AlertDialog.Builder(activity)
+            .setTitle(R.string.permission_needed)
             .setMessage(R.string.rationale_permission_read_external_storage)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 request.proceed()

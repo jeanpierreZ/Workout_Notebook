@@ -4,8 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.firebase.ui.auth.AuthUI
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
@@ -17,13 +20,20 @@ import kotlinx.android.synthetic.main.toolbar.*
 
 class MainActivity : AppCompatActivity() {
 
+    enum class Tabs(val position: Int) {
+        SPORTS(0),
+        CALENDAR(1),
+        STATISTICS(2),
+        COMMUNITY(3),
+        PROFILE(4)
+    }
+
     companion object {
         const val EDIT = "EDIT"
         private const val RC_EDIT_PROFILE: Int = 200
     }
 
-    private var fabSelected = 0
-    private var profileFAB = 4
+    private var pageSelected = 0
     private val myUtils = MyUtils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,8 +80,35 @@ class MainActivity : AppCompatActivity() {
 
     private fun configureTabLayout() {
         TabLayoutMediator(mainActivityTabLayout, mainActivityViewPager) { tab, position ->
-            tab.text = "OBJECT ${(position + 1)}"
+            // Add icons to tabs
+            when (position) {
+                Tabs.SPORTS.position -> tab.setIcon(R.drawable.ic_baseline_fitness_center_24)
+                Tabs.CALENDAR.position -> tab.setIcon(R.drawable.ic_baseline_event_24)
+                Tabs.STATISTICS.position -> tab.setIcon(R.drawable.ic_baseline_timeline_24)
+                Tabs.COMMUNITY.position -> tab.setIcon(R.drawable.ic_baseline_people_24)
+                Tabs.PROFILE.position -> tab.setIcon(R.drawable.ic_baseline_person_pin_24)
+            }
         }.attach()
+
+        // Modify color of icon if tab is selected
+        mainActivityTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val color: Int = ContextCompat.getColor(this@MainActivity, R.color.colorAccentLight)
+                tab?.icon?.let { DrawableCompat.setTint(it, color) }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                val color: Int =
+                    ContextCompat.getColor(this@MainActivity, R.color.colorTextSecondary)
+                tab?.icon?.let { DrawableCompat.setTint(it, color) }
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+        })
+
+        // Then choose the page to display
+        mainActivityViewPager.currentItem = Tabs.PROFILE.position
     }
 
     //--------------------------------------------------------------------------------------
@@ -82,8 +119,8 @@ class MainActivity : AppCompatActivity() {
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                fabSelected = position
-                if (profileFAB == fabSelected) {
+                pageSelected = position
+                if (Tabs.PROFILE.position == pageSelected) {
                     mainActivityFABEditProfile.show()
                     mainActivityFABDisconnect.show()
                 } else {
@@ -93,11 +130,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageScrollStateChanged(state: Int) {
-                if (state == ViewPager2.SCROLL_STATE_IDLE && profileFAB == fabSelected) {
+                if (state == ViewPager2.SCROLL_STATE_IDLE && Tabs.PROFILE.position == pageSelected) {
                     mainActivityFABEditProfile.show()
                     mainActivityFABDisconnect.show()
                 }
-                if (state == ViewPager2.SCROLL_STATE_DRAGGING && profileFAB == fabSelected) {
+                if (state == ViewPager2.SCROLL_STATE_DRAGGING && Tabs.PROFILE.position == pageSelected) {
                     mainActivityFABEditProfile.hide()
                     mainActivityFABDisconnect.hide()
                 }
@@ -115,8 +152,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun disconnectCurrentUser() {
         // Create an alert dialog to prevent the user
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this, R.style.AlertDialogDisconnectTheme)
-        builder.setMessage(R.string.disconnect)
+        AlertDialog.Builder(this, R.style.AlertDialogDisconnectTheme)
+            .setMessage(R.string.disconnect)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 AuthUI.getInstance().signOut(this).addOnSuccessListener {
                     val intent = Intent(this, ConnectionActivity::class.java)
