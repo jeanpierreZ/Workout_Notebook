@@ -1,14 +1,11 @@
 package com.jpz.workoutnotebook.viewmodels
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.api.UserHelper
 import com.jpz.workoutnotebook.models.User
 
-class UserViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val userHelper = UserHelper()
+class UserViewModel(private val userHelper: UserHelper) : ViewModel() {
 
     // --- CREATE ---
 

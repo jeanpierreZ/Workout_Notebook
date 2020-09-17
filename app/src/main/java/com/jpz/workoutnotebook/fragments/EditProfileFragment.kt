@@ -18,11 +18,12 @@ import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.models.User
-import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import permissions.dispatcher.*
 
@@ -35,8 +36,9 @@ class EditProfileFragment : Fragment() {
         const val RC_CHOOSE_PHOTO = 300
     }
 
+    private val userAuth: UserAuth by inject()
     private val userViewModel: UserViewModel by viewModel()
-    private val myUtils = MyUtils()
+    private val myUtils: MyUtils by inject()
 
     // Uri used to locate the device picture
     private var uriPictureSelected: Uri? = null
@@ -63,8 +65,7 @@ class EditProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val firebaseUtils = FirebaseUtils()
-        userId = firebaseUtils.getCurrentUser()?.uid
+        userId = userAuth.getCurrentUser()?.uid
 
         displayUserData(userId)
         onChangeData()

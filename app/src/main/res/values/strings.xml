@@ -6,7 +6,6 @@
     <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb1132242497170089</string>
 
     <!--Connection Activity -->
-    <string name="splash_subtitle">Note and track your training</string>
     <string name="authentication_succeed">Successful authentication</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="error_no_internet">No internet connection</string>

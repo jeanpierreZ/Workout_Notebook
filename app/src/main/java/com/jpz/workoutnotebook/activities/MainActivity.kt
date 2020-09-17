@@ -16,6 +16,7 @@ import com.jpz.workoutnotebook.fragments.ProfileFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
+import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var pageSelected = 0
-    private val myUtils = MyUtils()
+    private val myUtils: MyUtils by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

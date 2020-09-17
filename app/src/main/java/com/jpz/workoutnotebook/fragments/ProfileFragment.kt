@@ -11,10 +11,11 @@ import com.bumptech.glide.Glide
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.storage.FirebaseStorage
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.models.User
-import com.jpz.workoutnotebook.utils.FirebaseUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -24,8 +25,7 @@ class ProfileFragment : Fragment() {
         private val TAG = ProfileFragment::class.java.simpleName
     }
 
-    private val firebaseUtils = FirebaseUtils()
-
+    private val userAuth: UserAuth by inject()
     private val userViewModel: UserViewModel by viewModel()
 
     override fun onCreateView(
@@ -37,7 +37,7 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val userId = firebaseUtils.getCurrentUser()?.uid
+        val userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")
         if (userId != null) {
             getCurrentUserInRealTime(userId)

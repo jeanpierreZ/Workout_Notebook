@@ -9,10 +9,13 @@ import com.jpz.workoutnotebook.fragments.ProfileFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
+import org.koin.android.ext.android.inject
 
 class EditActivity : AppCompatActivity() {
 
     private var edit: String? = null
+
+    private val myUtils: MyUtils by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +46,6 @@ class EditActivity : AppCompatActivity() {
                 .add(R.id.editActivityContainer, editProfileFragment)
                 .commit()
         } else {
-            val myUtils = MyUtils()
             myUtils.showSnackBar(editActivityCoordinatorLayout, R.string.user_data_recovery_error)
         }
     }
