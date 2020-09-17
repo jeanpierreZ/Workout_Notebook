@@ -6,10 +6,10 @@ data class User(
     var name: String? = null,
     var firstName: String? = null,
     var age: Int? = null,
-    var photo: Boolean = false,
+    var photo: Int? = null,
     var sports: String? = null,
     var iFollow: ArrayList<String>? = ArrayList(),
     var followers: ArrayList<String>? = ArrayList()
 ) {
-    constructor() : this("", null, null, null, 0, false, null, null, null)
+    constructor() : this("", null, null, null, 0, 0, null, null, null)
 }

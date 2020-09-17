@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.UserAuth
@@ -52,7 +51,7 @@ class EditProfileFragment : Fragment() {
     private var name: String? = null
     private var firstName: String? = null
     private var age: Int? = null
-    private var photo: Boolean = false
+    private var photo: Int? = 0
     private var sports: String? = null
     private var iFollow: ArrayList<String>? = null
     private var followers: ArrayList<String>? = null
@@ -111,7 +110,7 @@ class EditProfileFragment : Fragment() {
                     view?.let {
                         if (activity != null) {
                             // Download the photo if it exists...
-                            if (user.photo) {
+                            if (user.photo != 0) {
                                 // Download the photo from Firebase Storage
                                 userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
                                     myUtils.displayUserPhoto(
@@ -168,26 +167,20 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun uploadPhotoInFirebaseAndUpdateUser() {
-        // Instance of FirebaseStorage with point to the root reference
-        val storageRef = FirebaseStorage.getInstance().reference
-        // Use variables to create child values
-        // Points to "photos/userID"
-        val photosRef = storageRef.child("photos")
-        val fileName = userId
-        val spaceRef = fileName?.let { photosRef.child(it) }
-
         // Upload the picture local file chosen by the user
-        val uploadTask = uriPictureSelected?.let { spaceRef?.putFile(it) }
-        // Register observers to listen for when the download is done or if it fails
-        uploadTask?.addOnFailureListener { exception ->
-            val errorCode = (exception as StorageException).errorCode
-            val errorMessage = exception.message
-            Log.e(TAG, "Unsuccessful upload: $errorCode $errorMessage")
-        }?.addOnSuccessListener { taskSnapshot ->
-            Log.i(TAG, "Successful upload: ${taskSnapshot.totalByteCount}")
-            // If a new photo is added, set boolean photo to true then update user data
-            photo = true
-            updateUser()
+        if (userId != null && uriPictureSelected != null) {
+            val uploadTask = userStoragePhoto.storageRef(userId!!).putFile(uriPictureSelected!!)
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener { exception ->
+                val errorCode = (exception as StorageException).errorCode
+                val errorMessage = exception.message
+                Log.e(TAG, "Unsuccessful upload: $errorCode $errorMessage")
+            }.addOnSuccessListener { taskSnapshot ->
+                Log.i(TAG, "Successful upload: ${taskSnapshot.totalByteCount}")
+                // If a new photo is added, set boolean photo to true then update user data
+                photo = photo?.plus(1)
+                updateUser()
+            }
         }
     }
 

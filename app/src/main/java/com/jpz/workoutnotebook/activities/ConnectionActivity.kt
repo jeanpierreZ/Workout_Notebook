@@ -25,8 +25,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ConnectionActivity : AppCompatActivity() {
 
     companion object {
-        private const val RC_SIGN_IN: Int = 100
         private val TAG = ConnectionActivity::class.java.simpleName
+        private const val RC_SIGN_IN: Int = 100
+        private const val AUTH_USER_ID = "userId"
+        private const val AUTH_USER_PHOTO = "photo"
     }
 
     private val userAuth: UserAuth by inject()
@@ -132,7 +134,7 @@ class ConnectionActivity : AppCompatActivity() {
     private fun createUser() {
         if (userAuth.getCurrentUser() != null) {
             val userId: String = userAuth.getCurrentUser()!!.uid
-            val data = hashMapOf("userId" to userId)
+            val data = hashMapOf(AUTH_USER_ID to userId, AUTH_USER_PHOTO to 0)
             userViewModel.createUser(userId, data)
         }
     }

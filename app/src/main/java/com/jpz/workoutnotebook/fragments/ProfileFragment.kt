@@ -1,14 +1,11 @@
 package com.jpz.workoutnotebook.fragments
 
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.google.firebase.firestore.DocumentChange
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.UserAuth
@@ -68,7 +65,7 @@ class ProfileFragment : Fragment() {
                             Log.i(TAG, "User photo = ${user.photo}")
                             if (activity != null) {
                                 // Download the photo if it exists...
-                                if (user.photo) {
+                                if (user.photo != 0) {
                                     // Download the photo from Firebase Storage
                                     userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
                                         myUtils.displayUserPhoto(
@@ -94,32 +91,5 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
-    }
-
-    //--------------------------------------------------------------------------------------
-    // Private methods to display the data
-
-    private fun displayUserPhoto(uri: Uri) {
-        activity?.let {
-            Glide.with(it)
-                .load(uri)
-                .circleCrop()
-                .into(profileFragmentPhoto)
-        }
-    }
-
-    private fun displayGenericPhoto() {
-        // If user has no photo, display a generic icon for the photo
-        profileFragmentPhoto.background = activity?.let { activity ->
-            ContextCompat.getDrawable(activity, R.drawable.ic_baseline_person_pin_24)
-        }
-    }
-
-    private fun displayUserData(user: User) {
-        profileFragmentNickname?.editText?.setText(user.nickName)
-        profileFragmentName.editText?.setText(user.name)
-        profileFragmentFirstName.editText?.setText(user.firstName)
-        if (user.age != null) profileFragmentAge.editText?.setText(user.age.toString())
-        profileFragmentSports.editText?.setText(user.sports)
     }
 }

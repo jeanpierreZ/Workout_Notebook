@@ -22,7 +22,7 @@ class UserHelper {
     // --- CREATE ---
 
     // Creating the document if it does not already exist or update the userId (which is the same that auth.uid).
-    fun createUser(userId: String, data: HashMap<String, String>): Task<Void>? {
+    fun createUser(userId: String, data: HashMap<String, out Any>): Task<Void>? {
         return getUsersCollection()?.document(userId)?.set(data, SetOptions.merge())
     }
 

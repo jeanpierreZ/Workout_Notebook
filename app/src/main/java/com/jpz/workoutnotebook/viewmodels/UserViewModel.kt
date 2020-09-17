@@ -9,7 +9,7 @@ class UserViewModel(private val userHelper: UserHelper) : ViewModel() {
 
     // --- CREATE ---
 
-    fun createUser(userId: String, data: HashMap<String, String>) =
+    fun createUser(userId: String, data: HashMap<String, out Any>) =
         userHelper.createUser(userId, data)?.addOnFailureListener { e ->
             Log.e("createUser", "Error writing document", e)
         }
