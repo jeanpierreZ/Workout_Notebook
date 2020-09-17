@@ -2,6 +2,7 @@ package com.jpz.workoutnotebook.injections
 
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.api.UserHelper
+import com.jpz.workoutnotebook.api.UserStoragePhoto
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -16,6 +17,11 @@ val moduleUserAuth = module {
 val moduleUserHelper = module {
     // Instance of UserHelper
     single { UserHelper() }
+}
+
+val moduleUserStoragePhoto = module {
+    // Instance of UserStoragePhoto
+    single { UserStoragePhoto() }
 }
 
 val moduleUserViewModel = module {

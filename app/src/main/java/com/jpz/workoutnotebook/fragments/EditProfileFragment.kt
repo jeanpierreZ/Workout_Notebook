@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -19,6 +18,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.UserAuth
+import com.jpz.workoutnotebook.api.UserStoragePhoto
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
@@ -38,6 +38,7 @@ class EditProfileFragment : Fragment() {
 
     private val userAuth: UserAuth by inject()
     private val userViewModel: UserViewModel by viewModel()
+    private val userStoragePhoto: UserStoragePhoto by inject()
     private val myUtils: MyUtils by inject()
 
     // Uri used to locate the device picture
@@ -100,45 +101,37 @@ class EditProfileFragment : Fragment() {
         if (userId != null) {
             userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
                 val user: User? = documentSnapshot.toObject(User::class.java)
+
                 user?.let {
                     // Retrieve data user
                     photo = user.photo
                     iFollow = user.iFollow
                     followers = user.followers
+
                     view?.let {
-                        // Download the photo if it exists
-                        if (user.photo) {
-                            // Instance of FirebaseStorage with point to the root reference
-                            val storageRef = FirebaseStorage.getInstance().reference
-                            // Use variables to create child values
-                            // Points to "photos/userID"
-                            val photosRef = storageRef.child("photos")
-                            val fileName = user.userId
-                            val spaceRef = photosRef.child(fileName)
-                            // Download the photo from Firebase Storage
-                            spaceRef.downloadUrl.addOnSuccessListener { uri ->
-                                activity?.let { it1 ->
-                                    Glide.with(it1)
-                                        .load(uri)
-                                        .circleCrop()
-                                        .into(editProfileFragmentPhoto)
-                                }
-                            }
-                            // Else display an icon for the photo
-                        } else {
-                            editProfileFragmentPhoto.background =
-                                activity?.let { activity ->
-                                    ContextCompat.getDrawable(
-                                        activity, R.drawable.ic_baseline_person_pin_24
+                        if (activity != null) {
+                            // Download the photo if it exists...
+                            if (user.photo) {
+                                // Download the photo from Firebase Storage
+                                userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
+                                    myUtils.displayUserPhoto(
+                                        activity!!, uri, editProfileFragmentPhoto
                                     )
                                 }
+                                // ...else display an icon for the photo
+                            } else {
+                                myUtils.displayGenericPhoto(activity!!, editProfileFragmentPhoto)
+                            }
                         }
+                        myUtils.displayUserData(
+                            user,
+                            editProfileFragmentNickname,
+                            editProfileFragmentName,
+                            editProfileFragmentFirstName,
+                            editProfileFragmentAge,
+                            editProfileFragmentSports
+                        )
                     }
-                    editProfileFragmentNickname.editText?.setText(user.nickName)
-                    editProfileFragmentName.editText?.setText(user.name)
-                    editProfileFragmentFirstName.editText?.setText(user.firstName)
-                    editProfileFragmentAge.editText?.setText(user.age.toString())
-                    editProfileFragmentSports.editText?.setText(user.sports)
                 }
             }
         }
@@ -199,8 +192,8 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun updateUser() {
-        val user = userId?.let { it1 ->
-            User(it1, nickName, name, firstName, age, photo, sports, iFollow, followers)
+        val user = userId?.let { it ->
+            User(it, nickName, name, firstName, age, photo, sports, iFollow, followers)
         }
         if (user != null) {
             Log.d(TAG, "user = $user")

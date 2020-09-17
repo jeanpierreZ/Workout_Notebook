@@ -1,10 +1,7 @@
 package com.jpz.workoutnotebook.application
 
 import android.app.Application
-import com.jpz.workoutnotebook.injections.moduleMyUtils
-import com.jpz.workoutnotebook.injections.moduleUserAuth
-import com.jpz.workoutnotebook.injections.moduleUserHelper
-import com.jpz.workoutnotebook.injections.moduleUserViewModel
+import com.jpz.workoutnotebook.injections.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -17,7 +14,15 @@ class KoinApplication : Application() {
             // Android context
             androidContext(this@KoinApplication)
             // modules
-            modules(listOf(moduleUserAuth, moduleUserHelper, moduleUserViewModel, moduleMyUtils))
+            modules(
+                listOf(
+                    moduleUserAuth,
+                    moduleUserHelper,
+                    moduleUserStoragePhoto,
+                    moduleUserViewModel,
+                    moduleMyUtils
+                )
+            )
         }
     }
 }
