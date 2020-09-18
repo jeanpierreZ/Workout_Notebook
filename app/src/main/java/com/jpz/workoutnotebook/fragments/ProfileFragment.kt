@@ -2,53 +2,46 @@ package com.jpz.workoutnotebook.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.DocumentChange
-import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.api.UserAuth
-import com.jpz.workoutnotebook.api.UserStoragePhoto
 import com.jpz.workoutnotebook.models.User
-import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.fragment_profile.*
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlinx.android.synthetic.main.fragment_base_profile.*
 
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : BaseProfileFragment() {
 
     companion object {
         private val TAG = ProfileFragment::class.java.simpleName
     }
 
-    private val userAuth: UserAuth by inject()
-    private val userViewModel: UserViewModel by viewModel()
-    private val userStoragePhoto: UserStoragePhoto by inject()
-    private val myUtils: MyUtils by inject()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        // Disable EditText and counter
+        baseProfileFragmentNickname.editText?.isEnabled = false
+        baseProfileFragmentNickname.isCounterEnabled = false
+        baseProfileFragmentName.editText?.isEnabled = false
+        baseProfileFragmentName.isCounterEnabled = false
+        baseProfileFragmentFirstName.editText?.isEnabled = false
+        baseProfileFragmentFirstName.isCounterEnabled = false
+        baseProfileFragmentAge.editText?.isEnabled = false
+        baseProfileFragmentAge.isCounterEnabled = false
+        baseProfileFragmentSports.editText?.isEnabled = false
+        baseProfileFragmentSports.isCounterEnabled = false
+
+        // Disable FloatingActionButton
+        baseProfileFragmentFABSave.visibility = View.GONE
+        baseProfileFragmentFABCancel.visibility = View.GONE
+
         val userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")
-        if (userId != null) {
-            getCurrentUserInRealTime(userId)
-        }
+
+        userId?.let { getCurrentUserDataInRealTime(it) }
     }
 
     //--------------------------------------------------------------------------------------
     // Listener of current user data in real time from Firebase
 
-    private fun getCurrentUserInRealTime(userId: String) {
+    private fun getCurrentUserDataInRealTime(userId: String) {
         userViewModel.getCurrentUser(userId)?.addSnapshotListener { snapshot, e ->
 
             if (e != null) {
@@ -62,30 +55,21 @@ class ProfileFragment : Fragment() {
                         val user: User? = dc.document.toObject(User::class.java)
 
                         user?.let {
-                            Log.i(TAG, "User photo = ${user.photo}")
+                            Log.i(TAG, "user.photo = ${user.photo}")
                             if (activity != null) {
                                 // Download the photo if it exists...
-                                if (user.photo != 0) {
+                                if (user.photo != null && user.photo != 0) {
                                     // Download the photo from Firebase Storage
                                     userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
-                                        myUtils.displayUserPhoto(
-                                            activity!!, uri, profileFragmentPhoto
-                                        )
+                                        displayUserPhoto(uri)
                                     }
                                     // ...else display an icon for the photo
                                 } else {
-                                    myUtils.displayGenericPhoto(activity!!, profileFragmentPhoto)
+                                    displayGenericPhoto()
                                 }
                             }
                             // Display user data
-                            myUtils.displayUserData(
-                                user,
-                                profileFragmentNickname,
-                                profileFragmentName,
-                                profileFragmentFirstName,
-                                profileFragmentAge,
-                                profileFragmentSports
-                            )
+                            displayUserData(user)
                         }
                     }
                 }

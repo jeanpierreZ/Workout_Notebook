@@ -11,5 +11,5 @@ data class User(
     var iFollow: ArrayList<String>? = ArrayList(),
     var followers: ArrayList<String>? = ArrayList()
 ) {
-    constructor() : this("", null, null, null, 0, 0, null, null, null)
+    constructor() : this("", null, null, null, null, null, null, null, null)
 }

@@ -17,8 +17,9 @@
         <item name="android:windowBackground">@drawable/connection_background</item>
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="titleTextColor">@color/colorTextPrimary</item>
-        <item name="windowActionBar">true</item>
+        <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
     </style>
 
     <!-- AlertDialog theme -->

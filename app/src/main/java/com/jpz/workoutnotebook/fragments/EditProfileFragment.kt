@@ -8,45 +8,33 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.api.UserAuth
-import com.jpz.workoutnotebook.api.UserStoragePhoto
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import kotlinx.android.synthetic.main.fragment_base_profile.*
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import permissions.dispatcher.*
 
 
 @RuntimePermissions
-class EditProfileFragment : Fragment() {
+class EditProfileFragment : BaseProfileFragment() {
 
     companion object {
         private val TAG = EditProfileFragment::class.java.simpleName
         const val RC_CHOOSE_PHOTO = 300
     }
 
-    private val userAuth: UserAuth by inject()
-    private val userViewModel: UserViewModel by viewModel()
-    private val userStoragePhoto: UserStoragePhoto by inject()
     private val myUtils: MyUtils by inject()
 
     // Uri used to locate the device picture
     private var uriPictureSelected: Uri? = null
 
-    // Used if the user has chosen a photo
+    // Boolean used if the user has chosen a photo
     private var newPhotoAdded: Boolean = false
 
-    private var userId: String? = null
     private var nickName: String? = null
     private var name: String? = null
     private var firstName: String? = null
@@ -56,23 +44,19 @@ class EditProfileFragment : Fragment() {
     private var iFollow: ArrayList<String>? = null
     private var followers: ArrayList<String>? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_edit_profile, container, false)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         userId = userAuth.getCurrentUser()?.uid
+        Log.d(TAG, "uid = $userId")
 
-        displayUserData(userId)
+        getUserData(userId)
         onChangeData()
-        editProfileFragmentFABSave.setOnClickListener {
+
+        baseProfileFragmentFABSave.setOnClickListener {
             saveUpdatedData()
         }
-        editProfileFragmentFABCancel.setOnClickListener {
+        baseProfileFragmentFABCancel.setOnClickListener {
             activity?.finish()
         }
     }
@@ -83,12 +67,7 @@ class EditProfileFragment : Fragment() {
             // Uri of picture selected by user
             uriPictureSelected = data?.data
             // Display the user photo with data
-            view?.let {
-                Glide.with(it)
-                    .load(uriPictureSelected)
-                    .circleCrop()
-                    .into(editProfileFragmentPhoto)
-            }
+            uriPictureSelected?.let { displayUserPhoto(it) }
             newPhotoAdded = true
         }
     }
@@ -96,7 +75,7 @@ class EditProfileFragment : Fragment() {
     //--------------------------------------------------------------------------------------
     // Display the user data from Firebase
 
-    private fun displayUserData(userId: String?) {
+    private fun getUserData(userId: String?) {
         if (userId != null) {
             userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
                 val user: User? = documentSnapshot.toObject(User::class.java)
@@ -104,32 +83,24 @@ class EditProfileFragment : Fragment() {
                 user?.let {
                     // Retrieve data user
                     photo = user.photo
+                    Log.d(TAG, "user.photo = $photo")
                     iFollow = user.iFollow
                     followers = user.followers
 
                     view?.let {
                         if (activity != null) {
                             // Download the photo if it exists...
-                            if (user.photo != 0) {
+                            if (user.photo != null && user.photo != 0) {
                                 // Download the photo from Firebase Storage
                                 userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
-                                    myUtils.displayUserPhoto(
-                                        activity!!, uri, editProfileFragmentPhoto
-                                    )
+                                    displayUserPhoto(uri)
                                 }
                                 // ...else display an icon for the photo
                             } else {
-                                myUtils.displayGenericPhoto(activity!!, editProfileFragmentPhoto)
+                                displayGenericPhoto()
                             }
                         }
-                        myUtils.displayUserData(
-                            user,
-                            editProfileFragmentNickname,
-                            editProfileFragmentName,
-                            editProfileFragmentFirstName,
-                            editProfileFragmentAge,
-                            editProfileFragmentSports
-                        )
+                        displayUserData(user)
                     }
                 }
             }
@@ -140,22 +111,23 @@ class EditProfileFragment : Fragment() {
     // Update / save data
 
     private fun onChangeData() {
-        editProfileFragmentPhoto.setOnClickListener {
+
+        baseProfileFragmentPhoto.setOnClickListener {
             addPhotoWithPermissionCheck()
         }
-        editProfileFragmentNickname.editText?.doOnTextChanged { text, _, _, _ ->
+        baseProfileFragmentNickname.editText?.doOnTextChanged { text, _, _, _ ->
             nickName = text.toString()
         }
-        editProfileFragmentName.editText?.doOnTextChanged { text, _, _, _ ->
+        baseProfileFragmentName.editText?.doOnTextChanged { text, _, _, _ ->
             name = text.toString()
         }
-        editProfileFragmentFirstName.editText?.doOnTextChanged { text, _, _, _ ->
+        baseProfileFragmentFirstName.editText?.doOnTextChanged { text, _, _, _ ->
             firstName = text.toString()
         }
-        editProfileFragmentAge.editText?.doOnTextChanged { text, _, _, _ ->
+        baseProfileFragmentAge.editText?.doOnTextChanged { text, _, _, _ ->
             age = text.toString().toIntOrNull()
         }
-        editProfileFragmentSports.editText?.doOnTextChanged { text, _, _, _ ->
+        baseProfileFragmentSports.editText?.doOnTextChanged { text, _, _, _ ->
             sports = text.toString()
         }
     }
@@ -177,8 +149,13 @@ class EditProfileFragment : Fragment() {
                 Log.e(TAG, "Unsuccessful upload: $errorCode $errorMessage")
             }.addOnSuccessListener { taskSnapshot ->
                 Log.i(TAG, "Successful upload: ${taskSnapshot.totalByteCount}")
-                // If a new photo is added, set boolean photo to true then update user data
-                photo = photo?.plus(1)
+                // If a new photo is added, increment photo number value then update user data
+                photo = if (photo == null) {
+                    1
+                } else {
+                    photo?.plus(1)
+                }
+                Log.d(TAG, "new photo data = $photo")
                 updateUser()
             }
         }
@@ -237,11 +214,11 @@ class EditProfileFragment : Fragment() {
 
     @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun onReadExternalStorageDenied() {
-        myUtils.showSnackBar(editProfileFragmentCoordinatorLayout, R.string.permission_denied)
+        myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.permission_denied)
     }
 
     @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun onPermissionNeverAskAgain() {
-        myUtils.showSnackBar(editProfileFragmentCoordinatorLayout, R.string.never_ask_again)
+        myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.never_ask_again)
     }
 }
