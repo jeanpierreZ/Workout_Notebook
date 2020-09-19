@@ -14,6 +14,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
 import com.jpz.workoutnotebook.fragments.ProfileFragment
 import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_PROFILE
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
@@ -31,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EDIT = "EDIT"
-        private const val RC_EDIT_PROFILE: Int = 200
     }
 
     private var pageSelected = 0

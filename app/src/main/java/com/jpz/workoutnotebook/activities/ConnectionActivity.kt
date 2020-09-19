@@ -12,6 +12,7 @@ import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_SIGN_IN
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_connection.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -26,7 +27,6 @@ class ConnectionActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = ConnectionActivity::class.java.simpleName
-        private const val RC_SIGN_IN: Int = 100
         private const val AUTH_USER_ID = "userId"
     }
 

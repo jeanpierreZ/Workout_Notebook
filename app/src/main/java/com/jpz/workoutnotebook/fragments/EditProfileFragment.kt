@@ -14,6 +14,7 @@ import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_CHOOSE_PHOTO
 import kotlinx.android.synthetic.main.fragment_base_profile.*
 import org.koin.android.ext.android.inject
 import permissions.dispatcher.*
@@ -24,7 +25,6 @@ class EditProfileFragment : BaseProfileFragment() {
 
     companion object {
         private val TAG = EditProfileFragment::class.java.simpleName
-        const val RC_CHOOSE_PHOTO = 300
     }
 
     private val myUtils: MyUtils by inject()

@@ -3,8 +3,7 @@ package com.jpz.workoutnotebook.adapters
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.jpz.workoutnotebook.fragments.ProfileFragment
-import com.jpz.workoutnotebook.fragments.SportsFragment
+import com.jpz.workoutnotebook.fragments.*
 
 class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
 
@@ -21,9 +20,9 @@ class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activ
         // Fragment to return
         when (position) {
             0 -> fragment = SportsFragment()
-            1 -> fragment = SportsFragment()
-            2 -> fragment = SportsFragment()
-            3 -> fragment = SportsFragment()
+            1 -> fragment = CalendarFragment()
+            2 -> fragment = StatisticsFragment()
+            3 -> fragment = FollowersFragment()
             4 -> fragment = ProfileFragment()
         }
         return fragment
