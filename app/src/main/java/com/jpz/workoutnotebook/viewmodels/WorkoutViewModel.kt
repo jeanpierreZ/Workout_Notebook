@@ -3,7 +3,6 @@ package com.jpz.workoutnotebook.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.api.WorkoutHelper
-import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 import java.util.*
 
@@ -12,9 +11,7 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
     // --- CREATE ---
 
     fun createWorkout(
-        workoutId: String, workoutName: String,
-        workoutDate: Date,
-        exercisesList: ArrayList<Exercise>?
+        workoutId: String, workoutName: String, workoutDate: Date, exercisesList: ArrayList<String>?
     ) = workoutHelper.createWorkout(workoutId, workoutName, workoutDate, exercisesList)
         ?.addOnFailureListener { e ->
             Log.e("createWorkout", "Error writing document", e)

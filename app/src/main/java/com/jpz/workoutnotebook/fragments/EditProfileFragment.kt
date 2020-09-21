@@ -43,6 +43,8 @@ class EditProfileFragment : BaseProfileFragment() {
     private var sports: String? = null
     private var iFollow: ArrayList<String>? = null
     private var followers: ArrayList<String>? = null
+    private var exercisesList: ArrayList<String>? = null
+    private var workoutsList: ArrayList<String>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,11 +83,13 @@ class EditProfileFragment : BaseProfileFragment() {
                 val user: User? = documentSnapshot.toObject(User::class.java)
 
                 user?.let {
-                    // Retrieve data user
+                    // Retrieve user data
                     photo = user.photo
                     Log.d(TAG, "user.photo = $photo")
                     iFollow = user.iFollow
                     followers = user.followers
+                    exercisesList = user.exercisesList
+                    workoutsList = user.workoutsList
 
                     view?.let {
                         if (activity != null) {
@@ -163,7 +167,10 @@ class EditProfileFragment : BaseProfileFragment() {
 
     private fun updateUser() {
         val user = userId?.let { it ->
-            User(it, nickName, name, firstName, age, photo, sports, iFollow, followers)
+            User(
+                it, nickName, name, firstName, age, photo, sports,
+                iFollow, followers, exercisesList, workoutsList
+            )
         }
         if (user != null) {
             Log.d(TAG, "user = $user")

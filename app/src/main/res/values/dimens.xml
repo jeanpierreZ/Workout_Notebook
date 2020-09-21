@@ -2,4 +2,14 @@
 <resources>
     <!-- Default FAB margin -->
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Title TextView -->
+    <dimen name="title_text_size">30sp</dimen>
+    <dimen name="title_text_margin">16dp</dimen>
+
+    <!-- SubTitle TextView -->
+    <dimen name="subtitle_text_size">24sp</dimen>
+
+    <!-- EditButtonText -->
+    <dimen name="edit_button_margin">50dp</dimen>
 </resources>

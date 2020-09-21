@@ -6,7 +6,6 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.jpz.workoutnotebook.models.Exercise
-import com.jpz.workoutnotebook.models.Set
 import java.util.*
 
 class ExerciseHelper {
@@ -20,15 +19,11 @@ class ExerciseHelper {
     // --- CREATE ---
 
     fun createExercise(
-        exerciseId: String,
-        exerciseName: String?,
-        restNextSet: Int?,
-        restNextExercise: Int?,
-        editable: Boolean,
-        sets: ArrayList<Set>?
+        exerciseId: String, exerciseName: String?, restNextSet: Int?,
+        restNextExercise: Int?, editable: Boolean, setsList: ArrayList<String>?
     ): Task<Void>? {
         val exerciseToCreate =
-            Exercise(exerciseId, exerciseName, restNextSet, restNextExercise, editable, sets)
+            Exercise(exerciseId, exerciseName, restNextSet, restNextExercise, editable, setsList)
         return getExercisesCollection()?.document(exerciseId)?.set(exerciseToCreate)
     }
 

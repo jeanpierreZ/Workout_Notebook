@@ -6,5 +6,5 @@ data class Exercise(
     var restNextSet: Int? = null,
     var restNextExercise: Int? = null,
     var editable: Boolean = true,
-    var sets: ArrayList<Set>? = ArrayList()
+    var setsList: ArrayList<String>? = ArrayList()
 )

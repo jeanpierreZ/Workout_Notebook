@@ -5,7 +5,6 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 import java.util.*
 
@@ -20,10 +19,7 @@ class WorkoutHelper {
     // --- CREATE ---
 
     fun createWorkout(
-        workoutId: String,
-        workoutName: String,
-        workoutDate: Date,
-        exercisesList: ArrayList<Exercise>?
+        workoutId: String, workoutName: String, workoutDate: Date, exercisesList: ArrayList<String>?
     ): Task<Void>? {
         val workoutToCreate = Workout(workoutId, workoutName, workoutDate, exercisesList)
         return getWorkoutsCollection()?.document(workoutId)?.set(workoutToCreate)

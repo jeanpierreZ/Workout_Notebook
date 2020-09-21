@@ -33,4 +33,9 @@
     <string name="permission_denied">Permission denied</string>
     <string name="never_ask_again">Never ask again</string>
 
+    <!--Sports Fragment -->
+    <string name="next_training_session">Next training session</string>
+    <string name="exercises">Exercises</string>
+    <string name="workouts">Workouts</string>
+
 </resources>

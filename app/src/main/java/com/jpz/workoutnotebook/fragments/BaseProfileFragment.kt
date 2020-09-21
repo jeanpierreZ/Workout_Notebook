@@ -49,7 +49,7 @@ abstract class BaseProfileFragment : Fragment() {
 
     protected fun displayGenericPhoto() {
         // If user has no photo, display a generic icon for the photo
-        baseProfileFragmentPhoto.background = activity?.let { activity ->
+        baseProfileFragmentPhoto?.background = activity?.let { activity ->
             ContextCompat.getDrawable(activity, R.drawable.ic_baseline_person_pin_24)
         }
     }

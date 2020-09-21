@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.api.ExerciseHelper
 import com.jpz.workoutnotebook.models.Exercise
-import com.jpz.workoutnotebook.models.Set
 import java.util.*
 
 class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel() {
@@ -12,19 +11,11 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
     // --- CREATE ---
 
     fun createExercise(
-        exerciseId: String,
-        exerciseName: String?,
-        restNextSet: Int?,
-        restNextExercise: Int?,
-        editable: Boolean,
-        sets: ArrayList<Set>?
+        exerciseId: String, exerciseName: String?, restNextSet: Int?,
+        restNextExercise: Int?, editable: Boolean, setsList: ArrayList<String>?
     ) = exerciseHelper.createExercise(
-        exerciseId,
-        exerciseName,
-        restNextSet,
-        restNextExercise,
-        editable,
-        sets
+        exerciseId, exerciseName, restNextSet,
+        restNextExercise, editable, setsList
     )
         ?.addOnFailureListener { e ->
             Log.e("createExercise", "Error writing document", e)
