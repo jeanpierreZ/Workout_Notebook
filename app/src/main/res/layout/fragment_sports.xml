@@ -28,7 +28,9 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/colorPrimaryDark"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@color/colorPrimaryLight"
             app:layout_constraintBottom_toBottomOf="@+id/guidelineFiftySportsFragment"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -46,7 +48,7 @@
             style="@style/SubTitleTextViewTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="36dp"
             android:text="Date of next training session"
             app:layout_constraintBottom_toTopOf="@+id/cardViewSportsFragment"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,7 +59,7 @@
             android:id="@+id/cardViewSportsFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:clickable="true"
             android:focusable="true"
             app:cardBackgroundColor="@color/colorAccentLight"
@@ -73,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Workout for training session" />
+                android:text="Workout for next training session" />
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.button.MaterialButton

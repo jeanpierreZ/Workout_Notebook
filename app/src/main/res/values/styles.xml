@@ -22,20 +22,15 @@
         <item name="android:windowFullscreen">false</item>
     </style>
 
-    <!-- AlertDialog theme -->
-    <style name="AlertDialogDisconnectTheme" parent="Theme.MaterialComponents.Dialog.Alert">
-        <item name="colorPrimary">@color/colorAccentLight</item>
-    </style>
-
     <!-- TextInputLayout theme -->
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/colorAccent</item>
-        <item name="hintTextColor">@color/colorAccent</item>
+        <item name="boxStrokeColor">@color/colorAccentLight</item>
+        <item name="hintTextColor">@color/colorAccentDark</item>
     </style>
 
     <!-- Title TextView Theme -->
     <style name="TitleTextViewTheme" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
         <item name="android:textSize">@dimen/title_text_size</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_margin">@dimen/title_text_margin</item>
@@ -43,17 +38,15 @@
 
     <!-- SubTitle TextView Theme -->
     <style name="SubTitleTextViewTheme" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textColor">@color/colorTextSecondary</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
         <item name="android:textSize">@dimen/subtitle_text_size</item>
     </style>
 
     <!-- EditButtonText Theme -->
-    <style name="EditButtonTheme" parent="Widget.MaterialComponents.Button">
+    <style name="EditButtonTheme" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="icon">@drawable/ic_baseline_edit_24</item>
-        <item name="iconTint">@color/colorAccentLight</item>
         <item name="android:layout_marginStart">@dimen/edit_button_margin</item>
         <item name="android:layout_marginEnd">@dimen/edit_button_margin</item>
-        <item name="android:textColor">@color/colorAccentLight</item>
         <item name="android:textSize">@dimen/subtitle_text_size</item>
     </style>
 

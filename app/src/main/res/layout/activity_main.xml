@@ -18,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimaryLight"
-            app:tabIconTint="@color/colorTextSecondary"
-            app:tabIndicatorColor="@color/colorAccentLight" />
+            app:tabIconTint="@color/colorTextPrimary"
+            app:tabIndicatorColor="@color/colorTextSecondary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/colorAccentLight"
         app:layout_anchor="@id/mainActivityViewPager"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_baseline_edit_24" />
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/colorAccentLight"
         app:layout_anchor="@id/mainActivityViewPager"
         app:layout_anchorGravity="bottom|start"
         app:srcCompat="@drawable/ic_baseline_not_interested_24" />

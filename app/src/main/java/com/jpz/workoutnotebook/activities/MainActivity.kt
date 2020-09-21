@@ -94,13 +94,14 @@ class MainActivity : AppCompatActivity() {
         // Modify color of icon if tab is selected
         mainActivityTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                val color: Int = ContextCompat.getColor(this@MainActivity, R.color.colorAccentLight)
+                val color: Int =
+                    ContextCompat.getColor(this@MainActivity, R.color.colorTextSecondary)
                 tab?.icon?.let { DrawableCompat.setTint(it, color) }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 val color: Int =
-                    ContextCompat.getColor(this@MainActivity, R.color.colorTextSecondary)
+                    ContextCompat.getColor(this@MainActivity, R.color.colorTextPrimary)
                 tab?.icon?.let { DrawableCompat.setTint(it, color) }
             }
 
@@ -153,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun disconnectCurrentUser() {
         // Create an alert dialog to prevent the user
-        AlertDialog.Builder(this, R.style.AlertDialogDisconnectTheme)
+        AlertDialog.Builder(this)
             .setMessage(R.string.disconnect)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 AuthUI.getInstance().signOut(this).addOnSuccessListener {
