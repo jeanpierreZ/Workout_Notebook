@@ -12,15 +12,16 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
-import com.jpz.workoutnotebook.fragments.ProfileFragment
+import com.jpz.workoutnotebook.fragments.SportsFragment
 import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_EXERCISE
 import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_PROFILE
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EDIT = "EDIT"
+        const val PROFILE_FRAGMENT = "PROFILE_FRAGMENT"
+        const val EXERCISE_FRAGMENT = "EXERCISE_FRAGMENT"
     }
 
     private var pageSelected = 0
@@ -45,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         configureTabLayout()
         animateFAB()
         mainActivityFABEditProfile.setOnClickListener {
-            editProfile()
+            startEditActivity(PROFILE_FRAGMENT)
         }
         mainActivityFABDisconnect.setOnClickListener {
             disconnectCurrentUser()
@@ -54,15 +57,31 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_EDIT_PROFILE) {
-            when (resultCode) {
-                RESULT_OK -> myUtils.showSnackBar(
-                    mainActivityCoordinatorLayout, R.string.user_data_updated
-                )
-                RESULT_CANCELED -> myUtils.showSnackBar(
-                    mainActivityCoordinatorLayout, R.string.update_data_cancel
-                )
+
+        when (requestCode) {
+
+            RC_EDIT_PROFILE -> {
+                if (resultCode == RESULT_OK) {
+                    myUtils.showSnackBar(
+                        mainActivityCoordinatorLayout, R.string.user_data_updated
+                    )
+                } else if (resultCode == RESULT_CANCELED) {
+                    myUtils.showSnackBar(
+                        mainActivityCoordinatorLayout, R.string.update_data_canceled
+                    )
+                }
             }
+
+/*            RC_EDIT_EXERCISE ->
+                if (resultCode == RESULT_OK) {
+                    myUtils.showSnackBar(
+                        mainActivityCoordinatorLayout, R.string.exercise_added
+                    )
+                } else if (resultCode == RESULT_CANCELED) {
+                    myUtils.showSnackBar(
+                        mainActivityCoordinatorLayout, R.string.add_exercise_canceled
+                    )
+                }*/
         }
     }
 
@@ -146,11 +165,13 @@ class MainActivity : AppCompatActivity() {
 
     //--------------------------------------------------------------------------------------
 
-    private fun editProfile() {
+    private fun startEditActivity(edit: String) {
         val intent = Intent(this, EditActivity::class.java)
-        intent.putExtra(EDIT, ProfileFragment::class.java.name)
+        intent.putExtra(EDIT, edit)
         startActivityForResult(intent, RC_EDIT_PROFILE)
     }
+
+    //--------------------------------------------------------------------------------------
 
     private fun disconnectCurrentUser() {
         // Create an alert dialog to prevent the user
@@ -166,5 +187,12 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(android.R.string.cancel) { _, _ ->
             }
             .show()
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    // Implement listener from SportsFragment to add an exercise
+    override fun onClickedButton(button: String?) {
+        startEditActivity(EXERCISE_FRAGMENT)
     }
 }

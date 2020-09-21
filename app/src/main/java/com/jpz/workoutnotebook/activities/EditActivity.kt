@@ -2,10 +2,13 @@ package com.jpz.workoutnotebook.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISE_FRAGMENT
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.PROFILE_FRAGMENT
 import com.jpz.workoutnotebook.fragments.EditProfileFragment
-import com.jpz.workoutnotebook.fragments.ProfileFragment
+import com.jpz.workoutnotebook.fragments.ExerciseFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -39,14 +42,20 @@ class EditActivity : AppCompatActivity() {
     //--------------------------------------------------------------------------------------
 
     private fun displayFragment() {
+        var fragment = Fragment()
         val editProfileFragment = EditProfileFragment()
+        val exerciseFragment = ExerciseFragment()
 
-        if (edit.equals(ProfileFragment::class.java.name)) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.editActivityContainer, editProfileFragment)
-                .commit()
-        } else {
-            myUtils.showSnackBar(editActivityCoordinatorLayout, R.string.user_data_recovery_error)
+        when (edit) {
+            PROFILE_FRAGMENT -> fragment = editProfileFragment
+            EXERCISE_FRAGMENT -> fragment = exerciseFragment
+            else -> myUtils.showSnackBar(
+                editActivityCoordinatorLayout, R.string.user_data_recovery_error
+            )
         }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.editActivityContainer, fragment)
+            .commit()
     }
 }
