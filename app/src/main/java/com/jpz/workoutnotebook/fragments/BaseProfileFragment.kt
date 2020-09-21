@@ -56,9 +56,9 @@ abstract class BaseProfileFragment : Fragment() {
 
     protected fun displayUserData(user: User) {
         baseProfileFragmentNickname?.editText?.setText(user.nickName)
-        baseProfileFragmentName.editText?.setText(user.name)
-        baseProfileFragmentFirstName.editText?.setText(user.firstName)
-        if (user.age != null) baseProfileFragmentAge.editText?.setText(user.age.toString())
-        baseProfileFragmentSports.editText?.setText(user.sports)
+        baseProfileFragmentName?.editText?.setText(user.name)
+        baseProfileFragmentFirstName?.editText?.setText(user.firstName)
+        if (user.age != null) baseProfileFragmentAge?.editText?.setText(user.age.toString())
+        baseProfileFragmentSports?.editText?.setText(user.sports)
     }
 }

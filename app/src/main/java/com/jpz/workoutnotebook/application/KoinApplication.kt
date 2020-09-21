@@ -20,6 +20,12 @@ class KoinApplication : Application() {
                     moduleUserHelper,
                     moduleUserStoragePhoto,
                     moduleUserViewModel,
+                    moduleWorkoutHelper,
+                    moduleWorkoutViewModel,
+                    moduleExerciseHelper,
+                    moduleExerciseViewModel,
+                    moduleSetHelper,
+                    moduleSetViewModel,
                     moduleMyUtils
                 )
             )
