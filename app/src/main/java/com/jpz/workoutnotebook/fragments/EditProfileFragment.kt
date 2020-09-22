@@ -12,7 +12,9 @@ import android.view.View
 import androidx.core.widget.doOnTextChanged
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.User
+import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_CHOOSE_PHOTO
 import kotlinx.android.synthetic.main.fragment_base_profile.*
@@ -43,8 +45,8 @@ class EditProfileFragment : BaseProfileFragment() {
     private var sports: String? = null
     private var iFollow: ArrayList<String>? = null
     private var followers: ArrayList<String>? = null
-    private var exercisesList: ArrayList<String>? = null
-    private var workoutsList: ArrayList<String>? = null
+    private var exercises: ArrayList<Exercise>? = null
+    private var workouts: ArrayList<Workout>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,8 +90,8 @@ class EditProfileFragment : BaseProfileFragment() {
                     Log.d(TAG, "user.photo = $photo")
                     iFollow = user.iFollow
                     followers = user.followers
-                    exercisesList = user.exercisesList
-                    workoutsList = user.workoutsList
+                    exercises = user.exercises
+                    workouts = user.workouts
 
                     view?.let {
                         if (activity != null) {
@@ -169,7 +171,7 @@ class EditProfileFragment : BaseProfileFragment() {
         val user = userId?.let { it ->
             User(
                 it, nickName, name, firstName, age, photo, sports,
-                iFollow, followers, exercisesList, workoutsList
+                iFollow, followers, exercises, workouts
             )
         }
         if (user != null) {

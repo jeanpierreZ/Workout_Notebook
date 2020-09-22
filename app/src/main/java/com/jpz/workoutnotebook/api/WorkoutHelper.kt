@@ -3,8 +3,7 @@ package com.jpz.workoutnotebook.api
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jpz.workoutnotebook.models.Workout
 import java.util.*
 
@@ -13,7 +12,7 @@ class WorkoutHelper {
     companion object {
         private const val COLLECTION_NAME = "workouts"
         fun getWorkoutsCollection(): CollectionReference? =
-            Firebase.firestore.collection(COLLECTION_NAME)
+            FirebaseFirestore.getInstance().collection(COLLECTION_NAME)
     }
 
     // --- CREATE ---

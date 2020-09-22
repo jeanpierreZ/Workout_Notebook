@@ -60,8 +60,8 @@ dependencies {
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:6.3.0'
 
-    // Firebase Firestore
-    implementation 'com.google.firebase:firebase-firestore-ktx:21.6.0'
+    // FirebaseUI for Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:6.0.2'
 
     // Firebase Storage
     implementation 'com.firebaseui:firebase-ui-storage:6.2.0'

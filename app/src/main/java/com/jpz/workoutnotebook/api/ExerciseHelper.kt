@@ -1,10 +1,7 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.*
 import com.jpz.workoutnotebook.models.Exercise
 import java.util.*
 
@@ -12,35 +9,43 @@ class ExerciseHelper {
 
     companion object {
         private const val COLLECTION_NAME = "exercises"
-        fun getExercisesCollection(): CollectionReference? =
-            Firebase.firestore.collection(COLLECTION_NAME)
+        /*fun getExercisesCollection(): CollectionReference? =
+            FirebaseFirestore.getInstance().collection(COLLECTION_NAME)*/
     }
 
     // --- CREATE ---
 
     fun createExercise(
-        exerciseId: String, exerciseName: String?, restNextSet: Int?,
+        userId: String, exerciseId: String, exerciseName: String?, restNextSet: Int?,
         restNextExercise: Int?, editable: Boolean, setsList: ArrayList<String>?
-    ): Task<Void>? {
+    ): Task<DocumentReference>? {
         val exerciseToCreate =
             Exercise(exerciseId, exerciseName, restNextSet, restNextExercise, editable, setsList)
-        return getExercisesCollection()?.document(exerciseId)?.set(exerciseToCreate)
+        return UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+            ?.add(exerciseToCreate)
     }
 
     // --- READ ---
 
-    fun getExercise(exerciseId: String): Task<DocumentSnapshot>? =
-        getExercisesCollection()?.document(exerciseId)?.get()
+    /*fun getExercise(exerciseId: String): Task<DocumentSnapshot>? =
+        getExercisesCollection()?.document(exerciseId)?.get()*/
+
+    // --- QUERY ---
+
+    fun getListOfExercises(userId: String): Query? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
 
     // --- UPDATE ---
 
-    fun updateExercise(exercise: Exercise): Task<Void>? {
+    /*fun updateExercise(exercise: Exercise): Task<Void>? {
         return getExercisesCollection()?.document(exercise.exerciseId)?.set(exercise)
-    }
+    }*/
 
     // --- DELETE ---
 
-    fun deleteExercise(exerciseId: String): Task<Void?>? {
+    /*fun deleteExercise(exerciseId: String): Task<Void?>? {
         return getExercisesCollection()?.document(exerciseId)?.delete()
-    }
+    }*/
 }

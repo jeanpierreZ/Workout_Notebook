@@ -11,10 +11,10 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
     // --- CREATE ---
 
     fun createExercise(
-        exerciseId: String, exerciseName: String?, restNextSet: Int?,
+        userId: String, exerciseId: String, exerciseName: String?, restNextSet: Int?,
         restNextExercise: Int?, editable: Boolean, setsList: ArrayList<String>?
     ) = exerciseHelper.createExercise(
-        exerciseId, exerciseName, restNextSet,
+        userId, exerciseId, exerciseName, restNextSet,
         restNextExercise, editable, setsList
     )
         ?.addOnFailureListener { e ->
@@ -23,23 +23,27 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
 
     // --- READ ---
 
-    fun getExercise(exerciseId: String) =
+    /*fun getExercise(exerciseId: String) =
         exerciseHelper.getExercise(exerciseId)?.addOnFailureListener { e ->
             Log.d("getExercise", "get failed with ", e)
-        }
+        }*/
+
+    // --- QUERY ---
+
+    fun getListOfExercises(userId: String) = exerciseHelper.getListOfExercises(userId)
 
     // --- UPDATE ---
 
-    fun updateExercise(exerciseId: Exercise) =
-        exerciseHelper.updateExercise(exerciseId)?.addOnFailureListener { e ->
-            Log.e("updateExercise", "Error updating document", e)
-        }
+    /* fun updateExercise(exerciseId: Exercise) =
+         exerciseHelper.updateExercise(exerciseId)?.addOnFailureListener { e ->
+             Log.e("updateExercise", "Error updating document", e)
+         }*/
 
 
     // --- DELETE ---
 
-    fun deleteExercise(exerciseId: String) =
+    /*fun deleteExercise(exerciseId: String) =
         exerciseHelper.deleteExercise(exerciseId)?.addOnFailureListener { e ->
             Log.e("deleteExercise", "Error deleting document", e)
-        }
+        }*/
 }

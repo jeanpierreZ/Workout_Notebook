@@ -10,6 +10,6 @@ data class User(
     var sports: String? = null,
     var iFollow: ArrayList<String>? = ArrayList(),
     var followers: ArrayList<String>? = ArrayList(),
-    var exercisesList: ArrayList<String>? = ArrayList(),
-    var workoutsList: ArrayList<String>? = ArrayList()
+    var exercises: ArrayList<Exercise>? = ArrayList(),
+    var workouts: ArrayList<Workout>? = ArrayList()
 )

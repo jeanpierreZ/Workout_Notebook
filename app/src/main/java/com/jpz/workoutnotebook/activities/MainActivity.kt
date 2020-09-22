@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
         })
 
         // Then choose the page to display
-        mainActivityViewPager.currentItem = Tabs.PROFILE.position
+        mainActivityViewPager.currentItem = Tabs.SPORTS.position
     }
 
     //--------------------------------------------------------------------------------------
