@@ -14,7 +14,7 @@ class ItemExerciseViewHolder(exercise: View) : RecyclerView.ViewHolder(exercise)
     private var exerciseName: TextView? = null
 
     init {
-        exerciseName = itemView.findViewById(R.id.textExerciseItem)
+        exerciseName = itemView.findViewById(R.id.exerciseItemName)
     }
 
     fun updateExercises(exercise: Exercise?, callback: ItemExerciseAdapter.Listener) {

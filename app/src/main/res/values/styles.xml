@@ -42,6 +42,12 @@
         <item name="android:textSize">@dimen/subtitle_text_size</item>
     </style>
 
+    <!-- Exercise TextView Theme -->
+    <style name="ExerciseTextViewTheme" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/exercise_text_size</item>
+    </style>
+
     <!-- EditButtonText Theme -->
     <style name="EditButtonTheme" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="icon">@drawable/ic_baseline_edit_24</item>

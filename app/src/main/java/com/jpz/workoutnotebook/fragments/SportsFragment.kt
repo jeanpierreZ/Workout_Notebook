@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.fragment_sports.*
 
 class SportsFragment : Fragment() {
 
-    private var callback: ButtonListener? = null
+    private var callback: SportsFragmentButtonListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,15 +26,15 @@ class SportsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cardViewSportsFragment.setOnClickListener {
+        sportsFragmentCardView.setOnClickListener {
             Toast.makeText(activity, "CardView", Toast.LENGTH_SHORT).show()
         }
 
-        exercisesButtonSportsFragment.setOnClickListener {
-            callback?.onClickedButton(getString(R.string.exercises))
+        sportsFragmentExercisesButton.setOnClickListener {
+            callback?.onClickedSportsFragmentButton(getString(R.string.exercises))
         }
 
-        workoutsButtonSportsFragment.setOnClickListener {
+        sportsFragmentWorkoutsButton.setOnClickListener {
 //            callback?.onClickedButton(getString(R.string.workouts))
         }
     }
@@ -49,15 +49,15 @@ class SportsFragment : Fragment() {
     }
 
     // Declare our interface that will be implemented by any container activity
-    interface ButtonListener {
-        fun onClickedButton(button: String?)
+    interface SportsFragmentButtonListener {
+        fun onClickedSportsFragmentButton(button: String?)
     }
 
     // Create callback to parent activity
     private fun callbackToParentActivity() {
         try {
             // Parent activity will automatically subscribe to callback
-            callback = activity as ButtonListener?
+            callback = activity as SportsFragmentButtonListener?
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement ButtonListener")
         }

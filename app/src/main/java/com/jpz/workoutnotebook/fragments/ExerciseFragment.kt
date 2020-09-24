@@ -1,5 +1,6 @@
 package com.jpz.workoutnotebook.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,11 +22,17 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
+    companion object {
+        const val EDIT_EXERCISE_FRAGMENT = "EDIT_EXERCISE_FRAGMENT"
+    }
+
     // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
 
     private var itemExerciseAdapter: ItemExerciseAdapter? = null
+
+    private var callback: ExerciseListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +43,15 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        exerciseFragmentFABAdd.setOnClickListener {
+            callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, null)
+        }
+
+        exerciseFragmentFABCancel.setOnClickListener {
+            activity?.finish()
+        }
+
         val userId = userAuth.getCurrentUser()?.uid
         userId?.let { configureRecyclerView(it) }
     }
@@ -51,10 +67,9 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
                 generateOptionsForAdapter(list)?.let { ItemExerciseAdapter(it, this) }
         }
         // Attach the adapter to the recyclerView to populate the exercises
-        recyclerViewExerciseFragment?.adapter = itemExerciseAdapter
+        exerciseFragmentRecyclerView?.adapter = itemExerciseAdapter
         // Set layout manager to position the exercises
-        recyclerViewExerciseFragment?.layoutManager =
-            LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
+        exerciseFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
     }
 
     // Create options for RecyclerView from a Query
@@ -71,5 +86,32 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
     override fun onClickExercise(exerciseId: String?, position: Int) {
         Toast.makeText(activity, "Click on $position where name is $exerciseId", Toast.LENGTH_SHORT)
             .show()
+        if (exerciseId != null) {
+            callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, exerciseId)
+        }
+    }
+
+    //----------------------------------------------------------------------------------
+    // Interface for callback to parent activity and associated methods when click on add button
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Call the methods that creating callback after being attached to parent activity
+        callbackToParentActivity()
+    }
+
+    // Declare our interface that will be implemented by any container activity
+    interface ExerciseListener {
+        fun onClickedExercise(edit: String, id: String?)
+    }
+
+    // Create callback to parent activity
+    private fun callbackToParentActivity() {
+        try {
+            // Parent activity will automatically subscribe to callback
+            callback = activity as ExerciseListener?
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$e must implement ExerciseListener")
+        }
     }
 }

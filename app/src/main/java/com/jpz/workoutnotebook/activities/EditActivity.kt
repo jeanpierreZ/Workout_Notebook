@@ -7,6 +7,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISE_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.PROFILE_FRAGMENT
+import com.jpz.workoutnotebook.fragments.EditExerciseFragment
 import com.jpz.workoutnotebook.fragments.EditProfileFragment
 import com.jpz.workoutnotebook.fragments.ExerciseFragment
 import com.jpz.workoutnotebook.utils.MyUtils
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
-class EditActivity : AppCompatActivity() {
+class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
 
     private var edit: String? = null
 
@@ -28,7 +29,7 @@ class EditActivity : AppCompatActivity() {
 
         edit = intent.getStringExtra(EDIT)
 
-        displayFragment()
+        displayProfileOrExerciseFragment()
     }
 
     //--------------------------------------------------------------------------------------
@@ -41,7 +42,7 @@ class EditActivity : AppCompatActivity() {
 
     //--------------------------------------------------------------------------------------
 
-    private fun displayFragment() {
+    private fun displayProfileOrExerciseFragment() {
         var fragment = Fragment()
         val editProfileFragment = EditProfileFragment()
         val exerciseFragment = ExerciseFragment()
@@ -57,5 +58,18 @@ class EditActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .add(R.id.editActivityContainer, fragment)
             .commit()
+    }
+
+    private fun displayEditExerciseFragment() {
+        val editExerciseFragment = EditExerciseFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.editActivityContainer, editExerciseFragment)
+            .commit()
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    override fun onClickedExercise(edit: String, id: String?) {
+        displayEditExerciseFragment()
     }
 }

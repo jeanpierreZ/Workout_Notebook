@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
-        <activity android:name=".activities.EditActivity" />
+        <activity
+            android:name=".activities.EditActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.ConnectionActivity">
             <intent-filter>

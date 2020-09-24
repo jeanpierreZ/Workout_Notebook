@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
+class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
         configureTabLayout()
         animateFAB()
         mainActivityFABEditProfile.setOnClickListener {
-            startEditActivity(PROFILE_FRAGMENT)
+            startEditActivity(PROFILE_FRAGMENT, RC_EDIT_PROFILE)
         }
         mainActivityFABDisconnect.setOnClickListener {
             disconnectCurrentUser()
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
                 }
             }
 
-/*            RC_EDIT_EXERCISE ->
+            RC_EDIT_EXERCISE ->
                 if (resultCode == RESULT_OK) {
                     myUtils.showSnackBar(
                         mainActivityCoordinatorLayout, R.string.exercise_added
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
                     myUtils.showSnackBar(
                         mainActivityCoordinatorLayout, R.string.add_exercise_canceled
                     )
-                }*/
+                }
         }
     }
 
@@ -99,6 +99,9 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
     }
 
     private fun configureTabLayout() {
+        val colorIconWhite: Int =
+            ContextCompat.getColor(this@MainActivity, R.color.colorTextSecondary)
+
         TabLayoutMediator(mainActivityTabLayout, mainActivityViewPager) { tab, position ->
             // Add icons to tabs
             when (position) {
@@ -113,23 +116,26 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
         // Modify color of icon if tab is selected
         mainActivityTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                val color: Int =
-                    ContextCompat.getColor(this@MainActivity, R.color.colorTextSecondary)
-                tab?.icon?.let { DrawableCompat.setTint(it, color) }
+                tab?.icon?.let { DrawableCompat.setTint(it, colorIconWhite) }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                val color: Int =
+                val colorIconBlack: Int =
                     ContextCompat.getColor(this@MainActivity, R.color.colorTextPrimary)
-                tab?.icon?.let { DrawableCompat.setTint(it, color) }
+                tab?.icon?.let { DrawableCompat.setTint(it, colorIconBlack) }
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
             }
         })
 
-        // Then choose the page to display
-        mainActivityViewPager.currentItem = Tabs.SPORTS.position
+        // Then display the tab icon in white for the first page
+        mainActivityTabLayout.getTabAt(Tabs.SPORTS.position)?.icon?.let {
+            DrawableCompat.setTint(
+                it,
+                colorIconWhite
+            )
+        }
     }
 
     //--------------------------------------------------------------------------------------
@@ -165,10 +171,10 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun startEditActivity(edit: String) {
+    private fun startEditActivity(edit: String, requestCode: Int) {
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, edit)
-        startActivityForResult(intent, RC_EDIT_PROFILE)
+        startActivityForResult(intent, requestCode)
     }
 
     //--------------------------------------------------------------------------------------
@@ -191,8 +197,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.ButtonListener {
 
     //--------------------------------------------------------------------------------------
 
-    // Implement listener from SportsFragment to add an exercise
-    override fun onClickedButton(button: String?) {
-        startEditActivity(EXERCISE_FRAGMENT)
+    // Implement listener from SportsFragment to consult the list of exercises
+    override fun onClickedSportsFragmentButton(button: String?) {
+        startEditActivity(EXERCISE_FRAGMENT, RC_EDIT_EXERCISE)
     }
 }

@@ -38,4 +38,14 @@
     <string name="exercises">Exercises</string>
     <string name="workouts">Workouts</string>
 
+    <!--EditExercise Fragment -->
+    <string name="exercise_name">ExerciseName</string>
+    <string name="goal_to_reach">Goal to reach</string>
+    <string name="rest_between_sets">Rest between sets</string>
+    <string name="seconds">seconds</string>
+    <string name="time">time</string>
+    <string name="rest_next_exercise">Rest next exercise</string>
+    <string name="repetitions">repetitions</string>
+    <string name="multiply">*</string>
+    <string name="number_unit">number of unit</string>
 </resources>

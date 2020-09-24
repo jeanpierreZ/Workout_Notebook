@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/setItemCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    app:cardCornerRadius="4dp"
+    card_view:cardBackgroundColor="@color/colorWhite">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/setItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintBaseline_toBaselineOf="@+id/setItemReps"
+            app:layout_constraintEnd_toStartOf="@+id/setItemReps"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/setItemReps"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="@string/repetitions"
+            app:counterEnabled="true"
+            app:counterMaxLength="3"
+            app:layout_constraintEnd_toStartOf="@+id/setItemMultiply"
+            app:layout_constraintStart_toEndOf="@+id/setItemName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="number"
+                android:maxLength="3"
+                android:textColor="@color/colorTextPrimary" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/setItemMultiply"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/multiply"
+            app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
+            app:layout_constraintEnd_toStartOf="@+id/setItemNumberOfUnit"
+            app:layout_constraintStart_toEndOf="@+id/setItemReps" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/setItemNumberOfUnit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:hint="@string/number_unit"
+            app:counterEnabled="true"
+            app:counterMaxLength="3"
+            app:layout_constraintEnd_toStartOf="@+id/setItemUnit"
+            app:layout_constraintStart_toEndOf="@+id/setItemMultiply">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="number"
+                android:maxLength="3"
+                android:textColor="@color/colorTextPrimary" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/setItemUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/setItemNumberOfUnit" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -12,14 +12,14 @@
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineFortySportsFragment"
+            android:id="@+id/sportsFragmentGuidelineForty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.4" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineFiftySportsFragment"
+            android:id="@+id/sportsFragmentGuidelineFifty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -31,10 +31,10 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@color/colorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="@+id/guidelineFiftySportsFragment"/>
+            app:layout_constraintBottom_toBottomOf="@+id/sportsFragmentGuidelineFifty"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/titleSportsFragment"
+            android:id="@+id/sportsFragmentTitle"
             style="@style/TitleTextViewTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,19 +44,19 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/dateNextTrainingSessionSportsFragment"
+            android:id="@+id/sportsFragmentDate"
             style="@style/SubTitleTextViewTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:text="Date of next training session"
-            app:layout_constraintBottom_toTopOf="@+id/cardViewSportsFragment"
+            app:layout_constraintBottom_toTopOf="@+id/sportsFragmentCardView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleSportsFragment" />
+            app:layout_constraintTop_toBottomOf="@+id/sportsFragmentTitle" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardViewSportsFragment"
+            android:id="@+id/sportsFragmentCardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -67,10 +67,10 @@
             app:cardElevation="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dateNextTrainingSessionSportsFragment">
+            app:layout_constraintTop_toBottomOf="@+id/sportsFragmentDate">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/nextTrainingSessionSportsFragment"
+                android:id="@+id/sportsFragmentNextWorkout"
                 style="@style/SubTitleTextViewTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,18 +79,18 @@
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/exercisesButtonSportsFragment"
+            android:id="@+id/sportsFragmentExercisesButton"
             style="@style/EditButtonTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/exercises"
-            app:layout_constraintBottom_toTopOf="@+id/workoutsButtonSportsFragment"
+            app:layout_constraintBottom_toTopOf="@+id/sportsFragmentWorkoutsButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineFiftySportsFragment" />
+            app:layout_constraintTop_toBottomOf="@+id/sportsFragmentGuidelineFifty" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/workoutsButtonSportsFragment"
+            android:id="@+id/sportsFragmentWorkoutsButton"
             style="@style/EditButtonTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/exercisesButtonSportsFragment" />
+            app:layout_constraintTop_toBottomOf="@+id/sportsFragmentExercisesButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

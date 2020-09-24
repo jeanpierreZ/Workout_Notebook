@@ -17,10 +17,9 @@ class SetHelper {
     // --- CREATE ---
 
     fun createSet(
-        setId: String, setName: String?, reps: Int?,
-        restNextExercise: Int?, unit: String?, numberOfUnit: Int?
+        setId: String, setName: String?, reps: Int?, unit: String?, numberOfUnit: Int?
     ): Task<Void>? {
-        val setToCreate = Set(setId, setName, reps, restNextExercise, unit, numberOfUnit)
+        val setToCreate = Set(setId, setName, reps, unit, numberOfUnit)
         return getSetsCollection()?.document(setId)?.set(setToCreate)
     }
 

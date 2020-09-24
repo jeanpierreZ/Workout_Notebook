@@ -10,6 +10,9 @@
     <!-- SubTitle TextView -->
     <dimen name="subtitle_text_size">24sp</dimen>
 
+    <!-- Exercise TextView -->
+    <dimen name="exercise_text_size">18sp</dimen>
+
     <!-- EditButtonText -->
     <dimen name="edit_button_margin">50dp</dimen>
 </resources>
