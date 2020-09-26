@@ -124,9 +124,35 @@
             android:id="@+id/editExerciseFragmentRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentFooter"
             app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentGuideline" />
 
+        <Space
+            android:id="@+id/editExerciseFragmentFooter"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentRecyclerView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/editExerciseFragmentRestFABSave"
+        layout="@layout/fab_save" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/editExerciseFragmentRestFABAdd"
+        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/add_a_set"
+        app:backgroundTint="@color/colorAccentLight"
+        app:icon="@drawable/ic_baseline_add_24" />
+
+    <include
+        android:id="@+id/editExerciseFragmentRestFABCancel"
+        layout="@layout/fab_cancel" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

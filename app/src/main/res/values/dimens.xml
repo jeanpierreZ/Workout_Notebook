@@ -15,4 +15,7 @@
 
     <!-- EditButtonText -->
     <dimen name="edit_button_margin">50dp</dimen>
+
+    <!-- ExerciseWidgetMargin -->
+    <dimen name="exercise_widget_margin">8dp</dimen>
 </resources>

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -58,7 +57,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
     //----------------------------------------------------------------------------------
 
-    //Configure RecyclerView with a Query
+    // Configure RecyclerView with a Query
     private fun configureRecyclerView(userId: String) {
         // Create the adapter by passing the list of exercises of the user
         val list = exerciseViewModel.getListOfExercises(userId)
@@ -84,8 +83,6 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
     // Interface for callback from ItemExerciseAdapter
     override fun onClickExercise(exerciseId: String?, position: Int) {
-        Toast.makeText(activity, "Click on $position where name is $exerciseId", Toast.LENGTH_SHORT)
-            .show()
         if (exerciseId != null) {
             callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, exerciseId)
         }

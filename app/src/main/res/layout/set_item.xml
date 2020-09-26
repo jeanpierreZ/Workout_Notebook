@@ -1,83 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
-    android:id="@+id/setItemCardView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="2dp"
-    app:cardCornerRadius="4dp"
-    card_view:cardBackgroundColor="@color/colorWhite">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.jpz.workoutnotebook.utils.DataBindingConverters" />
+
+        <variable
+            name="set"
+            type="com.jpz.workoutnotebook.models.Set" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/setItemCardView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="4dp">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/setItemName"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBaseline_toBaselineOf="@+id/setItemReps"
-            app:layout_constraintEnd_toStartOf="@+id/setItemReps"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_margin="@dimen/exercise_widget_margin">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/setItemReps"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:hint="@string/repetitions"
-            app:counterEnabled="true"
-            app:counterMaxLength="3"
-            app:layout_constraintEnd_toStartOf="@+id/setItemMultiply"
-            app:layout_constraintStart_toEndOf="@+id/setItemName">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/setItemName"
+                style="@style/ExerciseTextViewTheme"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:inputType="number"
-                android:maxLength="3"
-                android:textColor="@color/colorTextPrimary" />
+                android:layout_margin="@dimen/exercise_widget_margin"
+                android:text="@={set.setName}"
+                app:layout_constraintBaseline_toBaselineOf="@+id/setItemReps"
+                app:layout_constraintEnd_toStartOf="@+id/setItemReps"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/setItemMultiply"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/multiply"
-            app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
-            app:layout_constraintEnd_toStartOf="@+id/setItemNumberOfUnit"
-            app:layout_constraintStart_toEndOf="@+id/setItemReps" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/setItemNumberOfUnit"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:hint="@string/number_unit"
-            app:counterEnabled="true"
-            app:counterMaxLength="3"
-            app:layout_constraintEnd_toStartOf="@+id/setItemUnit"
-            app:layout_constraintStart_toEndOf="@+id/setItemMultiply">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/setItemReps"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:inputType="number"
-                android:maxLength="3"
-                android:textColor="@color/colorTextPrimary" />
+                android:hint="@string/repetitions"
+                app:counterEnabled="true"
+                app:counterMaxLength="5"
+                app:helperText="@string/repetitions"
+                app:layout_constraintEnd_toStartOf="@+id/setItemMultiply"
+                app:layout_constraintStart_toEndOf="@+id/setItemName">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:text="@={DataBindingConverters.convertIntegerToString(set.reps)}"
+                    android:textColor="@color/colorTextPrimary" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/setItemUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/setItemNumberOfUnit" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/setItemMultiply"
+                style="@style/ExerciseTextViewTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/exercise_widget_margin"
+                android:text="@string/multiply"
+                app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
+                app:layout_constraintEnd_toStartOf="@+id/setItemNumberOfUnit"
+                app:layout_constraintStart_toEndOf="@+id/setItemReps" />
 
-</com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/setItemNumberOfUnit"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:hint="@string/number_units"
+                app:counterEnabled="true"
+                app:counterMaxLength="5"
+                app:helperText="@string/number_units"
+                app:layout_constraintEnd_toStartOf="@+id/setItemUnit"
+                app:layout_constraintStart_toEndOf="@+id/setItemMultiply">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:maxLength="5"
+                    android:text="@={DataBindingConverters.convertIntegerToString(set.numberOfUnit)}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/setItemUnit"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/exercise_widget_margin"
+                android:text="unit"
+                app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/setItemNumberOfUnit" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>
