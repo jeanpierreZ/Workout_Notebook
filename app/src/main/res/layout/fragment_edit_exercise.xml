@@ -151,8 +151,4 @@
         app:backgroundTint="@color/colorAccentLight"
         app:icon="@drawable/ic_baseline_add_24" />
 
-    <include
-        android:id="@+id/editExerciseFragmentRestFABCancel"
-        layout="@layout/fab_cancel" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

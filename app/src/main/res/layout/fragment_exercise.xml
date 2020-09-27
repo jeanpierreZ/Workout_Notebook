@@ -34,8 +34,4 @@
         android:id="@+id/exerciseFragmentFABAdd"
         layout="@layout/fab_add" />
 
-    <include
-        android:id="@+id/exerciseFragmentFABCancel"
-        layout="@layout/fab_cancel" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

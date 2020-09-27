@@ -1,6 +1,7 @@
 package com.jpz.workoutnotebook.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
@@ -38,6 +39,22 @@ class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
     private fun configureToolbar() {
         // Get the toolbar view inside the activity layout
         setSupportActionBar(toolbar)
+        // Get a support ActionBar corresponding to this toolbar and enable the Up button
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                if (supportFragmentManager.popBackStackImmediate()) {
+                    supportFragmentManager.popBackStackImmediate()
+                } else {
+                    finish()
+                }
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     //--------------------------------------------------------------------------------------
@@ -64,6 +81,7 @@ class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
         val editExerciseFragment = EditExerciseFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.editActivityContainer, editExerciseFragment)
+            .addToBackStack(editExerciseFragment::class.java.name)
             .commit()
     }
 

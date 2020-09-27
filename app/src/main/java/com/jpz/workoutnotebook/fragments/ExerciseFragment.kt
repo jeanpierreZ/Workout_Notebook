@@ -47,10 +47,6 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
             callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, null)
         }
 
-        exerciseFragmentFABCancel.setOnClickListener {
-            activity?.finish()
-        }
-
         val userId = userAuth.getCurrentUser()?.uid
         userId?.let { configureRecyclerView(it) }
     }

@@ -2,12 +2,10 @@ package com.jpz.workoutnotebook.activities
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.firebase.ui.auth.AuthUI
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
@@ -43,15 +41,14 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         configureToolbar()
         configureViewPagerAdapter()
         configureTabLayout()
         animateFAB()
+
         mainActivityFABEditProfile.setOnClickListener {
             startEditActivity(PROFILE_FRAGMENT, RC_EDIT_PROFILE)
-        }
-        mainActivityFABDisconnect.setOnClickListener {
-            disconnectCurrentUser()
         }
     }
 
@@ -149,21 +146,17 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                 pageSelected = position
                 if (Tabs.PROFILE.position == pageSelected) {
                     mainActivityFABEditProfile.show()
-                    mainActivityFABDisconnect.show()
                 } else {
                     mainActivityFABEditProfile.hide()
-                    mainActivityFABDisconnect.hide()
                 }
             }
 
             override fun onPageScrollStateChanged(state: Int) {
                 if (state == ViewPager2.SCROLL_STATE_IDLE && Tabs.PROFILE.position == pageSelected) {
                     mainActivityFABEditProfile.show()
-                    mainActivityFABDisconnect.show()
                 }
                 if (state == ViewPager2.SCROLL_STATE_DRAGGING && Tabs.PROFILE.position == pageSelected) {
                     mainActivityFABEditProfile.hide()
-                    mainActivityFABDisconnect.hide()
                 }
             }
         })
@@ -175,24 +168,6 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, edit)
         startActivityForResult(intent, requestCode)
-    }
-
-    //--------------------------------------------------------------------------------------
-
-    private fun disconnectCurrentUser() {
-        // Create an alert dialog to prevent the user
-        AlertDialog.Builder(this)
-            .setMessage(R.string.disconnect)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                AuthUI.getInstance().signOut(this).addOnSuccessListener {
-                    val intent = Intent(this, ConnectionActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-            .setNegativeButton(android.R.string.cancel) { _, _ ->
-            }
-            .show()
     }
 
     //--------------------------------------------------------------------------------------
