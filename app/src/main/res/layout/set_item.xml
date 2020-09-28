@@ -108,6 +108,7 @@
                     android:layout_height="match_parent"
                     android:inputType="none"
                     android:labelFor="@id/setItemUnit"
+                    android:text="@={set.unit}"
                     tools:ignore="LabelFor" />
 
             </com.google.android.material.textfield.TextInputLayout>
