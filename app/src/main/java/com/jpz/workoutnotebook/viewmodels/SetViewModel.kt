@@ -9,8 +9,8 @@ class SetViewModel(private val setHelper: SetHelper) : ViewModel() {
 
     // --- CREATE ---
 
-    fun createSet(setId: String, setName: String?, reps: Int?, unit: String?, numberOfUnit: Int?) =
-        setHelper.createSet(setId, setName, reps, unit, numberOfUnit)
+    fun createSet(setId: String, setName: String?, reps: Int?, numberOfUnit: Double?, unit: String?) =
+        setHelper.createSet(setId, setName, reps, numberOfUnit, unit)
             ?.addOnFailureListener { e ->
                 Log.e("createSet", "Error writing document", e)
             }

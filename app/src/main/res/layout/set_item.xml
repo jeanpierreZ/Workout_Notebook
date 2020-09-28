@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -83,22 +84,33 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:maxLength="5"
-                    android:text="@={DataBindingConverters.convertIntegerToString(set.numberOfUnit)}"
+                    android:text="@={DataBindingConverters.convertDoubleToString(set.numberOfUnit)}"
                     android:textColor="@color/colorTextPrimary" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textview.MaterialTextView
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/setItemUnit"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
-                android:text="unit"
+                android:hint="@string/unit"
+                app:helperText="@string/unit"
                 app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/setItemNumberOfUnit" />
+                app:layout_constraintStart_toEndOf="@+id/setItemNumberOfUnit">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="none"
+                    android:labelFor="@id/setItemUnit"
+                    tools:ignore="LabelFor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

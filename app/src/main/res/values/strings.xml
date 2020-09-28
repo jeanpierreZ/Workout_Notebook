@@ -44,9 +44,10 @@
     <string name="seconds">seconds</string>
     <string name="time">time</string>
     <string name="rest_next_exercise">Rest next exercise</string>
-    <string name="repetitions">repetitions</string>
+    <string name="repetitions">reps</string>
     <string name="multiply">*</string>
-    <string name="number_units">number of units</string>
+    <string name="number_units">no of</string>
+    <string name="unit">unit</string>
     <string name="number_set">Set %d</string>
     <string name="add_a_set">Add a set</string>
 </resources>

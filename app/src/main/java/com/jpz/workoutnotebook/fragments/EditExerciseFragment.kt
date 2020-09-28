@@ -16,6 +16,11 @@ import kotlinx.android.synthetic.main.fragment_edit_exercise.*
 
 
 class EditExerciseFragment : Fragment() {
+
+    companion object {
+        private val TAG = EditExerciseFragment::class.java.simpleName
+    }
+
     private var itemSetAdapter: ItemSetAdapter? = null
     private var setList: MutableList<Set> = mutableListOf()
 
@@ -40,7 +45,7 @@ class EditExerciseFragment : Fragment() {
         }
 
         editExerciseFragmentRestFABSave.setOnClickListener {
-            Log.d("SAVE", "setList = $setList")
+            Log.d(TAG, "setList = $setList")
         }
     }
 
