@@ -9,12 +9,12 @@
         <import type="com.jpz.workoutnotebook.utils.DataBindingConverters" />
 
         <variable
-            name="set"
-            type="com.jpz.workoutnotebook.models.Set" />
+            name="series"
+            type="com.jpz.workoutnotebook.models.Series" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/setItemCardView"
+        android:id="@+id/seriesItemCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
@@ -26,18 +26,18 @@
             android:layout_margin="@dimen/exercise_widget_margin">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/setItemName"
+                android:id="@+id/seriesItemName"
                 style="@style/ExerciseTextViewTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
-                android:text="@={set.setName}"
-                app:layout_constraintBaseline_toBaselineOf="@+id/setItemReps"
-                app:layout_constraintEnd_toStartOf="@+id/setItemReps"
+                android:text="@={series.seriesName}"
+                app:layout_constraintBaseline_toBaselineOf="@+id/seriesItemReps"
+                app:layout_constraintEnd_toStartOf="@+id/seriesItemReps"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/setItemReps"
+                android:id="@+id/seriesItemReps"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -45,32 +45,32 @@
                 app:counterEnabled="true"
                 app:counterMaxLength="5"
                 app:helperText="@string/repetitions"
-                app:layout_constraintEnd_toStartOf="@+id/setItemMultiply"
-                app:layout_constraintStart_toEndOf="@+id/setItemName">
+                app:layout_constraintEnd_toStartOf="@+id/seriesItemMultiply"
+                app:layout_constraintStart_toEndOf="@+id/seriesItemName">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="number"
                     android:maxLength="5"
-                    android:text="@={DataBindingConverters.convertIntegerToString(set.reps)}"
+                    android:text="@={DataBindingConverters.convertIntegerToString(series.reps)}"
                     android:textColor="@color/colorTextPrimary" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/setItemMultiply"
+                android:id="@+id/seriesItemMultiply"
                 style="@style/ExerciseTextViewTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
                 android:text="@string/multiply"
-                app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
-                app:layout_constraintEnd_toStartOf="@+id/setItemNumberOfUnit"
-                app:layout_constraintStart_toEndOf="@+id/setItemReps" />
+                app:layout_constraintBaseline_toBaselineOf="@+id/seriesItemNumberOfUnit"
+                app:layout_constraintEnd_toStartOf="@+id/seriesItemNumberOfUnit"
+                app:layout_constraintStart_toEndOf="@+id/seriesItemReps" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/setItemNumberOfUnit"
+                android:id="@+id/seriesItemNumberOfUnit"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -78,37 +78,37 @@
                 app:counterEnabled="true"
                 app:counterMaxLength="5"
                 app:helperText="@string/number_units"
-                app:layout_constraintEnd_toStartOf="@+id/setItemUnit"
-                app:layout_constraintStart_toEndOf="@+id/setItemMultiply">
+                app:layout_constraintEnd_toStartOf="@+id/seriesItemUnit"
+                app:layout_constraintStart_toEndOf="@+id/seriesItemMultiply">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="numberDecimal"
                     android:maxLength="5"
-                    android:text="@={DataBindingConverters.convertDoubleToString(set.numberOfUnit)}"
+                    android:text="@={DataBindingConverters.convertDoubleToString(series.numberOfUnit)}"
                     android:textColor="@color/colorTextPrimary" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/setItemUnit"
+                android:id="@+id/seriesItemUnit"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
                 android:hint="@string/unit"
                 app:helperText="@string/unit"
-                app:layout_constraintBaseline_toBaselineOf="@+id/setItemNumberOfUnit"
+                app:layout_constraintBaseline_toBaselineOf="@+id/seriesItemNumberOfUnit"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/setItemNumberOfUnit">
+                app:layout_constraintStart_toEndOf="@+id/seriesItemNumberOfUnit">
 
                 <AutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:inputType="none"
-                    android:labelFor="@id/setItemUnit"
-                    android:text="@={set.unit}"
+                    android:labelFor="@id/seriesItemUnit"
+                    android:text="@={series.unit}"
                     tools:ignore="LabelFor" />
 
             </com.google.android.material.textfield.TextInputLayout>

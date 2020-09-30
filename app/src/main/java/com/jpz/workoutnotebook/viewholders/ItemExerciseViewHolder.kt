@@ -29,7 +29,7 @@ class ItemExerciseViewHolder(exercise: View) : RecyclerView.ViewHolder(exercise)
         itemView.setOnClickListener {
             // When a click happens, we fire our listener to get the exercise position in the list
             if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
-                finalCallback.onClickExercise(exercise?.exerciseId, adapterPosition)
+                finalCallback.onClickExercise(exercise?.exerciseName, adapterPosition)
             }
         }
     }

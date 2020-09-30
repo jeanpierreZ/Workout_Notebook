@@ -7,30 +7,30 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.databinding.SetItemBinding
-import com.jpz.workoutnotebook.models.Set
+import com.jpz.workoutnotebook.databinding.SeriesItemBinding
+import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.Unit
 
 
-class ItemSetViewHolder(private val binding: SetItemBinding) :
+class ItemSeriesViewHolder(private val binding: SeriesItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
     // Represent a line of a set in the RecyclerView
 
-    private var setName: TextView? = null
-    private var setItemUnit: TextInputLayout? = null
-    private var setItemNumberOfUnit: TextInputLayout? = null
+    private var seriesName: TextView? = null
+    private var seriesItemUnit: TextInputLayout? = null
+    private var seriesItemNumberOfUnit: TextInputLayout? = null
 
     init {
-        setName = itemView.findViewById(R.id.setItemName)
-        setItemUnit = itemView.findViewById(R.id.setItemUnit)
-        setItemNumberOfUnit = itemView.findViewById(R.id.setItemNumberOfUnit)
+        seriesName = itemView.findViewById(R.id.seriesItemName)
+        seriesItemUnit = itemView.findViewById(R.id.seriesItemUnit)
+        seriesItemNumberOfUnit = itemView.findViewById(R.id.seriesItemNumberOfUnit)
     }
 
-    fun updateSets(set: Set, context: Context) {
-        binding.set = set
+    fun updateSeries(series: Series, context: Context) {
+        binding.series = series
         // Rename setName
         val setNamePosition = adapterPosition + 1
-        set.setName = context.getString(R.string.number_set, setNamePosition)
+        series.seriesName = context.getString(R.string.number_set, setNamePosition)
         // Show menu from setItemUnit to choose a unit
         dropDownMenu(context)
     }
@@ -41,6 +41,6 @@ class ItemSetViewHolder(private val binding: SetItemBinding) :
             Unit.FT.stringValue, Unit.YD.stringValue, Unit.ML.stringValue
         )
         val adapter = ArrayAdapter(context, R.layout.unit_list_item, items)
-        (setItemUnit?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        (seriesItemUnit?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 }

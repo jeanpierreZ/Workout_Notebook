@@ -9,4 +9,8 @@ class MyUtils {
     fun showSnackBar(coordinatorLayout: CoordinatorLayout, text: Int) {
         Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT).show()
     }
+
+    fun showSnackBar(coordinatorLayout: CoordinatorLayout, text: String) {
+        Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT).show()
+    }
 }

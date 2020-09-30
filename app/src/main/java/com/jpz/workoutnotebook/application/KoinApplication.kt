@@ -24,8 +24,6 @@ class KoinApplication : Application() {
                     moduleWorkoutViewModel,
                     moduleExerciseHelper,
                     moduleExerciseViewModel,
-                    moduleSetHelper,
-                    moduleSetViewModel,
                     moduleMyUtils
                 )
             )

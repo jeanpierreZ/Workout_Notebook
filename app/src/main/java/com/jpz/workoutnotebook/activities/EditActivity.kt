@@ -87,7 +87,7 @@ class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
 
     //--------------------------------------------------------------------------------------
 
-    override fun onClickedExercise(edit: String, id: String?) {
+    override fun onClickedExercise(edit: String, name: String?) {
         displayEditExerciseFragment()
     }
 }

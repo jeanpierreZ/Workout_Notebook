@@ -1,154 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.EditExerciseFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+
+        <import type="com.jpz.workoutnotebook.utils.DataBindingConverters" />
+
+        <variable
+            name="exercise"
+            type="com.jpz.workoutnotebook.models.Exercise" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/editExerciseFragmentCoordinatorLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".fragments.EditExerciseFragment">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/editExerciseFragmentGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.4" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editExerciseFragmentTitle"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/title_text_margin"
-            android:layout_marginEnd="@dimen/title_text_margin"
-            android:hint="@string/exercise_name"
-            app:counterEnabled="true"
-            app:counterMaxLength="30"
-            app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentEditRestSet"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/editExerciseFragmentGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.4" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editExerciseFragmentName"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:maxLength="30"
-                android:textColor="@color/colorTextPrimary"
-                android:textSize="@dimen/title_text_size" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/title_text_margin"
+                android:layout_marginEnd="@dimen/title_text_margin"
+                android:hint="@string/exercise_name"
+                app:counterEnabled="true"
+                app:counterMaxLength="30"
+                app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentRestSeries"
+                app:layout_constraintTop_toTopOf="parent">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:maxLength="30"
+                    android:text="@={exercise.exerciseName}"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="@dimen/title_text_size" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/editExerciseFragmentRestSet"
-            style="@style/ExerciseTextViewTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rest_between_sets"
-            app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentEditRestSet"
-            app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentEditRestSet"
-            app:layout_constraintStart_toStartOf="parent" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editExerciseFragmentEditRestSet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/time"
-            app:counterEnabled="true"
-            app:counterMaxLength="3"
-            app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentEditRestExercise"
-            app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentRestSetTime"
-            app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentRestSet"
-            app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentTitle">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/editExerciseFragmentRestSeriesText"
+                style="@style/ExerciseTextViewTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rest_between_sets"
+                app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentRestSeries"
+                app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentRestSeries"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editExerciseFragmentRestSeries"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/time"
+                app:counterEnabled="true"
+                app:counterMaxLength="3"
+                app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentEditRestExercise"
+                app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentRestSeriesSeconds"
+                app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentRestSeriesText"
+                app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentName">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:text="@={DataBindingConverters.convertIntegerToString(exercise.restNextSet)}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/editExerciseFragmentRestSeriesSeconds"
+                style="@style/ExerciseTextViewTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/seconds"
+                app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentRestSeries"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentRestSeries" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/editExerciseFragmentRestExerciseText"
+                style="@style/ExerciseTextViewTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rest_next_exercise"
+                app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentEditRestExercise"
+                app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentEditRestExercise"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/editExerciseFragmentEditRestExercise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="@string/time"
+                app:counterEnabled="true"
+                app:counterMaxLength="3"
+                app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentGuideline"
+                app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentRestExerciseSeconds"
+                app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentRestExerciseText"
+                app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentRestSeries">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:text="@={DataBindingConverters.convertIntegerToString(exercise.restNextExercise)}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/editExerciseFragmentRestExerciseSeconds"
+                style="@style/ExerciseTextViewTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/seconds"
+                app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentEditRestExercise"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentEditRestExercise" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/editExerciseFragmentRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="number"
-                android:maxLength="3"
-                android:textColor="@color/colorTextPrimary" />
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentFooter"
+                app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentGuideline" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/editExerciseFragmentRestSetTime"
-            style="@style/ExerciseTextViewTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/seconds"
-            app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentEditRestSet"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentEditRestSet" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/editExerciseFragmentRestExercise"
-            style="@style/ExerciseTextViewTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/rest_next_exercise"
-            app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentEditRestExercise"
-            app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentEditRestExercise"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editExerciseFragmentEditRestExercise"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/time"
-            app:counterEnabled="true"
-            app:counterMaxLength="3"
-            app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentGuideline"
-            app:layout_constraintEnd_toStartOf="@+id/editExerciseFragmentRestExerciseTime"
-            app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentRestExercise"
-            app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentEditRestSet">
-
-            <com.google.android.material.textfield.TextInputEditText
+            <Space
+                android:id="@+id/editExerciseFragmentFooter"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="number"
-                android:maxLength="3"
-                android:textColor="@color/colorTextPrimary" />
+                android:layout_height="80dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentRecyclerView" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/editExerciseFragmentRestExerciseTime"
-            style="@style/ExerciseTextViewTheme"
+        <include
+            android:id="@+id/editExerciseFragmentRestFABSave"
+            layout="@layout/fab_save" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/editExerciseFragmentRestFABAdd"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/seconds"
-            app:layout_constraintBaseline_toBaselineOf="@+id/editExerciseFragmentEditRestExercise"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/editExerciseFragmentEditRestExercise" />
+            android:layout_gravity="bottom|center"
+            android:layout_margin="@dimen/fab_margin"
+            android:text="@string/add_a_set"
+            app:backgroundTint="@color/colorAccentLight"
+            app:icon="@drawable/ic_baseline_add_24" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/editExerciseFragmentRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/editExerciseFragmentFooter"
-            app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentGuideline" />
-
-        <Space
-            android:id="@+id/editExerciseFragmentFooter"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editExerciseFragmentRecyclerView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <include
-        android:id="@+id/editExerciseFragmentRestFABSave"
-        layout="@layout/fab_save" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/editExerciseFragmentRestFABAdd"
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/fab_margin"
-        android:text="@string/add_a_set"
-        app:backgroundTint="@color/colorAccentLight"
-        app:icon="@drawable/ic_baseline_add_24" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

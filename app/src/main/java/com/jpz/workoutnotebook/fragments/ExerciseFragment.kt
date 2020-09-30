@@ -78,9 +78,9 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
     //----------------------------------------------------------------------------------
 
     // Interface for callback from ItemExerciseAdapter
-    override fun onClickExercise(exerciseId: String?, position: Int) {
-        if (exerciseId != null) {
-            callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, exerciseId)
+    override fun onClickExercise(exerciseName: String?, position: Int) {
+        if (exerciseName != null) {
+            callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, exerciseName)
         }
     }
 
@@ -95,7 +95,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
     // Declare our interface that will be implemented by any container activity
     interface ExerciseListener {
-        fun onClickedExercise(edit: String, id: String?)
+        fun onClickedExercise(edit: String, name: String?)
     }
 
     // Create callback to parent activity

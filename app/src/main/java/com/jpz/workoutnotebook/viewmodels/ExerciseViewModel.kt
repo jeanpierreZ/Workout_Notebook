@@ -1,24 +1,41 @@
 package com.jpz.workoutnotebook.viewmodels
 
 import android.util.Log
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
+import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.ExerciseHelper
-import com.jpz.workoutnotebook.models.Exercise
+import com.jpz.workoutnotebook.models.Series
+import com.jpz.workoutnotebook.utils.MyUtils
+import org.koin.java.KoinJavaComponent.inject
 import java.util.*
 
 class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel() {
 
+    companion object {
+        private val TAG = ExerciseViewModel::class.java.simpleName
+    }
+
+    private val myUtils: MyUtils by inject(MyUtils::class.java)
+
     // --- CREATE ---
 
     fun createExercise(
-        userId: String, exerciseId: String, exerciseName: String?, restNextSet: Int?,
-        restNextExercise: Int?, editable: Boolean, setsList: ArrayList<String>?
+        coordinatorLayout: CoordinatorLayout, userId: String, exerciseName: String?,
+        restNextSet: Int?, restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
     ) = exerciseHelper.createExercise(
-        userId, exerciseId, exerciseName, restNextSet,
-        restNextExercise, editable, setsList
+        userId, exerciseName, restNextSet,
+        restNextExercise, editable, seriesList
     )
+        ?.addOnSuccessListener { documentReference ->
+            myUtils.showSnackBar(
+                coordinatorLayout,
+                coordinatorLayout.context.getString(R.string.new_exercise_created, exerciseName)
+            )
+            Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+        }
         ?.addOnFailureListener { e ->
-            Log.e("createExercise", "Error writing document", e)
+            Log.e(TAG, "Error writing document", e)
         }
 
     // --- READ ---

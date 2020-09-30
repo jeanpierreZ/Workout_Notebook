@@ -1,26 +1,26 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.models.Exercise
+import com.jpz.workoutnotebook.models.Series
 import java.util.*
 
 class ExerciseHelper {
 
     companion object {
         private const val COLLECTION_NAME = "exercises"
-        /*fun getExercisesCollection(): CollectionReference? =
-            FirebaseFirestore.getInstance().collection(COLLECTION_NAME)*/
     }
 
     // --- CREATE ---
 
     fun createExercise(
-        userId: String, exerciseId: String, exerciseName: String?, restNextSet: Int?,
-        restNextExercise: Int?, editable: Boolean, setsList: ArrayList<String>?
+        userId: String, exerciseName: String?, restNextSet: Int?,
+        restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
     ): Task<DocumentReference>? {
         val exerciseToCreate =
-            Exercise(exerciseId, exerciseName, restNextSet, restNextExercise, editable, setsList)
+            Exercise(exerciseName, restNextSet, restNextExercise, editable, seriesList)
         return UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
             ?.add(exerciseToCreate)
     }
