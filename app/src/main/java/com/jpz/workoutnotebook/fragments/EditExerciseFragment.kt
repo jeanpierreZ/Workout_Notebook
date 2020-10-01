@@ -1,6 +1,8 @@
 package com.jpz.workoutnotebook.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -150,7 +152,12 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                                 userId!!, exercise.exerciseName, exercise.restNextSet,
                                 exercise.restNextExercise, true, seriesList as ArrayList<Series>
                             )
+                            editExerciseFragmentProgressBar.visibility = View.VISIBLE
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                activity?.onBackPressed()
+                            }, 2000)
                         } else {
+                            // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
                                 editExerciseFragmentCoordinatorLayout,
                                 R.string.exercise_name_already_exists

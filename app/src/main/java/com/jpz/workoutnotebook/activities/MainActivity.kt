@@ -12,7 +12,6 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
 import com.jpz.workoutnotebook.fragments.SportsFragment
 import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_EXERCISE
 import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_PROFILE
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -48,7 +47,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         animateFAB()
 
         mainActivityFABEditProfile.setOnClickListener {
-            startEditActivity(PROFILE_FRAGMENT, RC_EDIT_PROFILE)
+            startEditActivityForProfile()
         }
     }
 
@@ -56,7 +55,6 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         super.onActivityResult(requestCode, resultCode, data)
 
         when (requestCode) {
-
             RC_EDIT_PROFILE -> {
                 if (resultCode == RESULT_OK) {
                     myUtils.showSnackBar(
@@ -68,17 +66,6 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                     )
                 }
             }
-
-            RC_EDIT_EXERCISE ->
-                if (resultCode == RESULT_OK) {
-                    myUtils.showSnackBar(
-                        mainActivityCoordinatorLayout, R.string.exercise_added
-                    )
-                } else if (resultCode == RESULT_CANCELED) {
-                    myUtils.showSnackBar(
-                        mainActivityCoordinatorLayout, R.string.add_exercise_canceled
-                    )
-                }
         }
     }
 
@@ -164,16 +151,22 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     //--------------------------------------------------------------------------------------
 
-    private fun startEditActivity(edit: String, requestCode: Int) {
+    private fun startEditActivity(fragmentName: String) {
         val intent = Intent(this, EditActivity::class.java)
-        intent.putExtra(EDIT, edit)
-        startActivityForResult(intent, requestCode)
+        intent.putExtra(EDIT, fragmentName)
+        startActivity(intent)
+    }
+
+    private fun startEditActivityForProfile() {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, PROFILE_FRAGMENT)
+        startActivityForResult(intent, RC_EDIT_PROFILE)
     }
 
     //--------------------------------------------------------------------------------------
 
     // Implement listener from SportsFragment to consult the list of exercises
     override fun onClickedSportsFragmentButton(button: String?) {
-        startEditActivity(EXERCISE_FRAGMENT, RC_EDIT_EXERCISE)
+        startEditActivity(EXERCISE_FRAGMENT)
     }
 }

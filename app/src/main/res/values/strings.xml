@@ -15,8 +15,6 @@
     <string name="disconnect">Sign out?</string>
     <string name="user_data_updated">User data updated</string>
     <string name="update_data_canceled">Update data canceled</string>
-    <string name="exercise_added">Exercise added</string>
-    <string name="add_exercise_canceled">Add exercise canceled</string>
 
     <!--Profile Fragment -->
     <string name="profile_photo">Photo chosen for profile</string>

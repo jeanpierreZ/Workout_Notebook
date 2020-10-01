@@ -166,5 +166,12 @@
             app:backgroundTint="@color/colorAccentLight"
             app:icon="@drawable/ic_baseline_add_24" />
 
+        <ProgressBar
+            android:id="@+id/editExerciseFragmentProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
