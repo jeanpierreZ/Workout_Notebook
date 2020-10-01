@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.activities.EditActivity.Companion.EXERCISE_NAME
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditExerciseBinding
@@ -34,6 +35,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     }
 
     private lateinit var binding: FragmentEditExerciseBinding
+
     private val exercise = Exercise()
     private var userId: String? = null
 
@@ -56,14 +58,28 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.exercise = exercise
-
         userId = userAuth.getCurrentUser()?.uid
 
-        // Make the exercise editable
-        exercise.editable = true
-        // Attach the list of series
-        exercise.seriesList = seriesList as ArrayList<Series>
+        val name = arguments?.getString(EXERCISE_NAME)
+        Log.e(TAG, "name  = $name")
+
+        if (name != null) {
+            // If the user click on an exercise in the list, bind data with this exercise
+            userId?.let {
+                exerciseViewModel.getExercise(it, name)?.addOnSuccessListener { documentSnapshot ->
+                    val exerciseFromList = documentSnapshot.toObject(Exercise::class.java)
+                    Log.e(TAG, "exerciseFromList  = $exerciseFromList")
+                    binding.exercise = exerciseFromList
+                }
+            }
+        } else {
+            // Else create an empty new exercise
+            binding.exercise = exercise
+            // Make the exercise editable
+            exercise.editable = true
+            // Attach the list of series
+            exercise.seriesList = seriesList as ArrayList<Series>
+        }
 
         // Add automatically the first series
         seriesList.add(Series())

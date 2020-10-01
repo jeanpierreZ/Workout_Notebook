@@ -31,6 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
+                android:hint="@string/first_set"
                 android:text="@={series.seriesName}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/seriesItemReps"
                 app:layout_constraintEnd_toStartOf="@+id/seriesItemReps"

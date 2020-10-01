@@ -27,12 +27,12 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
         userId, exerciseName, restNextSet,
         restNextExercise, editable, seriesList
     )
-        ?.addOnSuccessListener { documentReference ->
+        ?.addOnSuccessListener { _ ->
             myUtils.showSnackBar(
                 coordinatorLayout,
                 coordinatorLayout.context.getString(R.string.new_exercise_created, exerciseName)
             )
-            Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+            Log.d(TAG, "DocumentSnapshot written with name: $exerciseName")
         }
         ?.addOnFailureListener { e ->
             Log.e(TAG, "Error writing document", e)
@@ -40,10 +40,10 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
 
     // --- READ ---
 
-    /*fun getExercise(exerciseId: String) =
-        exerciseHelper.getExercise(exerciseId)?.addOnFailureListener { e ->
-            Log.d("getExercise", "get failed with ", e)
-        }*/
+    fun getExercise(userId: String, exerciseName: String) =
+        exerciseHelper.getExercise(userId, exerciseName)?.addOnFailureListener { e ->
+            Log.d(TAG, "get failed with ", e)
+        }
 
     // --- QUERY ---
 

@@ -46,6 +46,7 @@
     <string name="multiply">*</string>
     <string name="number_units">no of</string>
     <string name="unit">unit</string>
+    <string name="first_set">Set 1</string>
     <string name="number_set">Set %d</string>
     <string name="add_a_set">Add a set</string>
     <string name="exercise_name_already_exists">This exercise already exists, choose another name please.</string>

@@ -22,14 +22,13 @@ class ItemExerciseViewHolder(exercise: View) : RecyclerView.ViewHolder(exercise)
 
         // Create a new weak Reference to our Listener
         val callbackWeakRef: WeakReference<ItemExerciseAdapter.Listener> = WeakReference(callback)
-        //callback = callbackWeakRef.get()!!
         // Redefine callback to use it with lambda
         val finalCallback: ItemExerciseAdapter.Listener? = callbackWeakRef.get()
         // Implement Listener
         itemView.setOnClickListener {
             // When a click happens, we fire our listener to get the exercise position in the list
             if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
-                finalCallback.onClickExercise(exercise?.exerciseName, adapterPosition)
+                finalCallback.onClickExerciseName(exercise?.exerciseName, adapterPosition)
             }
         }
     }

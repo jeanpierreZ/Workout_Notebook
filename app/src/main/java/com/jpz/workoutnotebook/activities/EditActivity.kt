@@ -18,6 +18,10 @@ import org.koin.android.ext.android.inject
 
 class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
 
+    companion object {
+        const val EXERCISE_NAME = "EXERCISE_NAME"
+    }
+
     private var edit: String? = null
 
     private val myUtils: MyUtils by inject()
@@ -77,8 +81,12 @@ class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
             .commit()
     }
 
-    private fun displayEditExerciseFragment() {
+    private fun displayEditExerciseFragment(exerciseName: String?) {
         val editExerciseFragment = EditExerciseFragment()
+        val bundle = Bundle()
+        bundle.putString(EXERCISE_NAME, exerciseName)
+        editExerciseFragment.arguments = bundle
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.editActivityContainer, editExerciseFragment)
             .addToBackStack(editExerciseFragment::class.java.name)
@@ -86,8 +94,8 @@ class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
     }
 
     //--------------------------------------------------------------------------------------
-
-    override fun onClickedExercise(edit: String, name: String?) {
-        displayEditExerciseFragment()
+    // Callback from ExerciseFragment
+    override fun addOrUpdateExercise(exerciseName: String?) {
+        displayEditExerciseFragment(exerciseName)
     }
 }

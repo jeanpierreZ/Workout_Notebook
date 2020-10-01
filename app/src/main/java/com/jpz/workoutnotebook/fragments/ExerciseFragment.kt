@@ -21,10 +21,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
-    companion object {
-        const val EDIT_EXERCISE_FRAGMENT = "EDIT_EXERCISE_FRAGMENT"
-    }
-
     // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
@@ -44,7 +40,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         exerciseFragmentFABAdd.setOnClickListener {
-            callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, null)
+            callback?.addOrUpdateExercise(null)
         }
 
         val userId = userAuth.getCurrentUser()?.uid
@@ -78,9 +74,9 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
     //----------------------------------------------------------------------------------
 
     // Interface for callback from ItemExerciseAdapter
-    override fun onClickExercise(exerciseName: String?, position: Int) {
+    override fun onClickExerciseName(exerciseName: String?, position: Int) {
         if (exerciseName != null) {
-            callback?.onClickedExercise(EDIT_EXERCISE_FRAGMENT, exerciseName)
+            callback?.addOrUpdateExercise(exerciseName)
         }
     }
 
@@ -95,7 +91,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
     // Declare our interface that will be implemented by any container activity
     interface ExerciseListener {
-        fun onClickedExercise(edit: String, name: String?)
+        fun addOrUpdateExercise(exerciseName: String?)
     }
 
     // Create callback to parent activity

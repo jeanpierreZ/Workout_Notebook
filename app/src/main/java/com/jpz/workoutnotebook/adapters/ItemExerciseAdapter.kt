@@ -15,7 +15,7 @@ class ItemExerciseAdapter(
 
     // Callback
     interface Listener {
-        fun onClickExercise(exerciseName: String?, position: Int)
+        fun onClickExerciseName(exerciseName: String?, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemExerciseViewHolder {

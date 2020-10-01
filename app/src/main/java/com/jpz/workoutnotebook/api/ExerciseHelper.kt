@@ -1,7 +1,7 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
@@ -11,6 +11,7 @@ class ExerciseHelper {
 
     companion object {
         private const val COLLECTION_NAME = "exercises"
+        private const val EXERCISE_NAME_FIELD = "exerciseName"
     }
 
     // --- CREATE ---
@@ -18,24 +19,33 @@ class ExerciseHelper {
     fun createExercise(
         userId: String, exerciseName: String?, restNextSet: Int?,
         restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
-    ): Task<DocumentReference>? {
+    ): Task<Void>? {
         val exerciseToCreate =
             Exercise(exerciseName, restNextSet, restNextExercise, editable, seriesList)
-        return UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
-            ?.add(exerciseToCreate)
+        return exerciseName?.let {
+            UserHelper.getUsersCollection()
+                ?.document(userId)
+                ?.collection(COLLECTION_NAME)
+                ?.document(it)
+                ?.set(exerciseToCreate)
+        }
     }
 
     // --- READ ---
 
-    /*fun getExercise(exerciseId: String): Task<DocumentSnapshot>? =
-        getExercisesCollection()?.document(exerciseId)?.get()*/
+    fun getExercise(userId: String, exerciseName: String): Task<DocumentSnapshot>? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.document(exerciseName)
+            ?.get()
+
 
     // --- QUERY ---
 
     fun getListOfExercises(userId: String): Query? =
-        UserHelper.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
+        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+            ?.orderBy(EXERCISE_NAME_FIELD, Query.Direction.ASCENDING)
 
     // --- UPDATE ---
 
