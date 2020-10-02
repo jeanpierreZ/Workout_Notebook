@@ -24,19 +24,16 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
         coordinatorLayout: CoordinatorLayout, userId: String, exerciseName: String?,
         restNextSet: Int?, restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
     ) = exerciseHelper.createExercise(
-        userId, exerciseName, restNextSet,
-        restNextExercise, editable, seriesList
-    )
-        ?.addOnSuccessListener { _ ->
-            myUtils.showSnackBar(
-                coordinatorLayout,
-                coordinatorLayout.context.getString(R.string.new_exercise_created, exerciseName)
-            )
-            Log.d(TAG, "DocumentSnapshot written with name: $exerciseName")
-        }
-        ?.addOnFailureListener { e ->
-            Log.e(TAG, "Error writing document", e)
-        }
+        userId, exerciseName, restNextSet, restNextExercise, editable, seriesList
+    )?.addOnSuccessListener { _ ->
+        myUtils.showSnackBar(
+            coordinatorLayout,
+            coordinatorLayout.context.getString(R.string.new_exercise_created, exerciseName)
+        )
+        Log.d(TAG, "DocumentSnapshot written with name: $exerciseName")
+    }?.addOnFailureListener { e ->
+        Log.e(TAG, "Error writing document", e)
+    }
 
     // --- READ ---
 
@@ -47,15 +44,28 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
 
     // --- QUERY ---
 
+    fun getOrderedListOfExercises(userId: String) = exerciseHelper.getOrderedListOfExercises(userId)
+
     fun getListOfExercises(userId: String) = exerciseHelper.getListOfExercises(userId)
 
     // --- UPDATE ---
 
-    /* fun updateExercise(exerciseId: Exercise) =
-         exerciseHelper.updateExercise(exerciseId)?.addOnFailureListener { e ->
-             Log.e("updateExercise", "Error updating document", e)
-         }*/
-
+    fun updateExercise(
+        coordinatorLayout: CoordinatorLayout, userId: String, exerciseName: String?,
+        restNextSet: Int?, restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
+    ) = exerciseHelper.updateExercise(
+        userId, exerciseName, restNextSet, restNextExercise, editable, seriesList
+    )
+        ?.addOnSuccessListener { _ ->
+            myUtils.showSnackBar(
+                coordinatorLayout, coordinatorLayout.context.getString(
+                    R.string.exercise_updated, exerciseName
+                )
+            )
+            Log.d(TAG, "DocumentSnapshot successfully updated!")
+        }?.addOnFailureListener { e ->
+            Log.e(TAG, "Error updating document", e)
+        }
 
     // --- DELETE ---
 

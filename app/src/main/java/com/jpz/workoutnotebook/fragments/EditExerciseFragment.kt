@@ -37,7 +37,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private lateinit var binding: FragmentEditExerciseBinding
 
     private val exercise = Exercise()
+    private var exerciseFromList = Exercise()
     private var userId: String? = null
+    private var name: String? = null
 
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
@@ -60,17 +62,19 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        val name = arguments?.getString(EXERCISE_NAME)
-        Log.e(TAG, "name  = $name")
+        name = arguments?.getString(EXERCISE_NAME)
+        Log.d(TAG, "name  = $name")
 
         if (name != null) {
             // If the user click on an exercise in the list, bind data with this exercise
             userId?.let {
-                exerciseViewModel.getExercise(it, name)?.addOnSuccessListener { documentSnapshot ->
-                    val exerciseFromList = documentSnapshot.toObject(Exercise::class.java)
-                    Log.e(TAG, "exerciseFromList  = $exerciseFromList")
-                    binding.exercise = exerciseFromList
-                }
+                exerciseViewModel.getExercise(it, name!!)
+                    ?.addOnSuccessListener { documentSnapshot ->
+                        exerciseFromList = documentSnapshot.toObject(Exercise::class.java)!!
+                        Log.d(TAG, "exerciseFromList  = $exerciseFromList")
+                        exerciseFromList.seriesList?.let { it1 -> seriesList.addAll(it1) }
+                        binding.exercise = exerciseFromList
+                    }
             }
         } else {
             // Else create an empty new exercise
@@ -79,15 +83,14 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             exercise.editable = true
             // Attach the list of series
             exercise.seriesList = seriesList as ArrayList<Series>
+            // Add automatically the first series
+            seriesList.add(Series())
         }
-
-        // Add automatically the first series
-        seriesList.add(Series())
 
         configureRecyclerView()
         swipeToDeleteASeries()
 
-        editExerciseFragmentRestFABAdd.setOnClickListener(this)
+        editExerciseFragmentRestFABAddSeries.setOnClickListener(this)
         editExerciseFragmentRestFABSave.setOnClickListener(this)
     }
 
@@ -145,6 +148,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     }
 
     //----------------------------------------------------------------------------------
+    // Methods to save or update an exercise
 
     private fun saveExercise() {
         if (exercise.exerciseName.isNullOrEmpty() || exercise.exerciseName.isNullOrBlank()) {
@@ -161,17 +165,14 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
-                            // There isn't document with this exerciseName
+                            // There isn't document with this exerciseName so create the exercise
                             Log.d(TAG, "documents.isEmpty")
                             exerciseViewModel.createExercise(
                                 editExerciseFragmentCoordinatorLayout,
                                 userId!!, exercise.exerciseName, exercise.restNextSet,
                                 exercise.restNextExercise, true, seriesList as ArrayList<Series>
                             )
-                            editExerciseFragmentProgressBar.visibility = View.VISIBLE
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                activity?.onBackPressed()
-                            }, 2000)
+                            closeFragment()
                         } else {
                             // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
@@ -190,12 +191,39 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    private fun updateExercise() {
+        Log.d(TAG, "seriesList in updateExercise() = $seriesList")
+        userId?.let {
+            exerciseViewModel.updateExercise(
+                editExerciseFragmentCoordinatorLayout, it, exerciseFromList.exerciseName,
+                exerciseFromList.restNextSet, exerciseFromList.restNextExercise,
+                exerciseFromList.editable, seriesList as ArrayList<Series>
+            )
+        }
+        closeFragment()
+    }
+
+    //----------------------------------------------------------------------------------
+
+    private fun closeFragment() {
+        editExerciseFragmentProgressBar.visibility = View.VISIBLE
+        Handler(Looper.getMainLooper()).postDelayed({
+            activity?.onBackPressed()
+        }, 2000)
+    }
+
     //----------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.editExerciseFragmentRestFABAdd -> addASeries()
-            R.id.editExerciseFragmentRestFABSave -> saveExercise()
+            R.id.editExerciseFragmentRestFABAddSeries -> addASeries()
+            R.id.editExerciseFragmentRestFABSave -> {
+                if (name != null) {
+                    updateExercise()
+                } else {
+                    saveExercise()
+                }
+            }
         }
     }
 }

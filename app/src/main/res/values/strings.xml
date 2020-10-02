@@ -52,4 +52,5 @@
     <string name="exercise_name_already_exists">This exercise already exists, choose another name please.</string>
     <string name="exercise_name_cannot_be_blank">Exercise name cannot be blank</string>
     <string name="new_exercise_created">Exercise %s is created.</string>
+    <string name="exercise_updated">Exercise %s is updated.</string>
 </resources>

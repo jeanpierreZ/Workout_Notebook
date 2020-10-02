@@ -40,18 +40,31 @@ class ExerciseHelper {
             ?.document(exerciseName)
             ?.get()
 
-
     // --- QUERY ---
 
     fun getListOfExercises(userId: String): Query? =
+        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+
+    fun getOrderedListOfExercises(userId: String): Query? =
         UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
             ?.orderBy(EXERCISE_NAME_FIELD, Query.Direction.ASCENDING)
 
     // --- UPDATE ---
 
-    /*fun updateExercise(exercise: Exercise): Task<Void>? {
-        return getExercisesCollection()?.document(exercise.exerciseId)?.set(exercise)
-    }*/
+    fun updateExercise(
+        userId: String, exerciseName: String?, restNextSet: Int?,
+        restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
+    ): Task<Void>? {
+        val exerciseToUpdate =
+            Exercise(exerciseName, restNextSet, restNextExercise, editable, seriesList)
+        return exerciseName?.let {
+            UserHelper.getUsersCollection()
+                ?.document(userId)
+                ?.collection(COLLECTION_NAME)
+                ?.document(it)
+                ?.set(exerciseToUpdate)
+        }
+    }
 
     // --- DELETE ---
 

@@ -7,5 +7,6 @@ enum class Unit(val stringValue: String) {
     KM("km"),
     FT("ft"),
     YD("yd"),
-    ML("ml")
+    ML("ml"),
+    BLANK("")
 }

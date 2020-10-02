@@ -156,7 +156,7 @@
             layout="@layout/fab_save" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/editExerciseFragmentRestFABAdd"
+            android:id="@+id/editExerciseFragmentRestFABAddSeries"
             style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

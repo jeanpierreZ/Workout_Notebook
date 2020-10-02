@@ -52,7 +52,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
     // Configure RecyclerView with a Query
     private fun configureRecyclerView(userId: String) {
         // Create the adapter by passing the list of exercises of the user
-        val list = exerciseViewModel.getListOfExercises(userId)
+        val list = exerciseViewModel.getOrderedListOfExercises(userId)
         if (list != null) {
             itemExerciseAdapter =
                 generateOptionsForAdapter(list)?.let { ItemExerciseAdapter(it, this) }
