@@ -53,4 +53,6 @@
     <string name="exercise_name_cannot_be_blank">Exercise name cannot be blank</string>
     <string name="new_exercise_created">Exercise %s is created.</string>
     <string name="exercise_updated">Exercise %s is updated.</string>
+    <string name="series_deleted">Series deleted</string>
+    <string name="undo">UNDO</string>
 </resources>

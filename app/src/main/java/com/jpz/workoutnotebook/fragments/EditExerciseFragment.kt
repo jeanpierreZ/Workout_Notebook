@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.EXERCISE_NAME
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
@@ -39,7 +40,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private val exercise = Exercise()
     private var exerciseFromList = Exercise()
     private var userId: String? = null
-    private var name: String? = null
+    private var exerciseNameFromList: String? = null
 
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
@@ -62,13 +63,13 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        name = arguments?.getString(EXERCISE_NAME)
-        Log.d(TAG, "name  = $name")
+        exerciseNameFromList = arguments?.getString(EXERCISE_NAME)
+        Log.d(TAG, "exerciseNameFromList = $exerciseNameFromList")
 
-        if (name != null) {
+        if (exerciseNameFromList != null) {
             // If the user click on an exercise in the list, bind data with this exercise
             userId?.let {
-                exerciseViewModel.getExercise(it, name!!)
+                exerciseViewModel.getExercise(it, exerciseNameFromList!!)
                     ?.addOnSuccessListener { documentSnapshot ->
                         exerciseFromList = documentSnapshot.toObject(Exercise::class.java)!!
                         Log.d(TAG, "exerciseFromList  = $exerciseFromList")
@@ -121,13 +122,36 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // Retrieve the position swiped
                 val position = viewHolder.adapterPosition
+                // Retrieve the series object swiped
+                val recentlyDeletedItem: Series = seriesList[position]
+                Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
                 removeASeries(position)
+                showUndoSnackbar(position, recentlyDeletedItem)
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(editExerciseFragmentRecyclerView)
+    }
+
+    private fun showUndoSnackbar(position: Int, recentlyDeletedItem: Series) {
+        val snackbar: Snackbar = Snackbar.make(
+            editExerciseFragmentCoordinatorLayout, getString(R.string.series_deleted),
+            Snackbar.LENGTH_LONG
+        )
+        // Set action to undo delete the series swiped
+        snackbar.setAction(getString(R.string.undo)) {
+            undoDelete(position, recentlyDeletedItem)
+        }
+        snackbar.show()
+    }
+
+    private fun undoDelete(position: Int, recentlyDeletedItem: Series) {
+        seriesList.add(position, recentlyDeletedItem)
+        itemSeriesAdapter?.notifyItemInserted(position)
+        itemSeriesAdapter?.notifyItemRangeChanged(position, seriesList.size)
     }
 
     private fun addASeries() {
@@ -218,7 +242,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         when (v?.id) {
             R.id.editExerciseFragmentRestFABAddSeries -> addASeries()
             R.id.editExerciseFragmentRestFABSave -> {
-                if (name != null) {
+                if (exerciseNameFromList != null) {
                     updateExercise()
                 } else {
                     saveExercise()
