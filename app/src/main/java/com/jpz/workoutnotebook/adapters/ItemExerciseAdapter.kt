@@ -36,7 +36,7 @@ class ItemExerciseAdapter(
     override fun onBindViewHolder(holder: ItemExerciseViewHolder, position: Int, model: Exercise) =
         holder.updateExercises(model, callback)
 
-    fun deleteItem(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
+    fun deleteAnExercise(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
         // Get the documentSnapshot from the position and convert it to Exercise object
         snapshots.getSnapshot(position).reference.get().addOnSuccessListener { documentSnapshot ->
 

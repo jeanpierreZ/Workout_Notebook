@@ -89,7 +89,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 activity?.let {
-                    itemExerciseAdapter?.deleteItem(
+                    itemExerciseAdapter?.deleteAnExercise(
                         viewHolder.adapterPosition, it, exerciseFragmentCoordinatorLayout
                     )
                 }

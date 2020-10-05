@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.EXERCISE_NAME
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
@@ -100,7 +99,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     private fun configureRecyclerView() {
         // Create the adapter by passing the list of series of the user
-        itemSeriesAdapter = activity?.let { ItemSeriesAdapter(seriesList, it) }
+        itemSeriesAdapter = activity?.let { ItemSeriesAdapter(seriesList as ArrayList<Series>, it) }
         // Attach the adapter to the recyclerView to populate the series
         editExerciseFragmentRecyclerView?.adapter = itemSeriesAdapter
         // Set layout manager to position the series
@@ -127,48 +126,14 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 // Retrieve the series object swiped
                 val recentlyDeletedItem: Series = seriesList[position]
                 Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
-                removeASeries(position)
-                showUndoSnackbar(position, recentlyDeletedItem)
+                itemSeriesAdapter?.deleteASeries(
+                    editExerciseFragmentCoordinatorLayout, position, recentlyDeletedItem
+                )
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(editExerciseFragmentRecyclerView)
-    }
-
-    private fun showUndoSnackbar(position: Int, recentlyDeletedItem: Series) {
-        val snackbar: Snackbar = Snackbar.make(
-            editExerciseFragmentCoordinatorLayout, getString(R.string.series_deleted),
-            Snackbar.LENGTH_LONG
-        )
-        // Set action to undo delete the series swiped
-        snackbar.setAction(getString(R.string.undo)) {
-            undoDelete(position, recentlyDeletedItem)
-        }
-        snackbar.show()
-    }
-
-    private fun undoDelete(position: Int, recentlyDeletedItem: Series) {
-        seriesList.add(position, recentlyDeletedItem)
-        itemSeriesAdapter?.notifyItemInserted(position)
-        itemSeriesAdapter?.notifyItemRangeChanged(position, seriesList.size)
-    }
-
-    private fun addASeries() {
-        // Retrieve the size of the list
-        val seriesListSize: Int = seriesList.size
-        // Add a new series to the list
-        seriesList.add(seriesListSize, Series())
-        // Notify the adapter that the data has changed
-        itemSeriesAdapter?.notifyItemInserted(seriesListSize)
-        // Scroll to the bottom
-        editExerciseFragmentRecyclerView.smoothScrollToPosition(seriesListSize)
-    }
-
-    private fun removeASeries(position: Int) {
-        seriesList.removeAt(position)
-        itemSeriesAdapter?.notifyItemRemoved(position)
-        itemSeriesAdapter?.notifyItemRangeChanged(position, seriesList.size)
     }
 
     //----------------------------------------------------------------------------------
@@ -240,7 +205,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.editExerciseFragmentRestFABAddSeries -> addASeries()
+            R.id.editExerciseFragmentRestFABAddSeries ->
+                itemSeriesAdapter?.addASeries(editExerciseFragmentRecyclerView)
             R.id.editExerciseFragmentRestFABSave -> {
                 if (exerciseNameFromList != null) {
                     updateExercise()
