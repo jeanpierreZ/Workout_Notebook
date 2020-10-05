@@ -1,5 +1,6 @@
 package com.jpz.workoutnotebook.fragments
 
+import android.graphics.Canvas
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -22,6 +24,7 @@ import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_edit_exercise.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -128,6 +131,24 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
                 itemSeriesAdapter?.deleteASeries(
                     editExerciseFragmentCoordinatorLayout, position, recentlyDeletedItem
+                )
+            }
+
+            override fun onChildDraw(
+                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+            ) {
+                activity?.let { ContextCompat.getColor(it, R.color.colorDecorSwipeRed) }?.let {
+                    RecyclerViewSwipeDecorator.Builder(
+                        c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
+                    )
+                        .addBackgroundColor(it)
+                        .addActionIcon(R.drawable.ic_baseline_delete_24)
+                        .create()
+                        .decorate()
+                }
+                super.onChildDraw(
+                    c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive
                 )
             }
         }
