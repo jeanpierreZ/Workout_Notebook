@@ -54,5 +54,6 @@
     <string name="new_exercise_created">Exercise %s is created.</string>
     <string name="exercise_updated">Exercise %s is updated.</string>
     <string name="series_deleted">Series deleted</string>
+    <string name="exercise_deleted">Exercise deleted</string>
     <string name="undo">UNDO</string>
 </resources>

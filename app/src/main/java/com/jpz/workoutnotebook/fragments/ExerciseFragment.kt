@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
@@ -45,6 +47,7 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
 
         val userId = userAuth.getCurrentUser()?.uid
         userId?.let { configureRecyclerView(it) }
+        swipeToDeleteAnExercise()
     }
 
     //----------------------------------------------------------------------------------
@@ -69,6 +72,32 @@ class ExerciseFragment : Fragment(), ItemExerciseAdapter.Listener {
             .setQuery(query, Exercise::class.java)
             .setLifecycleOwner(this)
             .build()
+    }
+
+    //----------------------------------------------------------------------------------
+
+    private fun swipeToDeleteAnExercise() {
+        val itemTouchHelperCallback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                activity?.let {
+                    itemExerciseAdapter?.deleteItem(
+                        viewHolder.adapterPosition, it, exerciseFragmentCoordinatorLayout
+                    )
+                }
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(exerciseFragmentRecyclerView)
     }
 
     //----------------------------------------------------------------------------------

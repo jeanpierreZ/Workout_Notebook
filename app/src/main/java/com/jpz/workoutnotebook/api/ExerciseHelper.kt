@@ -65,10 +65,4 @@ class ExerciseHelper {
                 ?.set(exerciseToUpdate)
         }
     }
-
-    // --- DELETE ---
-
-    /*fun deleteExercise(exerciseId: String): Task<Void?>? {
-        return getExercisesCollection()?.document(exerciseId)?.delete()
-    }*/
 }

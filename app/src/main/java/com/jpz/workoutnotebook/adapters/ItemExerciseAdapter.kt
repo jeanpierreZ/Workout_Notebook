@@ -1,9 +1,14 @@
 package com.jpz.workoutnotebook.adapters
 
+import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.DocumentReference
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.viewholders.ItemExerciseViewHolder
@@ -12,6 +17,10 @@ import com.jpz.workoutnotebook.viewholders.ItemExerciseViewHolder
 class ItemExerciseAdapter(
     options: FirestoreRecyclerOptions<Exercise?>, private var callback: Listener
 ) : FirestoreRecyclerAdapter<Exercise, ItemExerciseViewHolder>(options) {
+
+    companion object {
+        private val TAG = ItemExerciseAdapter::class.java.simpleName
+    }
 
     // Callback
     interface Listener {
@@ -26,4 +35,44 @@ class ItemExerciseAdapter(
 
     override fun onBindViewHolder(holder: ItemExerciseViewHolder, position: Int, model: Exercise) =
         holder.updateExercises(model, callback)
+
+    fun deleteItem(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
+        // Get the documentSnapshot from the position and convert it to Exercise object
+        snapshots.getSnapshot(position).reference.get().addOnSuccessListener { documentSnapshot ->
+
+            // Convert it to Exercise object
+            val recentlyDeletedItem: Exercise? = documentSnapshot.toObject(Exercise::class.java)
+
+            // Get the documentReference from the position to delete and undo delete it
+            val documentReference: DocumentReference = snapshots.getSnapshot(position).reference
+
+            documentReference.delete().addOnSuccessListener {
+                Log.d(TAG, "recentlyDeletedItem deleted = $recentlyDeletedItem")
+                if (recentlyDeletedItem != null) {
+                    showUndoSnackbar(
+                        coordinatorLayout, context, recentlyDeletedItem, documentReference
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showUndoSnackbar(
+        coordinatorLayout: CoordinatorLayout, context: Context,
+        recentlyDeletedItem: Exercise, documentReference: DocumentReference
+    ) {
+        val snackbar: Snackbar = Snackbar.make(
+            coordinatorLayout, context.getString(R.string.exercise_deleted),
+            Snackbar.LENGTH_LONG
+        )
+        // Set action to undo delete the exercise swiped
+        snackbar.setAction(context.getString(R.string.undo)) {
+            undoDelete(documentReference, recentlyDeletedItem)
+        }
+        snackbar.show()
+    }
+
+    private fun undoDelete(documentReference: DocumentReference, recentlyDeletedItem: Exercise) {
+        documentReference.set(recentlyDeletedItem)
+    }
 }
