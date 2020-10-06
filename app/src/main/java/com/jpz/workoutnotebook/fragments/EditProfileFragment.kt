@@ -9,12 +9,10 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import androidx.core.widget.doOnTextChanged
+import com.bumptech.glide.Glide
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.User
-import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_CHOOSE_PHOTO
 import kotlinx.android.synthetic.main.fragment_base_profile.*
@@ -31,22 +29,13 @@ class EditProfileFragment : BaseProfileFragment() {
 
     private val myUtils: MyUtils by inject()
 
+    private var user: User? = null
+
     // Uri used to locate the device picture
     private var uriPictureSelected: Uri? = null
 
     // Boolean used if the user has chosen a photo
     private var newPhotoAdded: Boolean = false
-
-    private var nickName: String? = null
-    private var name: String? = null
-    private var firstName: String? = null
-    private var age: Int? = null
-    private var photo: Int? = 0
-    private var sports: String? = null
-    private var iFollow: ArrayList<String>? = null
-    private var followers: ArrayList<String>? = null
-    private var exercises: ArrayList<Exercise>? = null
-    private var workouts: ArrayList<Workout>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +44,10 @@ class EditProfileFragment : BaseProfileFragment() {
         Log.d(TAG, "uid = $userId")
 
         getUserData(userId)
-        onChangeData()
+
+        baseProfileFragmentPhoto.setOnClickListener {
+            addPhotoWithPermissionCheck()
+        }
 
         baseProfileFragmentFABSave.setOnClickListener {
             saveUpdatedData()
@@ -68,7 +60,7 @@ class EditProfileFragment : BaseProfileFragment() {
             // Uri of picture selected by user
             uriPictureSelected = data?.data
             // Display the user photo with data
-            uriPictureSelected?.let { displayUserPhoto(it) }
+            uriPictureSelected?.let { displayNewPhoto(it) }
             newPhotoAdded = true
         }
     }
@@ -79,61 +71,14 @@ class EditProfileFragment : BaseProfileFragment() {
     private fun getUserData(userId: String?) {
         if (userId != null) {
             userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
-                val user: User? = documentSnapshot.toObject(User::class.java)
-
-                user?.let {
-                    // Retrieve user data
-                    photo = user.photo
-                    Log.d(TAG, "user.photo = $photo")
-                    iFollow = user.iFollow
-                    followers = user.followers
-                    exercises = user.exercises
-                    workouts = user.workouts
-
-                    view?.let {
-                        if (activity != null) {
-                            // Download the photo if it exists...
-                            if (user.photo != null && user.photo != 0) {
-                                // Download the photo from Firebase Storage
-                                userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
-                                    displayUserPhoto(uri)
-                                }
-                                // ...else display an icon for the photo
-                            } else {
-                                displayGenericPhoto()
-                            }
-                        }
-                        displayUserData(user)
-                    }
-                }
+                user = documentSnapshot.toObject(User::class.java)
+                user?.let { binding.user = user }
             }
         }
     }
 
     //--------------------------------------------------------------------------------------
     // Update / save data
-
-    private fun onChangeData() {
-
-        baseProfileFragmentPhoto.setOnClickListener {
-            addPhotoWithPermissionCheck()
-        }
-        baseProfileFragmentNickname.editText?.doOnTextChanged { text, _, _, _ ->
-            nickName = text.toString()
-        }
-        baseProfileFragmentName.editText?.doOnTextChanged { text, _, _, _ ->
-            name = text.toString()
-        }
-        baseProfileFragmentFirstName.editText?.doOnTextChanged { text, _, _, _ ->
-            firstName = text.toString()
-        }
-        baseProfileFragmentAge.editText?.doOnTextChanged { text, _, _, _ ->
-            age = text.toString().toIntOrNull()
-        }
-        baseProfileFragmentSports.editText?.doOnTextChanged { text, _, _, _ ->
-            sports = text.toString()
-        }
-    }
 
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun addPhoto() {
@@ -144,31 +89,39 @@ class EditProfileFragment : BaseProfileFragment() {
     private fun uploadPhotoInFirebaseAndUpdateUser() {
         // Upload the picture local file chosen by the user
         if (userId != null && uriPictureSelected != null) {
-            val uploadTask = userStoragePhoto.storageRef(userId!!).putFile(uriPictureSelected!!)
+
+            val referenceToStorage = userStoragePhoto.storageRef(userId!!)
+
+            val uploadTask = referenceToStorage.putFile(uriPictureSelected!!)
+
             // Register observers to listen for when the download is done or if it fails
             uploadTask.addOnFailureListener { exception ->
                 val errorCode = (exception as StorageException).errorCode
                 val errorMessage = exception.message
                 Log.e(TAG, "Unsuccessful upload: $errorCode $errorMessage")
-            }.addOnSuccessListener { taskSnapshot ->
-                Log.i(TAG, "Successful upload: ${taskSnapshot.totalByteCount}")
-                // If a new photo is added, increment photo number value then update user data
-                photo = if (photo == null) {
-                    1
-                } else {
-                    photo?.plus(1)
-                }
-                Log.d(TAG, "new photo data = $photo")
-                updateUser()
             }
+                .addOnSuccessListener { taskSnapshot ->
+                    referenceToStorage.downloadUrl.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Download uri from Firebase Storage
+                            val downloadUri = task.result
+                            // Convert uri to url and pass it as photoProfile
+                            user?.photoProfile = downloadUri?.toString()
+                            Log.d(TAG, "photoProfile: $user?.photoProfile")
+                            // Then update User
+                            updateUser()
+                        }
+                    }
+                    Log.i(TAG, "Successful upload: ${taskSnapshot.totalByteCount}")
+                }
         }
     }
 
     private fun updateUser() {
         val user = userId?.let { it ->
             User(
-                it, nickName, name, firstName, age, photo, sports,
-                iFollow, followers, exercises, workouts
+                it, user?.nickName, user?.name, user?.firstName, user?.age, user?.photoProfile,
+                user?.sports, user?.iFollow, user?.followers, user?.exercises, user?.workouts
             )
         }
         if (user != null) {
@@ -183,12 +136,22 @@ class EditProfileFragment : BaseProfileFragment() {
         }
     }
 
-    // Update data
     private fun saveUpdatedData() {
         if (newPhotoAdded) {
             uploadPhotoInFirebaseAndUpdateUser()
         } else {
             updateUser()
+        }
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    private fun displayNewPhoto(uri: Uri) {
+        activity?.let {
+            Glide.with(it)
+                .load(uri)
+                .circleCrop()
+                .into(baseProfileFragmentPhoto)
         }
     }
 

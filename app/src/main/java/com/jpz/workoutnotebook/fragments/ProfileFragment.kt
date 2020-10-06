@@ -59,6 +59,7 @@ class ProfileFragment : BaseProfileFragment() {
         baseProfileFragmentSports.isCounterEnabled = false
 
         // Disable FloatingActionButton
+        baseProfileFragmentFABSave.isEnabled = false
         baseProfileFragmentFABSave.visibility = View.GONE
 
         val userId = userAuth.getCurrentUser()?.uid
@@ -82,23 +83,10 @@ class ProfileFragment : BaseProfileFragment() {
                 for (dc in snapshot.documentChanges) {
                     if (dc.type == DocumentChange.Type.ADDED || dc.type == DocumentChange.Type.MODIFIED) {
                         val user: User? = dc.document.toObject(User::class.java)
-
                         user?.let {
-                            Log.i(TAG, "user.photo = ${user.photo}")
-                            if (activity != null) {
-                                // Download the photo if it exists...
-                                if (user.photo != null && user.photo != 0) {
-                                    // Download the photo from Firebase Storage
-                                    userStoragePhoto.storageRef(userId).downloadUrl.addOnSuccessListener { uri ->
-                                        displayUserPhoto(uri)
-                                    }
-                                    // ...else display an icon for the photo
-                                } else {
-                                    displayGenericPhoto()
-                                }
-                            }
-                            // Display user data
-                            displayUserData(user)
+                            Log.d(TAG, "user = $user")
+                            // Display user data with binding
+                            binding.user = user
                         }
                     }
                 }
