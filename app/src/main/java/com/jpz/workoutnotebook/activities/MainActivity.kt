@@ -31,7 +31,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     companion object {
         const val EDIT = "EDIT"
         const val PROFILE_FRAGMENT = "PROFILE_FRAGMENT"
-        const val EXERCISE_FRAGMENT = "EXERCISE_FRAGMENT"
+        const val EXERCISES = "EXERCISES"
+        const val WORKOUTS = "WORKOUTS"
     }
 
     private var pageSelected = 0
@@ -165,8 +166,12 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     //--------------------------------------------------------------------------------------
 
-    // Implement listener from SportsFragment to consult the list of exercises
+    // Implement listener from SportsFragment to consult the list of exercises or workouts
     override fun onClickedSportsFragmentButton(button: String?) {
-        startEditActivity(EXERCISE_FRAGMENT)
+        if (button == getString(R.string.exercises)) {
+            startEditActivity(EXERCISES)
+        } else {
+            startEditActivity(WORKOUTS)
+        }
     }
 }

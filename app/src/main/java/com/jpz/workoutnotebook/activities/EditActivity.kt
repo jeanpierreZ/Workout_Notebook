@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
-import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISE_FRAGMENT
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.PROFILE_FRAGMENT
 import com.jpz.workoutnotebook.fragments.EditExerciseFragment
 import com.jpz.workoutnotebook.fragments.EditProfileFragment
@@ -70,7 +70,7 @@ class EditActivity : AppCompatActivity(), ExerciseFragment.ExerciseListener {
 
         when (edit) {
             PROFILE_FRAGMENT -> fragment = editProfileFragment
-            EXERCISE_FRAGMENT -> fragment = exerciseFragment
+            EXERCISES -> fragment = exerciseFragment
             else -> myUtils.showSnackBar(
                 editActivityCoordinatorLayout, R.string.user_data_recovery_error
             )

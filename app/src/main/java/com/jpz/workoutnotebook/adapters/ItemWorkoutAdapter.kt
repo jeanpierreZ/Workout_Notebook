@@ -10,38 +10,37 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentReference
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.models.Exercise
-import com.jpz.workoutnotebook.viewholders.ItemExerciseViewHolder
+import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.viewholders.ItemWorkoutViewHolder
 
-
-class ItemExerciseAdapter(
-    options: FirestoreRecyclerOptions<Exercise?>, private var callback: Listener
-) : FirestoreRecyclerAdapter<Exercise, ItemExerciseViewHolder>(options) {
+class ItemWorkoutAdapter(
+    options: FirestoreRecyclerOptions<Workout?>, private var callback: Listener
+) : FirestoreRecyclerAdapter<Workout, ItemWorkoutViewHolder>(options) {
 
     companion object {
-        private val TAG = ItemExerciseAdapter::class.java.simpleName
+        private val TAG = ItemWorkoutAdapter::class.java.simpleName
     }
 
     // Callback
     interface Listener {
-        fun onClickExerciseName(exerciseName: String?, position: Int)
+        fun onClickWorkoutName(workoutName: String?, position: Int)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemExerciseViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemWorkoutViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.exercise_item, parent, false)
-        return ItemExerciseViewHolder(view)
+        return ItemWorkoutViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ItemExerciseViewHolder, position: Int, model: Exercise) =
-        holder.updateExercises(model, callback)
+    override fun onBindViewHolder(holder: ItemWorkoutViewHolder, position: Int, model: Workout) =
+        holder.updateWorkouts(model, callback)
 
-    fun deleteAnExercise(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
-        // Get the documentSnapshot from the position and convert it to Exercise object
+    fun deleteAWorkout(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
+        // Get the documentSnapshot from the position and convert it to Workout object
         snapshots.getSnapshot(position).reference.get().addOnSuccessListener { documentSnapshot ->
 
-            // Convert it to Exercise object
-            val recentlyDeletedItem: Exercise? = documentSnapshot.toObject(Exercise::class.java)
+            // Convert it to Workout object
+            val recentlyDeletedItem: Workout? = documentSnapshot.toObject(Workout::class.java)
 
             // Get the documentReference from the position to delete and undo delete it
             val documentReference: DocumentReference = snapshots.getSnapshot(position).reference
@@ -59,20 +58,21 @@ class ItemExerciseAdapter(
 
     private fun showUndoSnackbar(
         coordinatorLayout: CoordinatorLayout, context: Context,
-        recentlyDeletedItem: Exercise, documentReference: DocumentReference
+        recentlyDeletedItem: Workout, documentReference: DocumentReference
     ) {
         val snackbar: Snackbar = Snackbar.make(
-            coordinatorLayout, context.getString(R.string.exercise_deleted),
+            coordinatorLayout, context.getString(R.string.workout_deleted),
             Snackbar.LENGTH_LONG
         )
-        // Set action to undo delete the exercise swiped
+        // Set action to undo delete the workout swiped
         snackbar.setAction(context.getString(R.string.undo)) {
             undoDelete(documentReference, recentlyDeletedItem)
         }
         snackbar.show()
     }
 
-    private fun undoDelete(documentReference: DocumentReference, recentlyDeletedItem: Exercise) {
+    private fun undoDelete(documentReference: DocumentReference, recentlyDeletedItem: Workout) {
         documentReference.set(recentlyDeletedItem)
     }
+
 }

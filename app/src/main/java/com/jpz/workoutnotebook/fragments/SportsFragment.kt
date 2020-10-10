@@ -35,7 +35,7 @@ class SportsFragment : Fragment() {
         }
 
         sportsFragmentWorkoutsButton.setOnClickListener {
-//            callback?.onClickedButton(getString(R.string.workouts))
+            callback?.onClickedSportsFragmentButton(getString(R.string.workouts))
         }
     }
 
@@ -59,7 +59,7 @@ class SportsFragment : Fragment() {
             // Parent activity will automatically subscribe to callback
             callback = activity as SportsFragmentButtonListener?
         } catch (e: ClassCastException) {
-            throw ClassCastException("$e must implement ButtonListener")
+            throw ClassCastException("$e must implement SportsFragmentButtonListener")
         }
     }
 }
