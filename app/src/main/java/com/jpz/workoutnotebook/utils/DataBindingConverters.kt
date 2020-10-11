@@ -42,6 +42,8 @@ class DataBindingConverters {
             return value?.toString() ?: ""
         }
 
+        //----------------------------------------------------------------------------------
+
         @JvmStatic
         @BindingAdapter("profileImage")
         fun loadImage(view: ImageView, profileImage: String?) {

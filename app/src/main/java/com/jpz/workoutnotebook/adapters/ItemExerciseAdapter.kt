@@ -29,12 +29,12 @@ class ItemExerciseAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemExerciseViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.exercise_item, parent, false)
+        val view = inflater.inflate(R.layout.sport_item, parent, false)
         return ItemExerciseViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ItemExerciseViewHolder, position: Int, model: Exercise) =
-        holder.updateExercises(model, callback)
+        holder.updateExercise(model, callback)
 
     fun deleteAnExercise(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
         // Get the documentSnapshot from the position and convert it to Exercise object

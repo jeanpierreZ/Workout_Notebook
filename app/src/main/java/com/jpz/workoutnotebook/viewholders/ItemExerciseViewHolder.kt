@@ -14,10 +14,10 @@ class ItemExerciseViewHolder(exercise: View) : RecyclerView.ViewHolder(exercise)
     private var exerciseName: TextView? = null
 
     init {
-        exerciseName = itemView.findViewById(R.id.exerciseItemName)
+        exerciseName = itemView.findViewById(R.id.sportItemName)
     }
 
-    fun updateExercises(exercise: Exercise?, callback: ItemExerciseAdapter.Listener) {
+    fun updateExercise(exercise: Exercise?, callback: ItemExerciseAdapter.Listener) {
         exerciseName?.text = exercise?.exerciseName
 
         // Create a new weak Reference to our Listener

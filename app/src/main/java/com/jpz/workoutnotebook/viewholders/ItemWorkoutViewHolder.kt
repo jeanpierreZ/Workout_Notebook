@@ -12,13 +12,12 @@ class ItemWorkoutViewHolder(workout: View) : RecyclerView.ViewHolder(workout) {
     // Represent a line of a workout in the RecyclerView
 
     private var workoutName: TextView? = null
-    // todo rename exercise_item to sports_item
 
     init {
-        workoutName = itemView.findViewById(R.id.exerciseItemName)
+        workoutName = itemView.findViewById(R.id.sportItemName)
     }
 
-    fun updateWorkouts(workout: Workout?, callback: ItemWorkoutAdapter.Listener) {
+    fun updateWorkout(workout: Workout?, callback: ItemWorkoutAdapter.Listener) {
         workoutName?.text = workout?.workoutName
 
         // Create a new weak Reference to our Listener

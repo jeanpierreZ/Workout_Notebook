@@ -5,7 +5,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 data class Workout(
-    var workoutId: String = "",
     var workoutName: String? = null,
     @ServerTimestamp
     var workoutDate: Date? = null,

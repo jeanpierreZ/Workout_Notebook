@@ -28,12 +28,12 @@ class ItemWorkoutAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemWorkoutViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.exercise_item, parent, false)
+        val view = inflater.inflate(R.layout.sport_item, parent, false)
         return ItemWorkoutViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ItemWorkoutViewHolder, position: Int, model: Workout) =
-        holder.updateWorkouts(model, callback)
+        holder.updateWorkout(model, callback)
 
     fun deleteAWorkout(position: Int, context: Context, coordinatorLayout: CoordinatorLayout) {
         // Get the documentSnapshot from the position and convert it to Workout object
@@ -74,5 +74,4 @@ class ItemWorkoutAdapter(
     private fun undoDelete(documentReference: DocumentReference, recentlyDeletedItem: Workout) {
         documentReference.set(recentlyDeletedItem)
     }
-
 }

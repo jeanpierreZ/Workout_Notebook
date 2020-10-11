@@ -4,6 +4,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.models.Workout
 import java.util.*
 
@@ -11,10 +12,9 @@ class WorkoutHelper {
 
     companion object {
         private const val COLLECTION_NAME = "workouts"
-        fun getWorkoutsCollection(): CollectionReference? =
-            FirebaseFirestore.getInstance().collection(COLLECTION_NAME)
+        private const val WORKOUT_NAME_FIELD = "workoutName"
     }
-
+/*
     // --- CREATE ---
 
     fun createWorkout(
@@ -28,7 +28,18 @@ class WorkoutHelper {
 
     fun getWorkout(workoutId: String): Task<DocumentSnapshot>? =
         getWorkoutsCollection()?.document(workoutId)?.get()
+*/
 
+    // --- QUERY ---
+
+    fun getListOfExercises(userId: String): Query? =
+        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+
+    fun getOrderedListOfExercises(userId: String): Query? =
+        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+            ?.orderBy(WORKOUT_NAME_FIELD, Query.Direction.ASCENDING)
+
+/*
     // --- UPDATE ---
 
     fun updateWorkout(workout: Workout): Task<Void>? {
@@ -39,5 +50,5 @@ class WorkoutHelper {
 
     fun deleteWorkout(workoutId: String): Task<Void?>? {
         return getWorkoutsCollection()?.document(workoutId)?.delete()
-    }
+    }*/
 }
