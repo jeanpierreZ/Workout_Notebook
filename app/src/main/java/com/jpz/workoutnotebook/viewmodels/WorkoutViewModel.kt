@@ -9,6 +9,10 @@ import java.util.*
 
 class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
 
+    companion object {
+        private val TAG = WorkoutViewModel::class.java.simpleName
+    }
+
 /*
     // --- CREATE ---
 
@@ -18,14 +22,14 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
         ?.addOnFailureListener { e ->
             Log.e("createWorkout", "Error writing document", e)
         }
+*/
 
     // --- READ ---
 
-    fun getWorkout(workoutId: String) =
-        workoutHelper.getWorkout(workoutId)?.addOnFailureListener { e ->
-            Log.d("getWorkout", "get failed with ", e)
-        }*/
-
+    fun getWorkout(userId: String, exerciseName: String) =
+        workoutHelper.getWorkout(userId, exerciseName)?.addOnFailureListener { e ->
+            Log.d(TAG, "get failed with ", e)
+        }
 
     // --- QUERY ---
 

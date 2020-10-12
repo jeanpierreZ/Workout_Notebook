@@ -8,5 +8,5 @@ data class Workout(
     var workoutName: String? = null,
     @ServerTimestamp
     var workoutDate: Date? = null,
-    var exercisesList: ArrayList<String>? = ArrayList()
+    var exercisesList: ArrayList<Exercise>? = ArrayList()
 )

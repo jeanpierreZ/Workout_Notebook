@@ -44,6 +44,7 @@ class EditWorkoutFragment : Fragment(), ItemExerciseAdapter.Listener {
     private val exerciseViewModel: ExerciseViewModel by viewModel()
 
     private var itemExerciseAdapter: ItemExerciseAdapter? = null
+    private var exercisesList: MutableList<Exercise> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,11 +64,21 @@ class EditWorkoutFragment : Fragment(), ItemExerciseAdapter.Listener {
         Log.d(TAG, "workoutNameFromList = $workoutNameFromList")
 
         if (workoutNameFromList != null) {
-
-            // todo create the read for workoutFromList from firestore
-            // workoutViewModel.getWorkout()
-            workoutFromList = Workout("TESTWorkoutFromList", null, null)
-            binding.workout = workoutFromList
+            // If the user click on a workout in the list, bind data with this workout
+            userId?.let {
+                workoutViewModel.getWorkout(it, workoutNameFromList!!)
+                    ?.addOnSuccessListener { documentSnapshot ->
+                        workoutFromList = documentSnapshot.toObject(Workout::class.java)!!
+                        Log.d(TAG, "workoutFromList  = $workoutFromList")
+                        workoutFromList.exercisesList?.let { it1 -> exercisesList.addAll(it1) }
+                        binding.workout = workoutFromList
+                    }
+            }
+        } else {
+            // Else create an empty new workout
+            binding.workout = workout
+            // Attach the list of exercises
+            workout.exercisesList = exercisesList as ArrayList<Exercise>
         }
 
         userId?.let { configureRecyclerView(it) }

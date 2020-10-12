@@ -23,12 +23,16 @@ class WorkoutHelper {
         val workoutToCreate = Workout(workoutId, workoutName, workoutDate, exercisesList)
         return getWorkoutsCollection()?.document(workoutId)?.set(workoutToCreate)
     }
+*/
 
     // --- READ ---
 
-    fun getWorkout(workoutId: String): Task<DocumentSnapshot>? =
-        getWorkoutsCollection()?.document(workoutId)?.get()
-*/
+    fun getWorkout(userId: String, workoutName: String): Task<DocumentSnapshot>? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.document(workoutName)
+            ?.get()
 
     // --- QUERY ---
 
