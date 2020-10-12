@@ -152,11 +152,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
-            android:id="@+id/editExerciseFragmentRestFABSave"
+            android:id="@+id/editExerciseFragmentFABSave"
             layout="@layout/fab_save" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/editExerciseFragmentRestFABAddSeries"
+            android:id="@+id/editExerciseFragmentFABAddSeries"
             style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

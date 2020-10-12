@@ -32,4 +32,8 @@ class ItemExerciseViewHolder(exercise: View) : RecyclerView.ViewHolder(exercise)
             }
         }
     }
+
+    fun updateExerciseFromWorkout(exercise: Exercise?) {
+        exerciseName?.text = exercise?.exerciseName
+    }
 }

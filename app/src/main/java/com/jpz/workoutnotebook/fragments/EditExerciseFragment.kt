@@ -94,8 +94,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         configureRecyclerView()
         swipeToDeleteASeries()
 
-        editExerciseFragmentRestFABAddSeries.setOnClickListener(this)
-        editExerciseFragmentRestFABSave.setOnClickListener(this)
+        editExerciseFragmentFABAddSeries.setOnClickListener(this)
+        editExerciseFragmentFABSave.setOnClickListener(this)
     }
 
     //----------------------------------------------------------------------------------
@@ -164,8 +164,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private fun saveExercise() {
         if (exercise.exerciseName.isNullOrEmpty() || exercise.exerciseName.isNullOrBlank()) {
             Toast.makeText(
-                activity, getString(R.string.exercise_name_cannot_be_blank),
-                Toast.LENGTH_SHORT
+                activity, getString(R.string.exercise_name_cannot_be_blank), Toast.LENGTH_SHORT
             ).show()
         } else {
             Log.d(TAG, "exercise = $exercise")
@@ -227,9 +226,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.editExerciseFragmentRestFABAddSeries ->
+            R.id.editExerciseFragmentFABAddSeries ->
                 itemSeriesAdapter?.addASeries(editExerciseFragmentRecyclerView)
-            R.id.editExerciseFragmentRestFABSave -> {
+            R.id.editExerciseFragmentFABSave -> {
                 if (exerciseNameFromList != null) {
                     updateExercise()
                 } else {

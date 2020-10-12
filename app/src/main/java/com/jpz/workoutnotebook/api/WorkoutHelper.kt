@@ -1,10 +1,9 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 import java.util.*
 
@@ -14,16 +13,21 @@ class WorkoutHelper {
         private const val COLLECTION_NAME = "workouts"
         private const val WORKOUT_NAME_FIELD = "workoutName"
     }
-/*
+
     // --- CREATE ---
 
     fun createWorkout(
-        workoutId: String, workoutName: String, workoutDate: Date, exercisesList: ArrayList<String>?
+        userId: String, workoutName: String?, workoutDate: Date?, exercisesList: ArrayList<Exercise>?
     ): Task<Void>? {
-        val workoutToCreate = Workout(workoutId, workoutName, workoutDate, exercisesList)
-        return getWorkoutsCollection()?.document(workoutId)?.set(workoutToCreate)
+        val workoutToCreate = Workout(workoutName, workoutDate, exercisesList)
+        return workoutName?.let {
+            UserHelper.getUsersCollection()
+                ?.document(userId)
+                ?.collection(COLLECTION_NAME)
+                ?.document(it)
+                ?.set(workoutToCreate)
+        }
     }
-*/
 
     // --- READ ---
 

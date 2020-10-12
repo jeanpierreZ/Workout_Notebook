@@ -5,14 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.WORKOUT_NAME
-import com.jpz.workoutnotebook.adapters.ItemExerciseAdapter
+import com.jpz.workoutnotebook.adapters.ItemExerciseFromWorkoutAdapter
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditWorkoutBinding
 import com.jpz.workoutnotebook.models.Exercise
@@ -24,7 +23,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class EditWorkoutFragment : Fragment(), ItemExerciseAdapter.Listener {
+class EditWorkoutFragment : Fragment() {
 
     companion object {
         private val TAG = EditWorkoutFragment::class.java.simpleName
@@ -43,7 +42,7 @@ class EditWorkoutFragment : Fragment(), ItemExerciseAdapter.Listener {
     private val workoutViewModel: WorkoutViewModel by viewModel()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
 
-    private var itemExerciseAdapter: ItemExerciseAdapter? = null
+    private var itemExerciseFromWorkoutAdapter: ItemExerciseFromWorkoutAdapter? = null
     private var exercisesList: MutableList<Exercise> = mutableListOf()
 
     override fun onCreateView(
@@ -81,39 +80,52 @@ class EditWorkoutFragment : Fragment(), ItemExerciseAdapter.Listener {
             workout.exercisesList = exercisesList as ArrayList<Exercise>
         }
 
-        userId?.let { configureRecyclerView(it) }
-    }
+        configureRecyclerView()
 
+        editWorkoutFragmentFABSave.setOnClickListener { saveWorkout() }
+    }
 
     //----------------------------------------------------------------------------------
     // Configure RecyclerView, Adapter & LayoutManager
 
-    private fun configureRecyclerView(userId: String) {
+    private fun configureRecyclerView() {
         // Create the adapter by passing the list of exercises from this workout
-
-        // todo create a query for list from this workout
-        val list = exerciseViewModel.getOrderedListOfExercises(userId)
-        if (list != null) {
-            itemExerciseAdapter =
-                generateOptionsForExerciseAdapter(list)?.let { ItemExerciseAdapter(it, this) }
-        }
+        itemExerciseFromWorkoutAdapter =
+            activity?.let {
+                ItemExerciseFromWorkoutAdapter(exercisesList as ArrayList<Exercise>, it)
+            }
         // Attach the adapter to the recyclerView to populate the exercises
-        editWorkoutFragmentRecyclerView?.adapter = itemExerciseAdapter
+        editWorkoutFragmentRecyclerView?.adapter = itemExerciseFromWorkoutAdapter
         // Set layout manager to position the exercises
         editWorkoutFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
     }
 
-    // Create options for RecyclerView from a Query
-    private fun generateOptionsForExerciseAdapter(query: Query): FirestoreRecyclerOptions<Exercise?>? {
-        return FirestoreRecyclerOptions.Builder<Exercise>()
-            .setQuery(query, Exercise::class.java)
-            .setLifecycleOwner(this)
-            .build()
+    //----------------------------------------------------------------------------------
+    // Methods to save or update a workout
+
+    private fun saveWorkout() {
+        if (workout.workoutName.isNullOrEmpty() || workout.workoutName.isNullOrBlank()) {
+            Toast.makeText(
+                activity, getString(R.string.workout_name_cannot_be_blank), Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Log.d(TAG, "workout = $workout")
+            if (userId != null) {
+                workoutViewModel.createWorkout(
+                    editWorkoutFragmentCoordinatorLayout, userId!!, workout.workoutName,
+                    workout.workoutDate, workout.exercisesList as ArrayList<Exercise>
+                )
+            }
+            closeFragment()
+        }
     }
+
+    // todo update a workout
+    // todo Add an exercise from list
 
     //----------------------------------------------------------------------------------
 
-    override fun onClickExerciseName(exerciseName: String?, position: Int) {
-        TODO("Not yet implemented")
+    private fun closeFragment() {
+        activity?.onBackPressed()
     }
 }

@@ -74,6 +74,10 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <include
+            android:id="@+id/editWorkoutFragmentFABSave"
+            layout="@layout/fab_save" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>
