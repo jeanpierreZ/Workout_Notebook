@@ -44,6 +44,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private var userId: String? = null
     private var exerciseNameFromList: String? = null
 
+    // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val myUtils: MyUtils by inject()

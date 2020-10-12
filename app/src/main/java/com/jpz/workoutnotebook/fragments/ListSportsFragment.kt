@@ -132,7 +132,6 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
     //----------------------------------------------------------------------------------
 
-    //    private fun swipeToDeleteAnExercise() {
     private fun swipeToDeleteAnItem() {
         val itemTouchHelperCallback = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {

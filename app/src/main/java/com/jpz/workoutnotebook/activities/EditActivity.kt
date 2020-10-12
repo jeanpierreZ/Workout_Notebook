@@ -2,7 +2,6 @@ package com.jpz.workoutnotebook.activities
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
@@ -12,6 +11,7 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.PROFILE_FRAGMEN
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
 import com.jpz.workoutnotebook.fragments.EditExerciseFragment
 import com.jpz.workoutnotebook.fragments.EditProfileFragment
+import com.jpz.workoutnotebook.fragments.EditWorkoutFragment
 import com.jpz.workoutnotebook.fragments.ListSportsFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
@@ -109,17 +109,26 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
             .commit()
     }
 
+    private fun displayEditWorkoutFragment(workoutName: String?) {
+        val editWorkoutFragment = EditWorkoutFragment()
+        val bundle = Bundle()
+        bundle.putString(WORKOUT_NAME, workoutName)
+        editWorkoutFragment.arguments = bundle
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.editActivityContainer, editWorkoutFragment)
+            .addToBackStack(editWorkoutFragment::class.java.name)
+            .commit()
+    }
+
     //--------------------------------------------------------------------------------------
     // Callback from LisSportsFragment
 
     override fun addOrUpdateItem(isAnExercise: Boolean, itemName: String?) {
-        // todo open edit /exercise or workout/ fragment
-
         if (isAnExercise) {
             displayEditExerciseFragment(itemName)
         } else {
-            Toast.makeText(this, "Click on a workout item in recyclerView", Toast.LENGTH_SHORT)
-                .show()
+            displayEditWorkoutFragment(itemName)
         }
     }
 }

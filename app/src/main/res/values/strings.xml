@@ -37,7 +37,7 @@
     <string name="workouts">Workouts</string>
 
     <!--Edit Exercise Workout Fragment -->
-    <string name="exercise_name">ExerciseName</string>
+    <string name="exercise_name">Exercise Name</string>
     <string name="rest_between_sets">Rest between sets</string>
     <string name="seconds">seconds</string>
     <string name="time">time</string>
@@ -56,5 +56,6 @@
     <string name="series_deleted">Series deleted</string>
     <string name="exercise_deleted">Exercise deleted</string>
     <string name="workout_deleted">Workout deleted</string>
+    <string name="workout_name">Workout Name</string>
     <string name="undo">UNDO</string>
 </resources>
