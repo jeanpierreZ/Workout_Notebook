@@ -77,6 +77,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                         exerciseFromList = documentSnapshot.toObject(Exercise::class.java)!!
                         Log.d(TAG, "exerciseFromList  = $exerciseFromList")
                         exerciseFromList.seriesList?.let { it1 -> seriesList.addAll(it1) }
+                        // todo workout = exerciseFromList
                         binding.exercise = exerciseFromList
                     }
             }
@@ -202,6 +203,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateExercise() {
+        // todo check if exerciseName != null & use workout
         Log.d(TAG, "seriesList in updateExercise() = $seriesList")
         userId?.let {
             exerciseViewModel.updateExercise(

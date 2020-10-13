@@ -56,6 +56,7 @@
     <string name="exercise_updated">Exercise %s is updated.</string>
     <string name="series_deleted">Series deleted</string>
     <string name="exercise_deleted">Exercise deleted</string>
+    <string name="add_an_exercise">Add an exercise</string>
 
     <string name="workout_deleted">Workout deleted</string>
     <string name="workout_name">Workout Name</string>

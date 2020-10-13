@@ -28,9 +28,9 @@ class ItemExerciseFromWorkoutAdapter(
         holder.updateExerciseFromWorkout(list[position])
     }
 
-    fun addAnExercise(recyclerView: RecyclerView) {
-        // Add a new series to the list
-        list.add(itemCount, Exercise())
+    fun addAnExercise(exercise: Exercise, recyclerView: RecyclerView) {
+        // Add an exercise to the list
+        list.add(itemCount, exercise)
         // Notify that the data has changed
         notifyItemInserted(itemCount)
         // Scroll to the bottom of the list
