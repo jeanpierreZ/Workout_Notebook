@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -20,6 +19,7 @@ import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditWorkoutBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import kotlinx.android.synthetic.main.fragment_edit_workout.*
@@ -31,6 +31,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     companion object {
         private val TAG = EditWorkoutFragment::class.java.simpleName
+        private const val WORKOUT_NAME_FIELD = "workoutName"
     }
 
     private lateinit var binding: FragmentEditWorkoutBinding
@@ -45,6 +46,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     private val userAuth: UserAuth by inject()
     private val workoutViewModel: WorkoutViewModel by viewModel()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
+    private val myUtils: MyUtils by inject()
 
     private var itemExerciseFromWorkoutAdapter: ItemExerciseFromWorkoutAdapter? = null
 
@@ -154,23 +156,58 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     private fun saveWorkout() {
         if (workout.workoutName.isNullOrEmpty() || workout.workoutName.isNullOrBlank()) {
-            // todo  snackbar
-            Toast.makeText(
-                activity, getString(R.string.workout_name_cannot_be_blank), Toast.LENGTH_SHORT
-            ).show()
+            myUtils.showSnackBar(
+                editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
+            )
         } else {
             Log.d(TAG, "workout = $workout")
             if (userId != null) {
-                workoutViewModel.createWorkout(
-                    editWorkoutFragmentCoordinatorLayout, userId!!, workout.workoutName,
-                    workout.workoutDate, workout.exercisesList as ArrayList<Exercise>
+                // Check if an workoutName already exists
+                workoutViewModel.getListOfExercises(userId!!)
+                    ?.whereEqualTo(WORKOUT_NAME_FIELD, workout.workoutName)
+                    ?.get()
+                    ?.addOnSuccessListener { documents ->
+                        if (documents.isEmpty) {
+                            // There isn't document with this workoutName so create the workout
+                            Log.d(TAG, "documents.isEmpty")
+                            workoutViewModel.createWorkout(
+                                editWorkoutFragmentCoordinatorLayout, userId!!, workout.workoutName,
+                                workout.workoutDate, workout.exercisesList as ArrayList<Exercise>
+                            )
+                            closeFragment()
+                        } else {
+                            // The same exercise name exists, choose another name
+                            myUtils.showSnackBar(
+                                editWorkoutFragmentCoordinatorLayout,
+                                R.string.workout_name_already_exists
+                            )
+                            for (document in documents) {
+                                Log.d(TAG, "${document.id} => ${document.data}")
+                            }
+                        }
+                    }
+                    ?.addOnFailureListener { exception ->
+                        Log.w(TAG, "Error getting documents: ", exception)
+                    }
+            }
+        }
+    }
+
+    private fun updateWorkout() {
+        if (workout.workoutName.isNullOrEmpty() || workout.workoutName.isNullOrBlank()) {
+            myUtils.showSnackBar(
+                editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
+            )
+        } else {
+            userId?.let {
+                workoutViewModel.updateWorkout(
+                    editWorkoutFragmentCoordinatorLayout, it,
+                    workout.workoutName, workout.workoutDate, workout.exercisesList
                 )
             }
             closeFragment()
         }
     }
-
-    // todo update a workout
 
     //----------------------------------------------------------------------------------
 
@@ -186,8 +223,13 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.editWorkoutFragmentFABAddExercise -> getAllExercises(allExerciseName)
-            R.id.editWorkoutFragmentFABSave -> saveWorkout()
-
+            R.id.editWorkoutFragmentFABSave -> {
+                if (workoutNameFromList != null) {
+                    updateWorkout()
+                } else {
+                    saveWorkout()
+                }
+            }
         }
     }
 }

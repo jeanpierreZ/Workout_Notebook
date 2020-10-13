@@ -47,15 +47,24 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
 
     fun getListOfExercises(userId: String) = workoutHelper.getListOfExercises(userId)
 
-
-/*
     // --- UPDATE ---
 
-    fun updateWorkout(workout: Workout) =
-        workoutHelper.updateWorkout(workout)?.addOnFailureListener { e ->
-            Log.e("updateWorkout", "Error updating document", e)
+    fun updateWorkout(
+        coordinatorLayout: CoordinatorLayout, userId: String,
+        workoutName: String?, workoutDate: Date?, exercisesList: ArrayList<Exercise>?
+    ) = workoutHelper.updateWorkout(userId, workoutName, workoutDate, exercisesList)
+        ?.addOnSuccessListener { _ ->
+            myUtils.showSnackBar(
+                coordinatorLayout, coordinatorLayout.context.getString(
+                    R.string.workout_updated, workoutName
+                )
+            )
+            Log.d(TAG, "DocumentSnapshot successfully updated!")
+        }?.addOnFailureListener { e ->
+            Log.e(TAG, "Error updating document", e)
         }
 
+/*
 
     // --- DELETE ---
 

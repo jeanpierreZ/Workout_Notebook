@@ -58,10 +58,12 @@
     <string name="exercise_deleted">Exercise deleted</string>
     <string name="add_an_exercise">Add an exercise</string>
 
+    <string name="workout_name_already_exists">This workout already exists, choose another name please.</string>
     <string name="workout_deleted">Workout deleted</string>
     <string name="workout_name">Workout Name</string>
     <string name="workout_name_cannot_be_blank">Workout name cannot be blank</string>
     <string name="new_workout_created">Workout %s is created.</string>
+    <string name="workout_updated">Workout %s is updated.</string>
 
     <string name="undo">UNDO</string>
 </resources>

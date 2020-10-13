@@ -17,7 +17,10 @@ class WorkoutHelper {
     // --- CREATE ---
 
     fun createWorkout(
-        userId: String, workoutName: String?, workoutDate: Date?, exercisesList: ArrayList<Exercise>?
+        userId: String,
+        workoutName: String?,
+        workoutDate: Date?,
+        exercisesList: ArrayList<Exercise>?
     ): Task<Void>? {
         val workoutToCreate = Workout(workoutName, workoutDate, exercisesList)
         return workoutName?.let {
@@ -47,12 +50,23 @@ class WorkoutHelper {
         UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
             ?.orderBy(WORKOUT_NAME_FIELD, Query.Direction.ASCENDING)
 
-/*
     // --- UPDATE ---
 
-    fun updateWorkout(workout: Workout): Task<Void>? {
-        return getWorkoutsCollection()?.document(workout.workoutId)?.set(workout)
+    fun updateWorkout(
+        userId: String, workoutName: String?, workoutDate: Date?,
+        exercisesList: ArrayList<Exercise>?
+    ): Task<Void>? {
+        val workoutToUpdate = Workout(workoutName, workoutDate, exercisesList)
+        return workoutName?.let {
+            UserHelper.getUsersCollection()
+                ?.document(userId)
+                ?.collection(COLLECTION_NAME)
+                ?.document(it)
+                ?.set(workoutToUpdate)
+        }
     }
+
+/*
 
     // --- DELETE ---
 
