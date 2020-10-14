@@ -37,7 +37,7 @@ class ItemSeriesAdapter(private var list: ArrayList<Series>, private var context
     }
 
     fun deleteASeries(
-        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Series
+        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Series?
     ) {
         list.removeAt(position)
         notifyItemRemoved(position)
@@ -47,7 +47,7 @@ class ItemSeriesAdapter(private var list: ArrayList<Series>, private var context
     }
 
     private fun showUndoSnackbar(
-        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Series
+        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Series?
     ) {
         val snackbar: Snackbar = Snackbar.make(
             coordinatorLayout, context.getString(R.string.series_deleted),
@@ -60,8 +60,8 @@ class ItemSeriesAdapter(private var list: ArrayList<Series>, private var context
         snackbar.show()
     }
 
-    private fun undoDelete(position: Int, recentlyDeletedItem: Series) {
-        list.add(position, recentlyDeletedItem)
+    private fun undoDelete(position: Int, recentlyDeletedItem: Series?) {
+        recentlyDeletedItem?.let { list.add(position, it) }
         notifyItemInserted(position)
         notifyItemRangeChanged(position, itemCount)
     }

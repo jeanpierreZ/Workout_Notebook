@@ -48,7 +48,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     private var workoutNameFromList: String? = null
     private val allExerciseName = mutableListOf<CharSequence>()
 
-    // Firebase Auth, Firestore
+    // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val workoutViewModel: WorkoutViewModel by viewModel()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
@@ -104,7 +104,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         // Create the adapter by passing the list of exercises from this workout
         itemExerciseFromWorkoutAdapter =
             activity?.let {
-                ItemExerciseFromWorkoutAdapter(workout.exercisesList as ArrayList<Exercise>, it)
+                workout.exercisesList?.let { it1 -> ItemExerciseFromWorkoutAdapter(it1, it) }
             }
         // Attach the adapter to the recyclerView to populate the exercises
         editWorkoutFragmentRecyclerView?.adapter = itemExerciseFromWorkoutAdapter
@@ -130,7 +130,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 // Retrieve the position swiped
                 val position = viewHolder.adapterPosition
                 // Retrieve the exercise object swiped
-                val recentlyDeletedItem: Exercise = workout.exercisesList?.get(position) as Exercise
+                val recentlyDeletedItem: Exercise? = workout.exercisesList?.get(position)
                 Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
                 itemExerciseFromWorkoutAdapter?.deleteAnExercise(
                     editWorkoutFragmentCoordinatorLayout, position, recentlyDeletedItem
@@ -228,7 +228,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                             Log.d(TAG, "documents.isEmpty")
                             workoutViewModel.createWorkout(
                                 editWorkoutFragmentCoordinatorLayout, userId!!, workout.workoutName,
-                                workout.workoutDate, workout.exercisesList as ArrayList<Exercise>
+                                workout.workoutDate, workout.exercisesList
                             )
                             closeFragment()
                         } else {

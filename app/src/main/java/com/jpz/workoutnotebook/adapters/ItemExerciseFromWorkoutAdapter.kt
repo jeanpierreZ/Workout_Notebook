@@ -38,7 +38,7 @@ class ItemExerciseFromWorkoutAdapter(
     }
 
     fun deleteAnExercise(
-        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Exercise
+        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Exercise?
     ) {
         list.removeAt(position)
         notifyItemRemoved(position)
@@ -48,7 +48,7 @@ class ItemExerciseFromWorkoutAdapter(
     }
 
     private fun showUndoSnackbar(
-        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Exercise
+        coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Exercise?
     ) {
         val snackbar: Snackbar = Snackbar.make(
             coordinatorLayout, context.getString(R.string.exercise_deleted), Snackbar.LENGTH_LONG
@@ -60,8 +60,8 @@ class ItemExerciseFromWorkoutAdapter(
         snackbar.show()
     }
 
-    private fun undoDelete(position: Int, recentlyDeletedItem: Exercise) {
-        list.add(position, recentlyDeletedItem)
+    private fun undoDelete(position: Int, recentlyDeletedItem: Exercise?) {
+        recentlyDeletedItem?.let { list.add(position, it) }
         notifyItemInserted(position)
         notifyItemRangeChanged(position, itemCount)
     }

@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -39,18 +38,17 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentEditExerciseBinding
 
-    private val exercise = Exercise()
-    private var exerciseFromList = Exercise()
+    private var exercise = Exercise()
+
     private var userId: String? = null
     private var exerciseNameFromList: String? = null
 
-    // Firebase Auth, Firestore
+    // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
     private var itemSeriesAdapter: ItemSeriesAdapter? = null
-    private var seriesList: MutableList<Series> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,11 +72,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             userId?.let {
                 exerciseViewModel.getExercise(it, exerciseNameFromList!!)
                     ?.addOnSuccessListener { documentSnapshot ->
-                        exerciseFromList = documentSnapshot.toObject(Exercise::class.java)!!
-                        Log.d(TAG, "exerciseFromList  = $exerciseFromList")
-                        exerciseFromList.seriesList?.let { it1 -> seriesList.addAll(it1) }
-                        // todo workout = exerciseFromList
-                        binding.exercise = exerciseFromList
+                        exercise = documentSnapshot.toObject(Exercise::class.java)!!
+                        Log.d(TAG, "exercise  = $exercise")
+                        binding.exercise = exercise
+                        configureRecyclerView()
                     }
             }
         } else {
@@ -86,13 +83,13 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             binding.exercise = exercise
             // Make the exercise editable
             exercise.editable = true
-            // Attach the list of series
-            exercise.seriesList = seriesList as ArrayList<Series>
+            // Attach an empty list of series
+            exercise.seriesList = mutableListOf<Series>() as ArrayList<Series>
             // Add automatically the first series
-            seriesList.add(Series())
+            exercise.seriesList?.add(Series())
+            configureRecyclerView()
         }
 
-        configureRecyclerView()
         swipeToDeleteASeries()
 
         editExerciseFragmentFABAddSeries.setOnClickListener(this)
@@ -104,7 +101,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     private fun configureRecyclerView() {
         // Create the adapter by passing the list of series of the user
-        itemSeriesAdapter = activity?.let { ItemSeriesAdapter(seriesList as ArrayList<Series>, it) }
+        itemSeriesAdapter =
+            activity?.let { exercise.seriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
         // Attach the adapter to the recyclerView to populate the series
         editExerciseFragmentRecyclerView?.adapter = itemSeriesAdapter
         // Set layout manager to position the series
@@ -112,7 +110,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     }
 
     //----------------------------------------------------------------------------------
-    // Methods to add or remove a series
+    // Methods to remove a series
 
     private fun swipeToDeleteASeries() {
         val itemTouchHelperCallback = object :
@@ -129,7 +127,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 // Retrieve the position swiped
                 val position = viewHolder.adapterPosition
                 // Retrieve the series object swiped
-                val recentlyDeletedItem: Series = seriesList[position]
+                val recentlyDeletedItem: Series? = exercise.seriesList?.get(position)
                 Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
                 itemSeriesAdapter?.deleteASeries(
                     editExerciseFragmentCoordinatorLayout, position, recentlyDeletedItem
@@ -164,9 +162,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     private fun saveExercise() {
         if (exercise.exerciseName.isNullOrEmpty() || exercise.exerciseName.isNullOrBlank()) {
-            Toast.makeText(
-                activity, getString(R.string.exercise_name_cannot_be_blank), Toast.LENGTH_SHORT
-            ).show()
+            myUtils.showSnackBar(
+                editExerciseFragmentCoordinatorLayout, R.string.exercise_name_cannot_be_blank
+            )
         } else {
             Log.d(TAG, "exercise = $exercise")
             if (userId != null) {
@@ -181,7 +179,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                             exerciseViewModel.createExercise(
                                 editExerciseFragmentCoordinatorLayout,
                                 userId!!, exercise.exerciseName, exercise.restNextSet,
-                                exercise.restNextExercise, true, seriesList as ArrayList<Series>
+                                exercise.restNextExercise, true, exercise.seriesList
                             )
                             closeFragment()
                         } else {
@@ -203,16 +201,21 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateExercise() {
-        // todo check if exerciseName != null & use workout
-        Log.d(TAG, "seriesList in updateExercise() = $seriesList")
-        userId?.let {
-            exerciseViewModel.updateExercise(
-                editExerciseFragmentCoordinatorLayout, it, exerciseFromList.exerciseName,
-                exerciseFromList.restNextSet, exerciseFromList.restNextExercise,
-                exerciseFromList.editable, seriesList as ArrayList<Series>
+        Log.d(TAG, "exercise.seriesList in updateExercise() = ${exercise.seriesList}")
+        if (exercise.exerciseName.isNullOrEmpty() || exercise.exerciseName.isNullOrBlank()) {
+            myUtils.showSnackBar(
+                editExerciseFragmentCoordinatorLayout, R.string.exercise_name_cannot_be_blank
             )
+        } else {
+            userId?.let {
+                exerciseViewModel.updateExercise(
+                    editExerciseFragmentCoordinatorLayout, it, exercise.exerciseName,
+                    exercise.restNextSet, exercise.restNextExercise,
+                    exercise.editable, exercise.seriesList
+                )
+            }
+            closeFragment()
         }
-        closeFragment()
     }
 
     //----------------------------------------------------------------------------------
