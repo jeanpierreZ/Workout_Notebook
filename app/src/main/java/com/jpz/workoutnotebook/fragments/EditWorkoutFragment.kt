@@ -228,7 +228,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                             Log.d(TAG, "documents.isEmpty")
                             workoutViewModel.createWorkout(
                                 editWorkoutFragmentCoordinatorLayout, userId!!, workout.workoutName,
-                                workout.workoutDate, workout.exercisesList
+                                null, workout.exercisesList
                             )
                             closeFragment()
                         } else {
@@ -258,7 +258,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             userId?.let {
                 workoutViewModel.updateWorkout(
                     editWorkoutFragmentCoordinatorLayout, it,
-                    workout.workoutName, workout.workoutDate, workout.exercisesList
+                    workout.workoutName, null, workout.exercisesList
                 )
             }
             closeFragment()

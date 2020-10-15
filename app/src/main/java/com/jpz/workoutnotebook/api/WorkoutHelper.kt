@@ -65,12 +65,4 @@ class WorkoutHelper {
                 ?.set(workoutToUpdate)
         }
     }
-
-/*
-
-    // --- DELETE ---
-
-    fun deleteWorkout(workoutId: String): Task<Void?>? {
-        return getWorkoutsCollection()?.document(workoutId)?.delete()
-    }*/
 }

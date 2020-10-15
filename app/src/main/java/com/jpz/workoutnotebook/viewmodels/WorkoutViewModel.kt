@@ -63,13 +63,4 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
         }?.addOnFailureListener { e ->
             Log.e(TAG, "Error updating document", e)
         }
-
-/*
-
-    // --- DELETE ---
-
-    fun deleteWorkout(workoutId: String) =
-        workoutHelper.deleteWorkout(workoutId)?.addOnFailureListener { e ->
-            Log.e("deleteWorkout", "Error deleting document", e)
-        }*/
 }
