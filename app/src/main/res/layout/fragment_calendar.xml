@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.CalendarFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.applandeo.materialcalendarview.CalendarView
+        android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="calendar" />
+        android:layout_height="wrap_content"
+        app:abbreviationsLabelsColor="@color/colorAccentDark"
+        app:anotherMonthsDaysLabelsColor="@color/colorAccent"
+        app:eventsEnabled="true"
+        app:headerColor="@color/colorPrimaryLight"
+        app:swipeEnabled="false" />
 
 </FrameLayout>
