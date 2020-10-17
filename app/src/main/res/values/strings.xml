@@ -66,4 +66,6 @@
     <string name="workout_updated">Workout %s is updated.</string>
 
     <string name="undo">UNDO</string>
+
+    <string name="new_training_session_created">Training session for %s is created.</string>
 </resources>

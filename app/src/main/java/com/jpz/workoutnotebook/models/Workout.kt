@@ -5,6 +5,7 @@ import kotlin.collections.ArrayList
 
 data class Workout(
     var workoutName: String? = null,
+    // TODO delete workoutDate
     var workoutDate: Date? = null,
     var exercisesList: ArrayList<Exercise>? = ArrayList()
 )

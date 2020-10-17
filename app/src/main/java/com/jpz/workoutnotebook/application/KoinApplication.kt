@@ -20,6 +20,8 @@ class KoinApplication : Application() {
                     moduleUserHelper,
                     moduleUserStoragePhoto,
                     moduleUserViewModel,
+                    moduleTrainingSessionHelper,
+                    moduleTrainingSessionViewModel,
                     moduleWorkoutHelper,
                     moduleWorkoutViewModel,
                     moduleExerciseHelper,
