@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/calendarFragmentCoordinatorLayout"
     tools:context=".fragments.CalendarFragment">
 
     <com.applandeo.materialcalendarview.CalendarView
-        android:id="@+id/calendarView"
+        android:id="@+id/calendarFragmentCalendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:abbreviationsLabelsColor="@color/colorAccentDark"
@@ -16,4 +17,8 @@
         app:headerColor="@color/colorPrimaryLight"
         app:swipeEnabled="false" />
 
-</FrameLayout>
+    <include
+        android:id="@+id/calendarFragmentFABAdd"
+        layout="@layout/fab_add" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
