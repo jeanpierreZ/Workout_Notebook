@@ -3,20 +3,19 @@ package com.jpz.workoutnotebook.utils
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.widget.DatePicker
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
-import java.text.SimpleDateFormat
 import java.util.*
 
 class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     companion object {
-        private val TAG = DatePickerFragment::class.java.simpleName
-        const val BUNDLE_KEY_DATE = "BUNDLE_KEY_DATE"
         const val REQUEST_KEY_DATE = "REQUEST_KEY_DATE"
+        const val BUNDLE_KEY_YEAR = "BUNDLE_KEY_YEAR"
+        const val BUNDLE_KEY_MONTH = "BUNDLE_KEY_MONTH"
+        const val BUNDLE_KEY_DAY = "BUNDLE_KEY_DAY"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -36,20 +35,10 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
-        Log.d(TAG, "onDateSet = year = $year, month = $month, day = $day")
-
-        // Set date format
-        val dateFormat = "MM/dd/yyyy"
-        val sdf = SimpleDateFormat(dateFormat, Locale.getDefault())
-        // Set the date chosen
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month, day)
-        // The date chosen by the user
-        val dateChosen: Date = calendar.time
-        // The date formatted
-        val dateFormatted = sdf.format(dateChosen)
-
         // Send the result to EditCalendarFragment
-        setFragmentResult(REQUEST_KEY_DATE, bundleOf(BUNDLE_KEY_DATE to dateFormatted))
+        setFragmentResult(
+            REQUEST_KEY_DATE,
+            bundleOf(BUNDLE_KEY_YEAR to year, BUNDLE_KEY_MONTH to month, BUNDLE_KEY_DAY to day)
+        )
     }
 }
