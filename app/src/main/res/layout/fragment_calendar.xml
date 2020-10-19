@@ -17,8 +17,4 @@
         app:headerColor="@color/colorPrimaryLight"
         app:swipeEnabled="false" />
 
-    <include
-        android:id="@+id/calendarFragmentFABAdd"
-        layout="@layout/fab_add" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

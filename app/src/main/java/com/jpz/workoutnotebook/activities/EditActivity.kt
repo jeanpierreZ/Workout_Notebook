@@ -5,14 +5,12 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_CALENDAR_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
-import com.jpz.workoutnotebook.activities.MainActivity.Companion.PROFILE_FRAGMENT
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_PROFILE_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
-import com.jpz.workoutnotebook.fragments.EditExerciseFragment
-import com.jpz.workoutnotebook.fragments.EditProfileFragment
-import com.jpz.workoutnotebook.fragments.EditWorkoutFragment
-import com.jpz.workoutnotebook.fragments.ListSportsFragment
+import com.jpz.workoutnotebook.fragments.*
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -36,7 +34,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
         val edit = intent.getStringExtra(EDIT)
 
-        edit?.let { displayListSportsOrEditProfileFragment(it) }
+        edit?.let { displayFragment(it) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -65,14 +63,17 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun displayListSportsOrEditProfileFragment(edit: String) {
+    private fun displayFragment(edit: String) {
         var fragment = Fragment()
         val editProfileFragment = EditProfileFragment()
+        val editCalendarFragment = EditCalendarFragment()
         val listSportsFragment = ListSportsFragment()
         val bundle = Bundle()
 
         when (edit) {
-            PROFILE_FRAGMENT -> fragment = editProfileFragment
+            EDIT_PROFILE_FRAGMENT -> fragment = editProfileFragment
+
+            EDIT_CALENDAR_FRAGMENT -> fragment = editCalendarFragment
 
             EXERCISES -> {
                 fragment = listSportsFragment
@@ -122,7 +123,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
     }
 
     //--------------------------------------------------------------------------------------
-    // Callback from LisSportsFragment
+    // Callback from ListSportsFragment
 
     override fun addOrUpdateItem(isAnExercise: Boolean, itemName: String?) {
         if (isAnExercise) {

@@ -54,10 +54,10 @@ class CalendarFragment : Fragment() {
             }
         })
 
-        calendarFragmentFABAdd.setOnClickListener {
+        /*calendarFragmentFABAdd.setOnClickListener {
             val datePicker = DatePickerFragment()
             datePicker.show(childFragmentManager, DatePickerFragment()::class.java.simpleName)
-        }
+        }*/
     }
 
     //--------------------------------------------------------------------------------------

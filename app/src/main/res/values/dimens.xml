@@ -18,4 +18,9 @@
 
     <!-- ExerciseWidgetMargin -->
     <dimen name="exercise_widget_margin">8dp</dimen>
+
+    <!-- Button Icon Theme -->
+    <dimen name="button_icon_padding_normal">10dp</dimen>
+    <dimen name="button_icon_padding_reduce">4dp</dimen>
+    <dimen name="button_icon_min_null">0dp</dimen>
 </resources>

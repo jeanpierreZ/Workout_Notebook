@@ -2,6 +2,7 @@ package com.jpz.workoutnotebook.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -18,7 +19,8 @@ import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener {
+class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener,
+    View.OnClickListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -30,7 +32,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     companion object {
         const val EDIT = "EDIT"
-        const val PROFILE_FRAGMENT = "PROFILE_FRAGMENT"
+        const val EDIT_PROFILE_FRAGMENT = "EDIT_PROFILE_FRAGMENT"
+        const val EDIT_CALENDAR_FRAGMENT = "EDIT_CALENDAR_FRAGMENT"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
     }
@@ -47,9 +50,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         configureTabLayout()
         animateFAB()
 
-        mainActivityFABEditProfile.setOnClickListener {
-            startEditActivityForProfile()
-        }
+        mainActivityFABEditProfile.setOnClickListener(this)
+        mainActivityFABAddCalendar.setOnClickListener(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -132,19 +134,36 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 pageSelected = position
-                if (Tabs.PROFILE.position == pageSelected) {
-                    mainActivityFABEditProfile.show()
-                } else {
-                    mainActivityFABEditProfile.hide()
+
+                when (pageSelected) {
+                    Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
+                    Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
+                    else -> {
+                        mainActivityFABEditProfile.hide(); mainActivityFABAddCalendar.hide()
+                    }
                 }
             }
 
             override fun onPageScrollStateChanged(state: Int) {
-                if (state == ViewPager2.SCROLL_STATE_IDLE && Tabs.PROFILE.position == pageSelected) {
-                    mainActivityFABEditProfile.show()
-                }
-                if (state == ViewPager2.SCROLL_STATE_DRAGGING && Tabs.PROFILE.position == pageSelected) {
-                    mainActivityFABEditProfile.hide()
+                when (state) {
+                    ViewPager2.SCROLL_STATE_IDLE ->
+                        when (pageSelected) {
+                            Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
+                            Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
+                        }
+
+                    ViewPager2.SCROLL_STATE_DRAGGING ->
+                        when (pageSelected) {
+                            Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
+                            Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
+                        }
+
+                    ViewPager2.SCROLL_STATE_SETTLING -> {
+                        when (pageSelected) {
+                            Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
+                            Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
+                        }
+                    }
                 }
             }
         })
@@ -160,7 +179,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     private fun startEditActivityForProfile() {
         val intent = Intent(this, EditActivity::class.java)
-        intent.putExtra(EDIT, PROFILE_FRAGMENT)
+        intent.putExtra(EDIT, EDIT_PROFILE_FRAGMENT)
         startActivityForResult(intent, RC_EDIT_PROFILE)
     }
 
@@ -172,6 +191,13 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
             startEditActivity(EXERCISES)
         } else {
             startEditActivity(WORKOUTS)
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.mainActivityFABEditProfile -> startEditActivityForProfile()
+            R.id.mainActivityFABAddCalendar -> startEditActivity(EDIT_CALENDAR_FRAGMENT)
         }
     }
 }

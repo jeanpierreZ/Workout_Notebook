@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.EditCalendarFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/editCalendarFragmentTitle"
+            style="@style/TitleTextViewTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_training_session"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editCalendarFragmentButtonWorkout"
+            style="@style/ButtonIconTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_baseline_fitness_center_24"
+            app:layout_constraintBottom_toTopOf="@+id/editCalendarFragmentButtonDate"
+            app:layout_constraintEnd_toStartOf="@+id/editCalendarFragmentWorkout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editCalendarFragmentTitle" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/editCalendarFragmentWorkout"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:hint="@string/workout_name"
+            app:layout_constraintBaseline_toBaselineOf="@+id/editCalendarFragmentButtonWorkout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/editCalendarFragmentButtonWorkout" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editCalendarFragmentButtonDate"
+            style="@style/ButtonIconTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_baseline_event_24"
+            app:layout_constraintBottom_toTopOf="@+id/editCalendarFragmentButtonTime"
+            app:layout_constraintEnd_toStartOf="@+id/editCalendarFragmentDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editCalendarFragmentButtonWorkout" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/editCalendarFragmentDate"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:hint="@string/date_training_session"
+            app:layout_constraintBaseline_toBaselineOf="@+id/editCalendarFragmentButtonDate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/editCalendarFragmentButtonDate" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editCalendarFragmentButtonTime"
+            style="@style/ButtonIconTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_baseline_more_time_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/editCalendarFragmentTime"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editCalendarFragmentButtonDate" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/editCalendarFragmentTime"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:hint="@string/time_training_session"
+            app:layout_constraintBaseline_toBaselineOf="@+id/editCalendarFragmentButtonTime"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/editCalendarFragmentButtonTime" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include
+        android:id="@+id/editCalendarFragmentSave"
+        layout="@layout/fab_save" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
