@@ -9,24 +9,11 @@ import androidx.fragment.app.Fragment
 import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.utils.DatePickerFragment
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import java.util.*
 
 
 class CalendarFragment : Fragment() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Use the Kotlin extension in the fragment-ktx artifact for setFragmentResultListener
-        // Listen the result from DatePickerFragment
-        childFragmentManager.setFragmentResultListener("requestKeyDate", this) { key, bundle ->
-            val result = bundle.getString("bundleKeyDate")
-
-            Toast.makeText(activity, "result = $result", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,11 +40,6 @@ class CalendarFragment : Fragment() {
                 addEvent(clickedDayCalendar)
             }
         })
-
-        /*calendarFragmentFABAdd.setOnClickListener {
-            val datePicker = DatePickerFragment()
-            datePicker.show(childFragmentManager, DatePickerFragment()::class.java.simpleName)
-        }*/
     }
 
     //--------------------------------------------------------------------------------------

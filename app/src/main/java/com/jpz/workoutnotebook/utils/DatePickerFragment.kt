@@ -8,10 +8,16 @@ import android.widget.DatePicker
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
-import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
+
+    companion object {
+        private val TAG = DatePickerFragment::class.java.simpleName
+        const val BUNDLE_KEY_DATE = "BUNDLE_KEY_DATE"
+        const val REQUEST_KEY_DATE = "REQUEST_KEY_DATE"
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Use the current date as the default date in the picker
@@ -30,14 +36,20 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
+        Log.d(TAG, "onDateSet = year = $year, month = $month, day = $day")
+
+        // Set date format
+        val dateFormat = "MM/dd/yyyy"
+        val sdf = SimpleDateFormat(dateFormat, Locale.getDefault())
         // Set the date chosen
         val calendar = Calendar.getInstance()
         calendar.set(year, month, day)
-        Log.d("DATE", "year = $year, month = $month, day = $day")
+        // The date chosen by the user
+        val dateChosen: Date = calendar.time
+        // The date formatted
+        val dateFormatted = sdf.format(dateChosen)
 
-        val chosenDate: String = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.time)
-
-        // Send the result to CalendarFragment
-        setFragmentResult("requestKeyDate", bundleOf("bundleKeyDate" to chosenDate))
+        // Send the result to EditCalendarFragment
+        setFragmentResult(REQUEST_KEY_DATE, bundleOf(BUNDLE_KEY_DATE to dateFormatted))
     }
 }
