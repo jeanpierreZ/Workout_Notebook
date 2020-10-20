@@ -66,6 +66,8 @@
     <string name="workout_name_cannot_be_blank">Workout name cannot be blank</string>
     <string name="new_workout_created">Workout %s is created.</string>
     <string name="workout_updated">Workout %s is updated.</string>
+    <string name="add_a_workout">Add a workout</string>
+    <string name="no_workout">There is no workout</string>
 
     <string name="undo">UNDO</string>
 
