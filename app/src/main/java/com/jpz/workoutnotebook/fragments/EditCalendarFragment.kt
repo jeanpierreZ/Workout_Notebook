@@ -178,14 +178,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             )
         } else {
             if (userId != null) {
-                // Get the date and time chosen
-                calendar.set(year, month, day, hour, minute)
-                val date: Date = calendar.time
-                // Create a SimpleDateFormat to format and store trainingSessionDate in Firestore
-                val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
-                val trainingSessionDate = sdf.format(date)
-                Log.d(TAG, "trainingSessionDate = $trainingSessionDate")
-
                 // Retrieve the workout from its name
                 workoutViewModel.getWorkout(userId!!, editCalendarFragmentWorkout.text as String)
                     ?.addOnSuccessListener { documentSnapshot ->
@@ -194,13 +186,23 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             // Create the training session
                             trainingSessionViewModel.createTrainingSession(
                                 editCalendarFragmentCoordinatorLayout,
-                                userId!!, trainingSessionDate, workoutToAdd
+                                userId!!, getTrainingSessionDate(), workoutToAdd
                             )
                         }
                     }
                 closeFragment()
             }
         }
+    }
+
+    // Get the date and time chosen
+    private fun getTrainingSessionDate(): String {
+        calendar.set(year, month, day, hour, minute)
+        val date: Date = calendar.time
+        // Create a SimpleDateFormat to format and store trainingSessionDate in Firestore
+        val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+        Log.d(TAG, "trainingSessionDate = ${sdf.format(date)}")
+        return sdf.format(date)
     }
 
     //----------------------------------------------------------------------------------

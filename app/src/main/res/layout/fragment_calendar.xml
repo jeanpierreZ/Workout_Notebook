@@ -19,7 +19,6 @@
         android:layout_height="wrap_content"
         app:abbreviationsLabelsColor="@color/colorAccentDark"
         app:anotherMonthsDaysLabelsColor="@color/colorAccent"
-        app:eventsEnabled="true"
         app:headerColor="@color/colorPrimaryLight"
         app:swipeEnabled="false" />
 

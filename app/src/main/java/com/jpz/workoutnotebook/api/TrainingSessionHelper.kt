@@ -1,6 +1,7 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 
@@ -26,4 +27,8 @@ class TrainingSessionHelper {
         }
     }
 
+    // --- QUERY ---
+
+    fun getListOfTrainingSessions(userId: String): Query? =
+        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
 }
