@@ -7,6 +7,12 @@
     android:id="@+id/calendarFragmentCoordinatorLayout"
     tools:context=".fragments.CalendarFragment">
 
+    <!-- Add a RelativeLayout to contain materialcalendarview to fix bug
+     (dates not displayed at launch), waiting a new release -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/calendarFragmentCalendarView"
         android:layout_width="match_parent"
@@ -16,5 +22,7 @@
         app:eventsEnabled="true"
         app:headerColor="@color/colorPrimaryLight"
         app:swipeEnabled="false" />
+
+    </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
