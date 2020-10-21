@@ -38,7 +38,7 @@
     <string name="exercises">Exercises</string>
     <string name="workouts">Workouts</string>
 
-    <!--Edit Exercise Workout Fragment -->
+    <!--Exercise Workout -->
     <string name="exercise_name">Exercise Name</string>
     <string name="rest_between_sets">Rest between sets</string>
     <string name="seconds">seconds</string>
@@ -59,6 +59,7 @@
     <string name="series_deleted">Series deleted</string>
     <string name="exercise_deleted">Exercise deleted</string>
     <string name="add_an_exercise">Add an exercise</string>
+    <string name="no_exercise">There is no exercise</string>
 
     <string name="workout_name_already_exists">This workout already exists, choose another name please.</string>
     <string name="workout_deleted">Workout deleted</string>
@@ -76,4 +77,5 @@
     <string name="add_training_session">Add a training session</string>
     <string name="date_training_session">Date</string>
     <string name="time_training_session">Time</string>
+    <string name="add_date_time_workout">Add a date, time and workout</string>
 </resources>

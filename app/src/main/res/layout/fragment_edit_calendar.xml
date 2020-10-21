@@ -90,7 +90,14 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
-        android:id="@+id/editCalendarFragmentSave"
+        android:id="@+id/editCalendarFragmentButtonSave"
         layout="@layout/fab_save" />
+
+    <ProgressBar
+        android:id="@+id/editCalendarFragmentProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

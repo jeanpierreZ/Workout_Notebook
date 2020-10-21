@@ -27,6 +27,7 @@ import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.fragment_edit_calendar.*
 import kotlinx.android.synthetic.main.fragment_edit_workout.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -164,15 +165,26 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     // Get the list of all exercises
     private fun getAllExercises(allExerciseName: MutableList<CharSequence>) {
+        // Clear the list before use it
+        allExerciseName.clear()
+
         userId?.let {
-            exerciseViewModel.getListOfExercises(it)?.get()?.addOnSuccessListener { documents ->
-                for ((index, value) in documents.withIndex()) {
-                    val myString: String = value.data.getValue(EXERCISE_NAME_FIELD) as String
-                    allExerciseName.add(index, myString)
+            exerciseViewModel.getListOfExercises(it)?.get()
+                ?.addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        myUtils.showSnackBar(
+                            editCalendarFragmentCoordinatorLayout, R.string.no_exercise
+                        )
+                    } else {
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} => ${document.data}")
+                            // Add the exercises name to the list
+                            allExerciseName.add(document.get(EXERCISE_NAME_FIELD) as CharSequence)
+                        }
+                        // Then show the AlertDialog to add an exercise
+                        addAnExerciseAlertDialog(allExerciseName.toTypedArray())
+                    }
                 }
-                // Then show the AlertDialog to add an exercise
-                addAnExerciseAlertDialog(allExerciseName.toTypedArray())
-            }
                 ?.addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }

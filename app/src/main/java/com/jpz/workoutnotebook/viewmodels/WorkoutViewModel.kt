@@ -36,8 +36,8 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
 
     // --- READ ---
 
-    fun getWorkout(userId: String, exerciseName: String) =
-        workoutHelper.getWorkout(userId, exerciseName)?.addOnFailureListener { e ->
+    fun getWorkout(userId: String, workoutName: String) =
+        workoutHelper.getWorkout(userId, workoutName)?.addOnFailureListener { e ->
             Log.d(TAG, "get failed with ", e)
         }
 
