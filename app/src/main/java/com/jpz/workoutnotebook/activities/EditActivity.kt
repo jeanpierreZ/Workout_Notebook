@@ -1,16 +1,19 @@
 package com.jpz.workoutnotebook.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_CALENDAR_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
-import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_CALENDAR_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_PROFILE_FRAGMENT
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
 import com.jpz.workoutnotebook.fragments.*
+import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -19,6 +22,7 @@ import org.koin.android.ext.android.inject
 class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     companion object {
+        private val TAG = EditActivity::class.java.simpleName
         const val IS_AN_EXERCISE = "IS_AN_EXERCISE"
         const val EXERCISE_NAME = "EXERCISE_NAME"
         const val WORKOUT_NAME = "WORKOUT_NAME"
@@ -32,9 +36,15 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
         configureToolbar()
 
+        // To know the fragment to display (called from MainActivity)
         val edit = intent.getStringExtra(EDIT)
+        Log.d(TAG, "edit = $edit")
 
-        edit?.let { displayFragment(it) }
+        // The training session from the calendar
+        val trainingSession = intent.getParcelableExtra<TrainingSession>(TRAINING_SESSION)
+        Log.d(TAG, "trainingSession = $trainingSession")
+
+        edit?.let { displayFragment(it, trainingSession) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -63,7 +73,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun displayFragment(edit: String) {
+    private fun displayFragment(edit: String, trainingSession: TrainingSession?) {
         var fragment = Fragment()
         val editProfileFragment = EditProfileFragment()
         val editCalendarFragment = EditCalendarFragment()
@@ -73,7 +83,10 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         when (edit) {
             EDIT_PROFILE_FRAGMENT -> fragment = editProfileFragment
 
-            EDIT_CALENDAR_FRAGMENT -> fragment = editCalendarFragment
+            EDIT_CALENDAR_FRAGMENT -> {
+                fragment = editCalendarFragment
+                bundle.putParcelable(TRAINING_SESSION, trainingSession)
+            }
 
             EXERCISES -> {
                 fragment = listSportsFragment

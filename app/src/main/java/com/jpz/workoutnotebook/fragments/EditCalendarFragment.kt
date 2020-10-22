@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.api.UserAuth
+import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.DatePickerFragment.Companion.BUNDLE_KEY_DAY
@@ -82,6 +84,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         userId = userAuth.getCurrentUser()?.uid
+
+        // TODO update trainingSession
+        val trainingSession = arguments?.getParcelable<TrainingSession>(TRAINING_SESSION)
+        Log.d(TAG, "trainingSession = $trainingSession")
 
         editCalendarFragmentButtonWorkout.setOnClickListener(this)
         editCalendarFragmentButtonDate.setOnClickListener(this)

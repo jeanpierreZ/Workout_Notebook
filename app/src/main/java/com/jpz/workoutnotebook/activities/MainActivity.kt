@@ -11,7 +11,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
+import com.jpz.workoutnotebook.fragments.CalendarFragment
 import com.jpz.workoutnotebook.fragments.SportsFragment
+import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_PROFILE
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,6 +22,7 @@ import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener,
+    CalendarFragment.TrainingSessionListener,
     View.OnClickListener {
 
     enum class Tabs(val position: Int) {
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val EDIT = "EDIT"
         const val EDIT_PROFILE_FRAGMENT = "EDIT_PROFILE_FRAGMENT"
         const val EDIT_CALENDAR_FRAGMENT = "EDIT_CALENDAR_FRAGMENT"
+        const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
     }
@@ -119,8 +123,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         // Then display the tab icon in white for the first page
         mainActivityTabLayout.getTabAt(Tabs.SPORTS.position)?.icon?.let {
             DrawableCompat.setTint(
-                it,
-                colorIconWhite
+                it, colorIconWhite
             )
         }
     }
@@ -171,9 +174,16 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     //--------------------------------------------------------------------------------------
 
-    private fun startEditActivity(fragmentName: String) {
+    private fun startEditActivityForExerciseOrWorkout(fragmentName: String) {
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, fragmentName)
+        startActivity(intent)
+    }
+
+    private fun startEditActivityForCalendar(trainingSession: TrainingSession?) {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, EDIT_CALENDAR_FRAGMENT)
+        intent.putExtra(TRAINING_SESSION, trainingSession)
         startActivity(intent)
     }
 
@@ -188,16 +198,23 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     // Implement listener from SportsFragment to consult the list of exercises or workouts
     override fun onClickedSportsFragmentButton(button: String?) {
         if (button == getString(R.string.exercises)) {
-            startEditActivity(EXERCISES)
+            startEditActivityForExerciseOrWorkout(EXERCISES)
         } else {
-            startEditActivity(WORKOUTS)
+            startEditActivityForExerciseOrWorkout(WORKOUTS)
         }
     }
+
+    // Implement listener from CalendarFragment to update a training session
+    override fun updateATrainingSession(trainingSession: TrainingSession?) {
+        startEditActivityForCalendar(trainingSession)
+    }
+
+    //--------------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.mainActivityFABEditProfile -> startEditActivityForProfile()
-            R.id.mainActivityFABAddCalendar -> startEditActivity(EDIT_CALENDAR_FRAGMENT)
+            R.id.mainActivityFABAddCalendar -> startEditActivityForCalendar(null)
         }
     }
 }

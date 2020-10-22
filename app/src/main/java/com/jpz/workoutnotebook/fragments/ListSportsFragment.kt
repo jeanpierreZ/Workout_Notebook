@@ -196,7 +196,8 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     }
 
     //----------------------------------------------------------------------------------
-    // Interface for callback to parent activity and associated methods when click on add button
+    // Interface for callback to parent activity and associated methods
+    // when click on add button or on an item in the list
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

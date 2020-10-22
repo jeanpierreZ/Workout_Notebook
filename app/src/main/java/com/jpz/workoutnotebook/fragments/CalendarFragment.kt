@@ -1,11 +1,11 @@
 package com.jpz.workoutnotebook.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.applandeo.materialcalendarview.EventDay
@@ -48,6 +48,8 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     // SimpleDateFormat is used to store (and compare) the dates in the trainingSessionList
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+
+    private var callback: TrainingSessionListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -222,6 +224,31 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     //--------------------------------------------------------------------------------------
 
     override fun onClickTrainingSession(trainingSession: TrainingSession?, position: Int) {
-        Toast.makeText(activity, "position = $position", Toast.LENGTH_SHORT).show()
+        callback?.updateATrainingSession(trainingSession)
+    }
+
+    //----------------------------------------------------------------------------------
+    // Interface for callback to parent activity and associated methods
+    // when click on add button or on an item in the list
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Call the methods that creating callback after being attached to parent activity
+        callbackToParentActivity()
+    }
+
+    // Declare our interface that will be implemented by any container activity
+    interface TrainingSessionListener {
+        fun updateATrainingSession(trainingSession: TrainingSession?)
+    }
+
+    // Create callback to parent activity
+    private fun callbackToParentActivity() {
+        try {
+            // Parent activity will automatically subscribe to callback
+            callback = activity as TrainingSessionListener?
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$e must implement ItemListener")
+        }
     }
 }
