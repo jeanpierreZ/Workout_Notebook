@@ -5,20 +5,20 @@
     <string name="facebook_application_id" translatable="false">1132242497170089</string>
     <string name="fb_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb1132242497170089</string>
 
-    <!--Connection Activity -->
+    <!-- Connection Activity -->
     <string name="authentication_succeed">Successful authentication</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="error_no_internet">No internet connection</string>
     <string name="error_unknown_error">An unknown error has occurred</string>
 
-    <!--Main Activity -->
+    <!-- Main Activity -->
     <string name="disconnect">Sign out?</string>
     <string name="user_data_updated">User data updated</string>
     <string name="update_data_canceled">Update data canceled</string>
     <string name="edit_profile">Edit profile</string>
     <string name="add">add</string>
 
-    <!--Profile Fragment -->
+    <!-- Profile Fragment -->
     <string name="profile_photo">Photo chosen for profile</string>
     <string name="nick_name">Nickname</string>
     <string name="name">Name</string>
@@ -33,12 +33,12 @@
     <string name="permission_denied">Permission denied</string>
     <string name="never_ask_again">Never ask again</string>
 
-    <!--Sports Fragment -->
+    <!-- Sports Fragment -->
     <string name="next_training_session">Next training session</string>
     <string name="exercises">Exercises</string>
     <string name="workouts">Workouts</string>
 
-    <!--Exercise Workout -->
+    <!-- Exercise / Workout / Series -->
     <string name="exercise_name">Exercise Name</string>
     <string name="rest_between_sets">Rest between sets</string>
     <string name="seconds">seconds</string>
@@ -72,10 +72,14 @@
 
     <string name="undo">UNDO</string>
 
-    <!--Edit Calendar Fragment -->
+    <!-- Edit Calendar Fragment -->
     <string name="new_training_session_created">Training session for %s is created.</string>
     <string name="add_training_session">Add a training session</string>
     <string name="date_training_session">Date</string>
     <string name="time_training_session">Time</string>
     <string name="add_date_time_workout">Add a date, time and workout</string>
+    <string name="training_session_deleted">Training session deleted</string>
+
+    <!-- Training session -->
+    <string name="training_sessions">Training sessions</string>
 </resources>

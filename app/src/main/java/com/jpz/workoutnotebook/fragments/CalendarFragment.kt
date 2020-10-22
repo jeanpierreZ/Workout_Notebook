@@ -5,12 +5,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.applandeo.materialcalendarview.EventDay
 import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.adapters.ItemTrainingSessionAdapter
 import com.jpz.workoutnotebook.api.UserAuth
+import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import org.koin.android.ext.android.inject
@@ -20,7 +24,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class CalendarFragment : Fragment() {
+class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     companion object {
         private val TAG = CalendarFragment::class.java.simpleName
@@ -32,12 +36,18 @@ class CalendarFragment : Fragment() {
     // List of EventDay in calendarView
     private val events = mutableListOf<EventDay>()
 
-    // List of training session dates from Firestore
+    // List of training session and dates from Firestore
+    private val trainingSessionList = arrayListOf<TrainingSession>()
     private val trainingSessionDateList: ArrayList<String> = ArrayList()
 
     // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
+
+    private var itemTrainingSessionAdapter: ItemTrainingSessionAdapter? = null
+
+    // SimpleDateFormat is used to store (and compare) the dates in the trainingSessionList
+    private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -71,19 +81,93 @@ class CalendarFragment : Fragment() {
 
         calendarFragmentCalendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
-/*
+                // Clear the list before use it
+                trainingSessionList.clear()
+
+                // Get the eventDay from the calendarView
                 val clickedDayCalendar: Calendar = eventDay.calendar
-                calendarFragmentCalendarView.setDate(clickedDayCalendar)
 
-                val clickedDayTime = clickedDayCalendar.time
+                // Get year, month and day from the eventDay
+                val yearOfTraining = clickedDayCalendar.get(Calendar.YEAR)
+                val monthOfTraining = clickedDayCalendar.get(Calendar.MONTH)
+                val dayOfTraining = clickedDayCalendar.get(Calendar.DATE)
 
-                Toast.makeText(activity, "clickedDayTime = $clickedDayTime", Toast.LENGTH_SHORT)
-                    .show()*/
+                userId?.let {
+                    // Get the list of training sessions from Firestore
+                    trainingSessionViewModel.getListOfTrainingSessions(it)
+                        // Filter the list with parsed dates
+                        ?.whereGreaterThanOrEqualTo(
+                            TRAINING_SESSION_DATE_FIELD,
+                            getDateOfTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
+                        )
+                        ?.whereLessThan(
+                            TRAINING_SESSION_DATE_FIELD,
+                            getDayAfterTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
+                        )
+                        ?.get()
+                        ?.addOnSuccessListener { documents ->
+                            for (document in documents) {
+                                val trainingSession = document.toObject(TrainingSession::class.java)
+                                Log.d(TAG, "trainingSession = $trainingSession")
+                                // Add each training session to the list
+                                trainingSessionList.add(trainingSession)
+                            }
+                            // Pass the list to the recyclerView
+                            configureRecyclerView(trainingSessionList)
+                        }
+                        ?.addOnFailureListener { exception ->
+                            Log.w(TAG, "Error getting documents: ", exception)
+                        }
+                }
             }
         })
     }
 
+    //----------------------------------------------------------------------------------
+    // Methods to have and convert the dates from the click event on the calendar
+
+    private fun getDateOfTraining(
+        yearOfTraining: Int, monthOfTraining: Int, dayOfTraining: Int, sdf: SimpleDateFormat
+    ): String {
+        // Instantiate a Calendar to have only the date of Training
+        val calendarOfTraining: Calendar = Calendar.getInstance()
+        calendarOfTraining.set(yearOfTraining, monthOfTraining, dayOfTraining, 0, 0)
+        val dateOfTraining: Date = calendarOfTraining.time
+
+        // Parse the date in SimpleDateFormat to compare it with the trainingSessionList
+        Log.d(TAG, "parsedDateOfTraining = ${sdf.format(dateOfTraining)}")
+        return sdf.format(dateOfTraining)
+    }
+
+    private fun getDayAfterTraining(
+        yearOfTraining: Int, monthOfTraining: Int, dayOfTraining: Int, sdf: SimpleDateFormat
+    ): String {
+        // Instantiate a Calendar to have only the day after training
+        val calendarOfDayAfter: Calendar = Calendar.getInstance()
+        val dayAfter = dayOfTraining + 1
+        calendarOfDayAfter.set(yearOfTraining, monthOfTraining, dayAfter, 0, 0)
+        val dateOfDayAfter: Date = calendarOfDayAfter.time
+
+        // Parse the date in SimpleDateFormat to compare it with the trainingSessionList
+        Log.d(TAG, "parsedDateOfDayAfter = ${sdf.format(dateOfDayAfter)}")
+        return sdf.format(dateOfDayAfter)
+    }
+
+    //----------------------------------------------------------------------------------
+    // Configure RecyclerView, Adapter & LayoutManager
+
+    private fun configureRecyclerView(list: ArrayList<TrainingSession>) {
+        // Create the adapter by passing the list of training sessions
+        itemTrainingSessionAdapter =
+            activity?.let { ItemTrainingSessionAdapter(list, it, this) }
+        // Attach the adapter to the recyclerView to populate the training sessions
+        calendarFragmentRecyclerView?.adapter = itemTrainingSessionAdapter
+        // Set layout manager to position the training sessions
+        calendarFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+    }
+
     //--------------------------------------------------------------------------------------
+    // Methods to add the training sessions to the current month of the calendar
 
     private fun addTrainingSessionsToCalendarView() {
         // Clear the list before use it
@@ -94,7 +178,7 @@ class CalendarFragment : Fragment() {
             trainingSessionViewModel.getListOfTrainingSessions(it)?.get()
                 ?.addOnSuccessListener { documents ->
                     for (document in documents) {
-                        // Add each training session to the list
+                        // Add each training session date to the list of dates
                         trainingSessionDateList.add(document.get(TRAINING_SESSION_DATE_FIELD) as String)
                     }
                     Log.d(TAG, "dateList = $trainingSessionDateList")
@@ -111,13 +195,12 @@ class CalendarFragment : Fragment() {
         // Clear the list before use it
         events.clear()
 
-        val formatter = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
         val currentMonth = calendarFragmentCalendarView.currentPageDate.get(Calendar.MONTH)
         Log.d(TAG, "currentMonth = $currentMonth")
 
         for (date in dateList) {
             // Set calendar with the date from the list
-            val parsedDate: Date? = formatter.parse(date)
+            val parsedDate: Date? = sdf.parse(date)
             Log.d(TAG, "parsedDate = $parsedDate")
 
             if (parsedDate != null) {
@@ -134,5 +217,11 @@ class CalendarFragment : Fragment() {
         }
         Log.d(TAG, " events.size = ${events.size}, events = $events")
         calendarFragmentCalendarView.setEvents(events)
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    override fun onClickTrainingSession(trainingSession: TrainingSession?, position: Int) {
+        Toast.makeText(activity, "position = $position", Toast.LENGTH_SHORT).show()
     }
 }

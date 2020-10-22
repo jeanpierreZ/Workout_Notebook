@@ -14,6 +14,7 @@ class ItemExerciseFromWorkoutAdapter(
     private var list: ArrayList<Exercise>,
     private var context: Context
 ) : RecyclerView.Adapter<ItemExerciseViewHolder>() {
+    // RecyclerView used only to interact with the list of exercises chosen for a workout
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemExerciseViewHolder {
         context = parent.context

@@ -2,9 +2,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/calendarFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/calendarFragmentCoordinatorLayout"
     tools:context=".fragments.CalendarFragment">
 
     <!-- Add a RelativeLayout to contain materialcalendarview to fix bug
@@ -13,14 +13,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.applandeo.materialcalendarview.CalendarView
-        android:id="@+id/calendarFragmentCalendarView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:abbreviationsLabelsColor="@color/colorAccentDark"
-        app:anotherMonthsDaysLabelsColor="@color/colorAccent"
-        app:headerColor="@color/colorPrimaryLight"
-        app:swipeEnabled="false" />
+        <com.applandeo.materialcalendarview.CalendarView
+            android:id="@+id/calendarFragmentCalendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:abbreviationsLabelsColor="@color/colorAccentDark"
+            app:anotherMonthsDaysLabelsColor="@color/colorAccent"
+            app:headerColor="@color/colorPrimaryLight"
+            app:swipeEnabled="false" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/calendarFragmentWorkouts"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/calendarFragmentCalendarView"
+            android:layout_alignParentStart="true"
+            android:layout_margin="@dimen/exercise_widget_margin"
+            android:text="@string/training_sessions" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/calendarFragmentRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@+id/calendarFragmentWorkouts"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
 
