@@ -205,8 +205,15 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     }
 
     // Implement listener from CalendarFragment to update a training session
-    override fun updateATrainingSession(trainingSession: TrainingSession?) {
+    override fun updateATrainingSession(trainingSession: TrainingSession) {
         startEditActivityForCalendar(trainingSession)
+    }
+
+    // Implement listener from CalendarFragment to show a snackBar below the FAB
+    override fun cannotUpdatePreviousTrainingSession() {
+        myUtils.showSnackBar(
+            mainActivityCoordinatorLayout, R.string.cannot_create_update_training_session_with_past_date
+        )
     }
 
     //--------------------------------------------------------------------------------------

@@ -59,17 +59,22 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         return inflater.inflate(R.layout.fragment_calendar, container, false)
     }
 
+    override fun onResume() {
+        super.onResume()
+        addTrainingSessionsToCalendarView()
+        configureRecyclerView(arrayListOf())
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         userId = userAuth.getCurrentUser()?.uid
 
-        addTrainingSessionsToCalendarView()
-
         calendarFragmentCalendarView.setOnPreviousPageChangeListener(
             object : OnCalendarPageChangeListener {
                 override fun onChange() {
                     addTrainingSessionsToCalendarView()
+                    configureRecyclerView(arrayListOf())
                 }
             })
 
@@ -77,7 +82,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             object : OnCalendarPageChangeListener {
                 override fun onChange() {
                     addTrainingSessionsToCalendarView()
-
+                    configureRecyclerView(arrayListOf())
                 }
             })
 
@@ -217,18 +222,28 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
                 }
             }
         }
-        Log.d(TAG, " events.size = ${events.size}, events = $events")
+        // Log.d(TAG, " events.size = ${events.size}, events = $events")
         calendarFragmentCalendarView.setEvents(events)
     }
 
     //--------------------------------------------------------------------------------------
 
-    override fun onClickTrainingSession(trainingSession: TrainingSession?, position: Int) {
-        callback?.updateATrainingSession(trainingSession)
+    override fun onClickTrainingSession(trainingSession: TrainingSession, position: Int) {
+        if (trainingSession.trainingSessionDate != null) {
+            val dateFromTrainingSession: Date? = sdf.parse(trainingSession.trainingSessionDate!!)
+            val nowCalendar = Calendar.getInstance()
+            val now: Date = nowCalendar.time
+
+            if (dateFromTrainingSession!!.before(now)) {
+                callback?.cannotUpdatePreviousTrainingSession()
+            } else {
+                callback?.updateATrainingSession(trainingSession)
+            }
+        }
     }
 
     //----------------------------------------------------------------------------------
-    // Interface for callback to parent activity and associated methods
+    // Interfaces for callback to parent activity and associated methods
     // when click on add button or on an item in the list
 
     override fun onAttach(context: Context) {
@@ -237,9 +252,10 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         callbackToParentActivity()
     }
 
-    // Declare our interface that will be implemented by any container activity
+    // Declare our interfaces that will be implemented by any container activity
     interface TrainingSessionListener {
-        fun updateATrainingSession(trainingSession: TrainingSession?)
+        fun updateATrainingSession(trainingSession: TrainingSession)
+        fun cannotUpdatePreviousTrainingSession()
     }
 
     // Create callback to parent activity

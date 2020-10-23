@@ -50,11 +50,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private var hour = 0
     private var minute = 0
 
-    private var updateCalendar = Calendar.getInstance()
-
     // SimpleDateFormat is used get the format of the trainingSessionDate
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
-
 
     private var userId: String? = null
     private var allWorkoutName = mutableListOf<CharSequence>()
@@ -92,7 +89,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        trainingSession = arguments?.getParcelable<TrainingSession>(TRAINING_SESSION)
+        trainingSession = arguments?.getParcelable(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
 
         if (trainingSession != null) {
@@ -207,6 +204,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     // Methods to save or update a training session
 
     private fun saveTrainingSession() {
+        val nowCalendar = Calendar.getInstance()
+        val now: Date = nowCalendar.time
+        val dateToRegister = calendar.time
+
         if (editCalendarFragmentDate.text.isNullOrEmpty()
             || editCalendarFragmentTime.text.isNullOrEmpty()
             || editCalendarFragmentWorkout.text.isNullOrEmpty()
@@ -214,11 +215,22 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
             )
+
+        } else if (dateToRegister.before(now)) {
+            // Cannot create a training session with a previous time
+            myUtils.showSnackBar(
+                editCalendarFragmentCoordinatorLayout,
+                R.string.cannot_create_update_training_session_with_past_date
+            )
+
         } else {
             if (userId != null) {
                 // Check if a trainingSession on this date already exists
                 trainingSessionViewModel.getListOfTrainingSessions(userId!!)
-                    ?.whereEqualTo(TRAINING_SESSION_DATE_FIELD, getTrainingSessionDate())
+                    ?.whereEqualTo(
+                        TRAINING_SESSION_DATE_FIELD,
+                        getTrainingSessionDateInSDFFormat(dateToRegister)
+                    )
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
@@ -235,7 +247,9 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                         // Create the training session
                                         trainingSessionViewModel.createTrainingSession(
                                             editCalendarFragmentCoordinatorLayout,
-                                            userId!!, getTrainingSessionDate(), workoutToAdd
+                                            userId!!,
+                                            getTrainingSessionDateInSDFFormat(dateToRegister),
+                                            workoutToAdd
                                         )
                                     }
                                 }
@@ -259,13 +273,25 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateTrainingSession() {
+        val nowCalendar = Calendar.getInstance()
+        val now: Date = nowCalendar.time
+        val dateToRegister = calendar.time
+
         if (editCalendarFragmentDate.text.isNullOrEmpty()
             || editCalendarFragmentTime.text.isNullOrEmpty()
             || editCalendarFragmentWorkout.text.isNullOrEmpty()
         ) {
             myUtils.showSnackBar(
-                editCalendarFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
+                editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
             )
+
+        } else if (dateToRegister.before(now)) {
+            // Cannot update a training session with a previous time
+            myUtils.showSnackBar(
+                editCalendarFragmentCoordinatorLayout,
+                R.string.cannot_create_update_training_session_with_past_date
+            )
+
         } else {
             userId?.let { it ->
                 // Retrieve the workout from its name
@@ -279,7 +305,9 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             // Update the training session
                             trainingSessionViewModel.updateTrainingSession(
                                 editCalendarFragmentCoordinatorLayout,
-                                it, getTrainingSessionDateToUpdate(), workoutToUpdate
+                                it,
+                                getTrainingSessionDateInSDFFormat(dateToRegister),
+                                workoutToUpdate
                             )
                         }
                     }
@@ -288,18 +316,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    // Get the date and time chosen
-    private fun getTrainingSessionDateToUpdate(): String {
-        val dateToUpdate: Date = calendar.time
-        Log.d(TAG, "trainingSessionDateToUpdate = ${sdf.format(dateToUpdate)}")
-        return sdf.format(dateToUpdate)
-    }
-
-    // Get the date and time chosen
-    private fun getTrainingSessionDate(): String {
-        val date: Date = calendar.time
-        Log.d(TAG, "trainingSessionDate = ${sdf.format(date)}")
-        return sdf.format(date)
+    // Get the date (and time) chosen and format it
+    private fun getTrainingSessionDateInSDFFormat(dateToRegister: Date): String {
+        Log.d(TAG, "trainingSessionDate = ${sdf.format(dateToRegister)}")
+        return sdf.format(dateToRegister)
     }
 
     //----------------------------------------------------------------------------------

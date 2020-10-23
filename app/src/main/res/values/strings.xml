@@ -29,7 +29,7 @@
 
     <!-- Request Permissions -->
     <string name="permission_needed">Permission needed</string>
-    <string name="rationale_permission_read_external_storage">This permission is required to access your external storage.</string>
+    <string name="rationale_permission_read_external_storage">This permission is required to access your external storage</string>
     <string name="permission_denied">Permission denied</string>
     <string name="never_ask_again">Never ask again</string>
 
@@ -52,36 +52,35 @@
     <string name="number_set">Set %d</string>
     <string name="add_a_set">Add a set</string>
 
-    <string name="exercise_name_already_exists">This exercise already exists, please choose another name.</string>
+    <string name="exercise_name_already_exists">This exercise already exists, please choose another name</string>
     <string name="exercise_name_cannot_be_blank">Exercise name cannot be blank</string>
-    <string name="new_exercise_created">Exercise %s is created.</string>
-    <string name="exercise_updated">Exercise %s is updated.</string>
+    <string name="new_exercise_created">Exercise %s is created</string>
+    <string name="exercise_updated">Exercise %s is updated</string>
     <string name="series_deleted">Series deleted</string>
     <string name="exercise_deleted">Exercise deleted</string>
     <string name="add_an_exercise">Add an exercise</string>
     <string name="no_exercise">There is no exercise</string>
 
-    <string name="workout_name_already_exists">This workout already exists, please choose another name.</string>
+    <string name="workout_name_already_exists">This workout already exists, please choose another name</string>
     <string name="workout_deleted">Workout deleted</string>
     <string name="workout_name">Workout Name</string>
     <string name="workout_name_cannot_be_blank">Workout name cannot be blank</string>
-    <string name="new_workout_created">Workout %s is created.</string>
-    <string name="workout_updated">Workout %s is updated.</string>
+    <string name="new_workout_created">Workout %s is created</string>
+    <string name="workout_updated">Workout %s is updated</string>
     <string name="add_a_workout">Add a workout</string>
     <string name="no_workout">There is no workout</string>
 
     <string name="undo">UNDO</string>
 
     <!-- Edit Calendar Fragment -->
-    <string name="new_training_session_created">Training session for %s is created.</string>
+    <string name="training_sessions">Training sessions</string>
+    <string name="new_training_session_created">Training session for %s is created</string>
     <string name="add_training_session">Add a training session</string>
     <string name="date_training_session">Date</string>
     <string name="time_training_session">Time</string>
-    <string name="training_session_updated">Training session is updated.</string>
+    <string name="training_session_updated">Training session is updated</string>
     <string name="add_date_time_workout">Add a date, time and workout</string>
     <string name="training_session_deleted">Training session deleted</string>
-    <string name="training_session_time_already_exists">A training session at this time already exists, please choose another time.</string>
-
-    <!-- Training session -->
-    <string name="training_sessions">Training sessions</string>
+    <string name="training_session_time_already_exists">A training session at this time already exists, please choose another time</string>
+    <string name="cannot_create_update_training_session_with_past_date">Cannot create or update a training session with a past date</string>
 </resources>

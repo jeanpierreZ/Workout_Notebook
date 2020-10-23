@@ -16,7 +16,7 @@ class ItemTrainingSessionAdapter(
 
     // Callback
     interface Listener {
-        fun onClickTrainingSession(trainingSession: TrainingSession?, position: Int)
+        fun onClickTrainingSession(trainingSession: TrainingSession, position: Int)
     }
 
     override fun onCreateViewHolder(
