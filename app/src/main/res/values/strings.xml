@@ -80,6 +80,7 @@
     <string name="time_training_session">Time</string>
     <string name="training_session_updated">Training session is updated</string>
     <string name="add_date_time_workout">Add a date, time and workout</string>
+    <string name="delete_this_training_session">Delete this training session?</string>
     <string name="training_session_deleted">Training session deleted</string>
     <string name="training_session_time_already_exists">A training session at this time already exists, please choose another time</string>
     <string name="cannot_create_update_training_session_with_past_date">Cannot create or update a training session with a past date</string>

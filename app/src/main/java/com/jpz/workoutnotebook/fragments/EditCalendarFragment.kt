@@ -5,10 +5,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.toColor
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
@@ -80,8 +79,23 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_edit_calendar, container, false)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_delete, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.menu_delete) {
+            userId?.let { trainingSession?.let { it1 -> deleteATrainingSession(it, it1) } }
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -316,6 +330,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    //----------------------------------------------------------------------------------
+
     // Get the date (and time) chosen and format it
     private fun getTrainingSessionDateInSDFFormat(dateToRegister: Date): String {
         Log.d(TAG, "trainingSessionDate = ${sdf.format(dateToRegister)}")
@@ -329,6 +345,26 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         Handler(Looper.getMainLooper()).postDelayed({
             activity?.onBackPressed()
         }, 2000)
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    private fun deleteATrainingSession(userId: String, trainingSession: TrainingSession) {
+        // Create an alert dialog to prevent the user
+        activity?.let { it ->
+            AlertDialog.Builder(it)
+                .setMessage(getString(R.string.delete_this_training_session))
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    // Delete the training session
+                    trainingSessionViewModel.deleteATrainingSession(
+                        editCalendarFragmentCoordinatorLayout, userId, trainingSession, it
+                    )
+                    closeFragment()
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ ->
+                }
+                .show()
+        }
     }
 
     //--------------------------------------------------------------------------------------

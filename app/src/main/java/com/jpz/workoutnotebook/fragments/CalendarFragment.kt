@@ -131,6 +131,19 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     }
 
     //----------------------------------------------------------------------------------
+    // Configure RecyclerView, Adapter & LayoutManager
+
+    private fun configureRecyclerView(list: ArrayList<TrainingSession>) {
+        // Create the adapter by passing the list of training sessions
+        itemTrainingSessionAdapter =
+            activity?.let { ItemTrainingSessionAdapter(list, it, this) }
+        // Attach the adapter to the recyclerView to populate the training sessions
+        calendarFragmentRecyclerView?.adapter = itemTrainingSessionAdapter
+        // Set layout manager to position the training sessions
+        calendarFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+    }
+
+    //----------------------------------------------------------------------------------
     // Methods to have and convert the dates from the click event on the calendar
 
     private fun getDateOfTraining(
@@ -158,19 +171,6 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         // Parse the date in SimpleDateFormat to compare it with the trainingSessionList
         Log.d(TAG, "parsedDateOfDayAfter = ${sdf.format(dateOfDayAfter)}")
         return sdf.format(dateOfDayAfter)
-    }
-
-    //----------------------------------------------------------------------------------
-    // Configure RecyclerView, Adapter & LayoutManager
-
-    private fun configureRecyclerView(list: ArrayList<TrainingSession>) {
-        // Create the adapter by passing the list of training sessions
-        itemTrainingSessionAdapter =
-            activity?.let { ItemTrainingSessionAdapter(list, it, this) }
-        // Attach the adapter to the recyclerView to populate the training sessions
-        calendarFragmentRecyclerView?.adapter = itemTrainingSessionAdapter
-        // Set layout manager to position the training sessions
-        calendarFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
     }
 
     //--------------------------------------------------------------------------------------

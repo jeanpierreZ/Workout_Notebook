@@ -8,7 +8,7 @@ import com.jpz.workoutnotebook.models.Workout
 class TrainingSessionHelper {
 
     companion object {
-        private const val COLLECTION_NAME = "trainingSessions"
+        const val COLLECTION_NAME = "trainingSessions"
     }
 
     // --- CREATE ---
@@ -44,6 +44,18 @@ class TrainingSessionHelper {
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)
                 ?.set(trainingSessionToUpdate)
+        }
+    }
+
+    // --- DELETE ---
+
+    fun deleteATrainingSession( userId: String, trainingSession: TrainingSession): Task<Void>? {
+        return trainingSession.trainingSessionDate?.let {
+            UserHelper.getUsersCollection()
+                ?.document(userId)
+                ?.collection(COLLECTION_NAME)
+                ?.document(it)
+                ?.delete()
         }
     }
 }
