@@ -85,9 +85,31 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        // TODO update trainingSession
         val trainingSession = arguments?.getParcelable<TrainingSession>(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
+
+        if (trainingSession != null) {
+            trainingSession.trainingSessionDate?.let {
+                // SimpleDateFormat is used get the format of the trainingSessionDate
+                val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+                // Get the date
+                val parsedDate: Date? = sdf.parse(it)
+                Log.d(TAG, "parsedDate = $parsedDate")
+                if (parsedDate != null) {
+                    // Instantiate a calendar
+                    val calendar = Calendar.getInstance()
+                    // Get calendar time from parsedDate
+                    calendar.time = parsedDate
+                    // Set textViews with date and time
+                    editCalendarFragmentDate.text =
+                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(parsedDate)
+                    editCalendarFragmentTime.text =
+                        DateFormat.getTimeInstance(DateFormat.SHORT).format(parsedDate)
+                }
+                // Set textView with workoutName
+                editCalendarFragmentWorkout.text = trainingSession.workout?.workoutName
+            }
+        }
 
         editCalendarFragmentButtonWorkout.setOnClickListener(this)
         editCalendarFragmentButtonDate.setOnClickListener(this)
@@ -173,6 +195,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     //----------------------------------------------------------------------------------
     // Methods to save a training session
+
+    // TODO update trainingSession
 
     private fun saveTrainingSession() {
         if (editCalendarFragmentDate.text.isNullOrEmpty()

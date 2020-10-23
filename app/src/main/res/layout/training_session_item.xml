@@ -4,8 +4,6 @@
 
     <data>
 
-        <import type="com.jpz.workoutnotebook.utils.DataBindingConverters" />
-
         <variable
             name="trainingSession"
             type="com.jpz.workoutnotebook.models.TrainingSession" />
@@ -27,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
-                android:text="@={trainingSession.trainingSessionDate}"
+                android:text="@{trainingSession.trainingSessionDate}"
                 app:layout_constraintEnd_toStartOf="@+id/trainingSessionItemWorkoutName"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +36,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/exercise_widget_margin"
-                android:text="@={trainingSession.workout.workoutName}"
+                android:text="@{trainingSession.workout.workoutName}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/trainingSessionItemTime"
                 app:layout_constraintTop_toTopOf="parent" />
