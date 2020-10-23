@@ -181,19 +181,22 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         trainingSessionDateList.clear()
 
         userId?.let {
-            // Get the list of training sessions from Firestore
-            trainingSessionViewModel.getListOfTrainingSessions(it)?.get()
-                ?.addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        // Add each training session date to the list of dates
-                        trainingSessionDateList.add(document.get(TRAINING_SESSION_DATE_FIELD) as String)
+            // Get the list of training sessions from Firestore in real time
+            trainingSessionViewModel.getListOfTrainingSessions(it)
+                ?.addSnapshotListener { value, e ->
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e)
+                        return@addSnapshotListener
                     }
-                    Log.d(TAG, "dateList = $trainingSessionDateList")
-                    // Add an event to each training session in calendarView
-                    addEventInCurrentMonth(trainingSessionDateList)
-                }
-                ?.addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
+                    if (value != null && !value.isEmpty) {
+                        for (doc in value) {
+                            // Add each training session date to the list of dates
+                            trainingSessionDateList.add(doc.get(TRAINING_SESSION_DATE_FIELD) as String)
+                        }
+                        Log.d(TAG, "dateList = $trainingSessionDateList")
+                        // Add an event to each training session in calendarView
+                        addEventInCurrentMonth(trainingSessionDateList)
+                    }
                 }
         }
     }
