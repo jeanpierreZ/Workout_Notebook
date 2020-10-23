@@ -41,4 +41,19 @@ class TrainingSessionViewModel(private val trainingSessionHelper: TrainingSessio
 
     fun getListOfTrainingSessions(userId: String) =
         trainingSessionHelper.getListOfTrainingSessions(userId)
+
+    // --- UPDATE ---
+
+    fun updateTrainingSession(
+        coordinatorLayout: CoordinatorLayout,
+        userId: String, trainingSessionDate: String?, workout: Workout?
+    ) = trainingSessionHelper.updateTrainingSession(userId, trainingSessionDate, workout)
+        ?.addOnSuccessListener { _ ->
+            myUtils.showSnackBar(
+                coordinatorLayout, R.string.training_session_updated
+            )
+            Log.d(TAG, "DocumentSnapshot successfully updated!")
+        }?.addOnFailureListener { e ->
+            Log.e(TAG, "Error updating document", e)
+        }
 }

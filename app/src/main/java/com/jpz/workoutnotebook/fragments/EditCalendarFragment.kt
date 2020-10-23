@@ -40,6 +40,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     companion object {
         private val TAG = EditCalendarFragment::class.java.simpleName
         private const val WORKOUT_NAME_FIELD = "workoutName"
+        private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
 
     private var calendar = Calendar.getInstance()
@@ -49,9 +50,15 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private var hour = 0
     private var minute = 0
 
-    private var userId: String? = null
+    private var updateCalendar = Calendar.getInstance()
 
+    // SimpleDateFormat is used get the format of the trainingSessionDate
+    private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+
+
+    private var userId: String? = null
     private var allWorkoutName = mutableListOf<CharSequence>()
+    private var trainingSession: TrainingSession? = null
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
@@ -85,21 +92,24 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        val trainingSession = arguments?.getParcelable<TrainingSession>(TRAINING_SESSION)
+        trainingSession = arguments?.getParcelable<TrainingSession>(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
 
         if (trainingSession != null) {
-            trainingSession.trainingSessionDate?.let {
-                // SimpleDateFormat is used get the format of the trainingSessionDate
-                val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+            trainingSession!!.trainingSessionDate?.let {
+
                 // Get the date
                 val parsedDate: Date? = sdf.parse(it)
                 Log.d(TAG, "parsedDate = $parsedDate")
                 if (parsedDate != null) {
-                    // Instantiate a calendar
-                    val calendar = Calendar.getInstance()
                     // Get calendar time from parsedDate
                     calendar.time = parsedDate
+                    // Set values with the updated calendar
+                    year = calendar.get(Calendar.YEAR)
+                    month = calendar.get(Calendar.MONTH)
+                    day = calendar.get(Calendar.DATE)
+                    hour = calendar.get(Calendar.HOUR)
+                    minute = calendar.get(Calendar.MINUTE)
                     // Set textViews with date and time
                     editCalendarFragmentDate.text =
                         DateFormat.getDateInstance(DateFormat.MEDIUM).format(parsedDate)
@@ -107,7 +117,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         DateFormat.getTimeInstance(DateFormat.SHORT).format(parsedDate)
                 }
                 // Set textView with workoutName
-                editCalendarFragmentWorkout.text = trainingSession.workout?.workoutName
+                editCalendarFragmentWorkout.text = trainingSession!!.workout?.workoutName
             }
         }
 
@@ -128,7 +138,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         Log.d(TAG, "year = $year, month = $month, day = $day")
 
         // Set calendar with the data from DatePickerFragment to display the date
-        calendar.set(year, month, day, 0, 0)
+        calendar.set(year, month, day, hour, minute)
         val dateChosen: Date = calendar.time
         return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
@@ -140,7 +150,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         Log.d(TAG, "hour = $hour, minute = $minute")
 
         // Set calendar with the data from TimePickerFragment to display the time
-        calendar.set(0, 0, 0, hour, minute)
+        calendar.set(year, month, day, hour, minute)
         val timeChosen: Date = calendar.time
         return DateFormat.getTimeInstance(DateFormat.SHORT).format(timeChosen)
     }
@@ -194,9 +204,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     }
 
     //----------------------------------------------------------------------------------
-    // Methods to save a training session
-
-    // TODO update trainingSession
+    // Methods to save or update a training session
 
     private fun saveTrainingSession() {
         if (editCalendarFragmentDate.text.isNullOrEmpty()
@@ -208,29 +216,88 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             )
         } else {
             if (userId != null) {
-                // Retrieve the workout from its name
-                workoutViewModel.getWorkout(userId!!, editCalendarFragmentWorkout.text as String)
-                    ?.addOnSuccessListener { documentSnapshot ->
-                        val workoutToAdd = documentSnapshot.toObject(Workout::class.java)
-                        if (workoutToAdd != null) {
-                            // Create the training session
-                            trainingSessionViewModel.createTrainingSession(
-                                editCalendarFragmentCoordinatorLayout,
-                                userId!!, getTrainingSessionDate(), workoutToAdd
+                // Check if a trainingSession on this date already exists
+                trainingSessionViewModel.getListOfTrainingSessions(userId!!)
+                    ?.whereEqualTo(TRAINING_SESSION_DATE_FIELD, getTrainingSessionDate())
+                    ?.get()
+                    ?.addOnSuccessListener { documents ->
+                        if (documents.isEmpty) {
+                            // There isn't document with this trainingSessionDate so create it
+                            Log.d(TAG, "documents.isEmpty")
+                            // Retrieve the workout from its name
+                            workoutViewModel.getWorkout(
+                                userId!!, editCalendarFragmentWorkout.text as String
                             )
+                                ?.addOnSuccessListener { documentSnapshot ->
+                                    val workoutToAdd =
+                                        documentSnapshot.toObject(Workout::class.java)
+                                    if (workoutToAdd != null) {
+                                        // Create the training session
+                                        trainingSessionViewModel.createTrainingSession(
+                                            editCalendarFragmentCoordinatorLayout,
+                                            userId!!, getTrainingSessionDate(), workoutToAdd
+                                        )
+                                    }
+                                }
+                            closeFragment()
+                        } else {
+                            // The same trainingSessionDate exists, choose another time
+                            myUtils.showSnackBar(
+                                editCalendarFragmentCoordinatorLayout,
+                                R.string.training_session_time_already_exists
+                            )
+                            for (document in documents) {
+                                Log.d(TAG, "${document.id} => ${document.data}")
+                            }
                         }
                     }
-                closeFragment()
+                    ?.addOnFailureListener { exception ->
+                        Log.w(TAG, "Error getting documents: ", exception)
+                    }
             }
         }
     }
 
+    private fun updateTrainingSession() {
+        if (editCalendarFragmentDate.text.isNullOrEmpty()
+            || editCalendarFragmentTime.text.isNullOrEmpty()
+            || editCalendarFragmentWorkout.text.isNullOrEmpty()
+        ) {
+            myUtils.showSnackBar(
+                editCalendarFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
+            )
+        } else {
+            userId?.let { it ->
+                // Retrieve the workout from its name
+                workoutViewModel.getWorkout(
+                    it, editCalendarFragmentWorkout.text as String
+                )
+                    ?.addOnSuccessListener { documentSnapshot ->
+                        val workoutToUpdate =
+                            documentSnapshot.toObject(Workout::class.java)
+                        if (workoutToUpdate != null) {
+                            // Update the training session
+                            trainingSessionViewModel.updateTrainingSession(
+                                editCalendarFragmentCoordinatorLayout,
+                                it, getTrainingSessionDateToUpdate(), workoutToUpdate
+                            )
+                        }
+                    }
+            }
+            closeFragment()
+        }
+    }
+
+    // Get the date and time chosen
+    private fun getTrainingSessionDateToUpdate(): String {
+        val dateToUpdate: Date = calendar.time
+        Log.d(TAG, "trainingSessionDateToUpdate = ${sdf.format(dateToUpdate)}")
+        return sdf.format(dateToUpdate)
+    }
+
     // Get the date and time chosen
     private fun getTrainingSessionDate(): String {
-        calendar.set(year, month, day, hour, minute)
         val date: Date = calendar.time
-        // Create a SimpleDateFormat to format and store trainingSessionDate in Firestore
-        val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
         Log.d(TAG, "trainingSessionDate = ${sdf.format(date)}")
         return sdf.format(date)
     }
@@ -260,7 +327,12 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 timePicker.show(childFragmentManager, TimePickerFragment::class.java.simpleName)
             }
 
-            R.id.editCalendarFragmentButtonSave -> saveTrainingSession()
+            R.id.editCalendarFragmentButtonSave ->
+                if (trainingSession != null) {
+                    updateTrainingSession()
+                } else {
+                    saveTrainingSession()
+                }
         }
     }
 }

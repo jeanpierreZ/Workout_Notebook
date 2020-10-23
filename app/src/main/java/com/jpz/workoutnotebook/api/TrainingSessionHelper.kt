@@ -31,4 +31,19 @@ class TrainingSessionHelper {
 
     fun getListOfTrainingSessions(userId: String): Query? =
         UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+
+    // --- UPDATE ---
+
+    fun updateTrainingSession(
+        userId: String, trainingSessionDate: String?, workout: Workout?
+    ): Task<Void>? {
+        val trainingSessionToUpdate = TrainingSession(trainingSessionDate, workout)
+        return trainingSessionDate?.let {
+            UserHelper.getUsersCollection()
+                ?.document(userId)
+                ?.collection(COLLECTION_NAME)
+                ?.document(it)
+                ?.set(trainingSessionToUpdate)
+        }
+    }
 }
