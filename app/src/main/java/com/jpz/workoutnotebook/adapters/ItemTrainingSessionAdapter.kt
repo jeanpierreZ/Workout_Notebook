@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.jpz.workoutnotebook.databinding.TrainingSessionItemBinding
+import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.viewholders.ItemTrainingSessionViewHolder
 
@@ -24,9 +24,8 @@ class ItemTrainingSessionAdapter(
     ): ItemTrainingSessionViewHolder {
         context = parent.context
         val inflater = LayoutInflater.from(context)
-        return ItemTrainingSessionViewHolder(
-            TrainingSessionItemBinding.inflate(inflater, parent, false)
-        )
+        val view = inflater.inflate(R.layout.training_session_item, parent, false)
+        return ItemTrainingSessionViewHolder(view)
     }
 
     override fun getItemCount(): Int = list.size

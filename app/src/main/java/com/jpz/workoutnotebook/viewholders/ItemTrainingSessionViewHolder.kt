@@ -1,15 +1,18 @@
 package com.jpz.workoutnotebook.viewholders
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ItemTrainingSessionAdapter
-import com.jpz.workoutnotebook.databinding.TrainingSessionItemBinding
 import com.jpz.workoutnotebook.models.TrainingSession
 import java.lang.ref.WeakReference
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
-class ItemTrainingSessionViewHolder(private val binding: TrainingSessionItemBinding) :
-    RecyclerView.ViewHolder(binding.root) {
+class ItemTrainingSessionViewHolder(trainingSession: View) :
+    RecyclerView.ViewHolder(trainingSession) {
     // Represent a line of a training session in the RecyclerView
 
     private var workoutName: MaterialTextView? = null
@@ -21,10 +24,19 @@ class ItemTrainingSessionViewHolder(private val binding: TrainingSessionItemBind
     }
 
     fun updateTrainingSession(
-        trainingSession: TrainingSession,
-        callback: ItemTrainingSessionAdapter.Listener
+        trainingSession: TrainingSession, callback: ItemTrainingSessionAdapter.Listener
     ) {
-        binding.trainingSession = trainingSession
+        workoutName?.text = trainingSession.workout?.workoutName
+
+        // SimpleDateFormat is used get the format of the trainingSessionDate
+        val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+        trainingSession.trainingSessionDate?.let { it ->
+            val myDate = sdf.parse(it)
+            myDate?.let {
+                time?.text = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                    .format(myDate)
+            }
+        }
 
         // Create a new weak Reference to our Listener
         val callbackWeakRef: WeakReference<ItemTrainingSessionAdapter.Listener> =
