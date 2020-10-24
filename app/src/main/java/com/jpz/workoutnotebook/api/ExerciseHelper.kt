@@ -43,7 +43,7 @@ class ExerciseHelper {
 
     // --- UPDATE ---
 
-    fun updateExerciseIdAfterCreateExercise(
+    fun updateExerciseIdAfterCreate(
         userId: String, documentReference: DocumentReference
     ): Task<Void>? =
         UserHelper.getUsersCollection()

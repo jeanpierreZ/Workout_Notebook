@@ -181,7 +181,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
-                            // There isn't document with this exerciseName so create the exercise
+                            // There is no document with this exerciseName so create the exercise
                             Log.d(TAG, "documents.isEmpty")
                             exerciseViewModel.createExercise(
                                 editExerciseFragmentCoordinatorLayout, it, exercise

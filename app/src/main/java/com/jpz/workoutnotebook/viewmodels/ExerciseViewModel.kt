@@ -23,7 +23,7 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
         exerciseHelper.createExercise(userId, exercise)
             ?.addOnSuccessListener { documentReference ->
                 // Set exerciseId
-                exerciseHelper.updateExerciseIdAfterCreateExercise(userId, documentReference)
+                exerciseHelper.updateExerciseIdAfterCreate(userId, documentReference)
                 // Inform the user
                 myUtils.showSnackBar(
                     coordinatorLayout, coordinatorLayout.context.getString(
@@ -37,8 +37,8 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
 
     // --- READ ---
 
-    fun getExercise(userId: String, exerciseName: String) =
-        exerciseHelper.getExercise(userId, exerciseName)?.addOnFailureListener { e ->
+    fun getExercise(userId: String, exerciseId: String) =
+        exerciseHelper.getExercise(userId, exerciseId)?.addOnFailureListener { e ->
             Log.d(TAG, "get failed with ", e)
         }
 

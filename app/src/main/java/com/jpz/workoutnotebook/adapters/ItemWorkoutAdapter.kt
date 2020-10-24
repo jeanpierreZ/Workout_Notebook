@@ -23,7 +23,7 @@ class ItemWorkoutAdapter(
 
     // Callback
     interface Listener {
-        fun onClickWorkoutName(workoutName: String?, position: Int)
+        fun onClickWorkout(workoutId: String?, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemWorkoutViewHolder {

@@ -189,11 +189,9 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         }
     }
 
-    // TODO use Id
-
-    override fun onClickWorkoutName(workoutName: String?, position: Int) {
-        if (workoutName != null) {
-            isAnExercise?.let { callback?.addOrUpdateItem(it, workoutName) }
+    override fun onClickWorkout(workoutId: String?, position: Int) {
+        workoutId?.let {
+            isAnExercise?.let { isAnExercise -> callback?.addOrUpdateItem(isAnExercise, it) }
         }
     }
 

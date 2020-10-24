@@ -1,36 +1,27 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
-import com.jpz.workoutnotebook.models.Exercise
+import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.Workout
-import java.util.*
 
 class WorkoutHelper {
 
     companion object {
         private const val COLLECTION_NAME = "workouts"
+        private const val WORKOUT_ID_FIELD = "workoutId"
         private const val WORKOUT_NAME_FIELD = "workoutName"
     }
 
     // --- CREATE ---
 
-    fun createWorkout(
-        userId: String,
-        workoutName: String?,
-        workoutDate: Date?,
-        exercisesList: ArrayList<Exercise>?
-    ): Task<Void>? {
-        val workoutToCreate = Workout(workoutName, workoutDate, exercisesList)
-        return workoutName?.let {
-            UserHelper.getUsersCollection()
-                ?.document(userId)
-                ?.collection(COLLECTION_NAME)
-                ?.document(it)
-                ?.set(workoutToCreate)
-        }
-    }
+    fun createWorkout(userId: String, workout: Workout): Task<DocumentReference>? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.add(workout)
 
     // --- READ ---
 
@@ -52,17 +43,22 @@ class WorkoutHelper {
 
     // --- UPDATE ---
 
-    fun updateWorkout(
-        userId: String, workoutName: String?, workoutDate: Date?,
-        exercisesList: ArrayList<Exercise>?
-    ): Task<Void>? {
-        val workoutToUpdate = Workout(workoutName, workoutDate, exercisesList)
-        return workoutName?.let {
+    fun updateWorkoutIdAfterCreate(
+        userId: String, documentReference: DocumentReference
+    ): Task<Void>? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.document(documentReference.id)
+            // Use SetOptions.merge() to only update the workoutId
+            ?.set(hashMapOf(WORKOUT_ID_FIELD to documentReference.id), SetOptions.merge())
+
+    fun updateWorkout(userId: String, workout: Workout): Task<Void>? =
+        workout.workoutId?.let {
             UserHelper.getUsersCollection()
                 ?.document(userId)
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)
-                ?.set(workoutToUpdate)
+                ?.set(workout)
         }
-    }
 }

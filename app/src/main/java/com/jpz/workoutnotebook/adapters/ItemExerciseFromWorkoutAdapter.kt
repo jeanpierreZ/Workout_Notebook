@@ -11,8 +11,7 @@ import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.viewholders.ItemExerciseViewHolder
 
 class ItemExerciseFromWorkoutAdapter(
-    private var list: ArrayList<Exercise>,
-    private var context: Context
+    private var list: ArrayList<Exercise>, private var context: Context
 ) : RecyclerView.Adapter<ItemExerciseViewHolder>() {
     // RecyclerView used only to interact with the list of exercises chosen for a workout
 

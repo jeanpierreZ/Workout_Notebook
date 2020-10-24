@@ -27,7 +27,6 @@ import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.fragment_edit_calendar.*
 import kotlinx.android.synthetic.main.fragment_edit_workout.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -38,7 +37,6 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     companion object {
         private val TAG = EditWorkoutFragment::class.java.simpleName
         private const val WORKOUT_NAME_FIELD = "workoutName"
-        private const val EXERCISE_NAME_FIELD = "exerciseName"
     }
 
     private lateinit var binding: FragmentEditWorkoutBinding
@@ -46,8 +44,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     private var workout = Workout()
 
     private var userId: String? = null
-    private var workoutNameFromList: String? = null
-    private val allExerciseName = mutableListOf<CharSequence>()
+    private var workoutIdFromList: String? = null
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
@@ -71,24 +68,17 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        workoutNameFromList = arguments?.getString(WORKOUT_NAME)
-        Log.d(TAG, "workoutNameFromList = $workoutNameFromList")
+        workoutIdFromList = arguments?.getString(WORKOUT_NAME)
+        Log.d(TAG, "workoutIdFromList = $workoutIdFromList")
 
-        if (workoutNameFromList != null) {
+        if (workoutIdFromList != null) {
             // If the user click on a workout in the list, bind data with this workout
-            userId?.let {
-                workoutViewModel.getWorkout(it, workoutNameFromList!!)
-                    ?.addOnSuccessListener { documentSnapshot ->
-                        workout = documentSnapshot.toObject(Workout::class.java)!!
-                        binding.workout = workout
-                        configureRecyclerView()
-                    }
-            }
+            userId?.let { getWorkoutDataToObject(it, workoutIdFromList!!) }
         } else {
             // Else create an empty new workout
             binding.workout = workout
             // Attach an empty list of exercises
-            workout.exercisesList = mutableListOf<Exercise>() as ArrayList<Exercise>
+            workout.exercisesList = arrayListOf()
             configureRecyclerView()
         }
 
@@ -98,14 +88,29 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         editWorkoutFragmentFABSave.setOnClickListener(this)
     }
 
+    //--------------------------------------------------------------------------------------
+    // Get the exercise data to Workout Object from Firebase
+
+    private fun getWorkoutDataToObject(userId: String, workoutIdFromList: String) {
+        // Get data
+        workoutViewModel.getWorkout(userId, workoutIdFromList)
+            ?.addOnSuccessListener { documentSnapshot ->
+                workout = documentSnapshot.toObject(Workout::class.java)!!
+                Log.d(TAG, "workout  = $workout")
+                binding.workout = workout
+                // Display data in the recyclerView
+                configureRecyclerView()
+            }
+    }
+
     //----------------------------------------------------------------------------------
     // Configure RecyclerView, Adapter & LayoutManager
 
     private fun configureRecyclerView() {
         // Create the adapter by passing the list of exercises from this workout
         itemExerciseFromWorkoutAdapter =
-            activity?.let {
-                workout.exercisesList?.let { it1 -> ItemExerciseFromWorkoutAdapter(it1, it) }
+            activity?.let { activity ->
+                workout.exercisesList?.let { it -> ItemExerciseFromWorkoutAdapter(it, activity) }
             }
         // Attach the adapter to the recyclerView to populate the exercises
         editWorkoutFragmentRecyclerView?.adapter = itemExerciseFromWorkoutAdapter
@@ -164,25 +169,25 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
 
     // Get the list of all exercises
-    private fun getAllExercises(allExerciseName: MutableList<CharSequence>) {
-        // Clear the list before use it
-        allExerciseName.clear()
+    private fun getAllExercises() {
+        val allExercises = arrayListOf<Exercise>()
 
         userId?.let {
-            exerciseViewModel.getListOfExercises(it)?.get()
+            exerciseViewModel.getOrderedListOfExercises(it)?.get()
                 ?.addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         myUtils.showSnackBar(
-                            editCalendarFragmentCoordinatorLayout, R.string.no_exercise
+                            editWorkoutFragmentCoordinatorLayout, R.string.no_exercise
                         )
                     } else {
                         for (document in documents) {
                             Log.d(TAG, "${document.id} => ${document.data}")
-                            // Add the exercises name to the list
-                            allExerciseName.add(document.get(EXERCISE_NAME_FIELD) as CharSequence)
+                            val exerciseToAdd = document.toObject(Exercise::class.java)
+                            // Add the exercises to the list
+                            allExercises.add(exerciseToAdd)
                         }
-                        // Then show the AlertDialog to add an exercise
-                        addAnExerciseAlertDialog(allExerciseName.toTypedArray())
+                        // Then show the AlertDialog
+                        addAnExerciseAlertDialog(allExercises)
                     }
                 }
                 ?.addOnFailureListener { exception ->
@@ -191,27 +196,38 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    // Display the AlertDialog with the list of all the exercises, in order to add an exercise in the workout
-    private fun addAnExerciseAlertDialog(list: Array<CharSequence>): Dialog {
+    // Display the AlertDialog with the list of the exercises, in order to add one to the workout
+    private fun addAnExerciseAlertDialog(exercises: ArrayList<Exercise>): Dialog {
+        // Create a list of exercises names to display on the AlertDialog
+        val exerciseNamesToDisplay = arrayListOf<String>()
+        // Add all exercise names to this list
+        for (exercise in exercises) {
+            exercise.exerciseName?.let { exerciseNamesToDisplay.add(it) }
+        }
+
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.setTitle(getString(R.string.add_an_exercise))
                 .setNeutralButton(android.R.string.cancel) { dialog, _ ->
                     dialog.dismiss()
                 }
-                .setItems(list) { _, which ->
-                    // Retrieve the exercise from the list position
-                    userId?.let { it1 ->
-                        exerciseViewModel.getExercise(it1, list[which] as String)
-                            ?.addOnSuccessListener { documentSnapshot ->
-                                val exerciseToAdd = documentSnapshot.toObject(Exercise::class.java)
-                                if (exerciseToAdd != null) {
-                                    // Add it to the adapter and the workout
-                                    itemExerciseFromWorkoutAdapter?.addAnExercise(
-                                        exerciseToAdd, editWorkoutFragmentRecyclerView
-                                    )
+                .setItems(exerciseNamesToDisplay.toTypedArray()) { _, which ->
+                    userId?.let { userId ->
+                        // Retrieve the exercise from the list position
+                        val exerciseId = exercises[which].exerciseId
+                        exerciseId?.let {
+                            exerciseViewModel.getExercise(userId, exerciseId)
+                                ?.addOnSuccessListener { documentSnapshot ->
+                                    val exerciseToAdd =
+                                        documentSnapshot.toObject(Exercise::class.java)
+                                    exerciseToAdd?.let {
+                                        // Add the exercise to the adapter and the workout
+                                        itemExerciseFromWorkoutAdapter?.addAnExercise(
+                                            exerciseToAdd, editWorkoutFragmentRecyclerView
+                                        )
+                                    }
                                 }
-                            }
+                        }
                     }
                 }
                 .create()
@@ -229,18 +245,17 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             )
         } else {
             Log.d(TAG, "workout = $workout")
-            if (userId != null) {
-                // Check if an workoutName already exists
-                workoutViewModel.getListOfExercises(userId!!)
+            userId?.let {
+                // Check if a workoutName already exists
+                workoutViewModel.getListOfExercises(it)
                     ?.whereEqualTo(WORKOUT_NAME_FIELD, workout.workoutName)
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
-                            // There isn't document with this workoutName so create the workout
+                            // There is no document with this workoutName so create the workout
                             Log.d(TAG, "documents.isEmpty")
                             workoutViewModel.createWorkout(
-                                editWorkoutFragmentCoordinatorLayout, userId!!, workout.workoutName,
-                                null, workout.exercisesList
+                                editWorkoutFragmentCoordinatorLayout, it, workout
                             )
                             closeFragment()
                         } else {
@@ -268,10 +283,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             )
         } else {
             userId?.let {
-                workoutViewModel.updateWorkout(
-                    editWorkoutFragmentCoordinatorLayout, it,
-                    workout.workoutName, null, workout.exercisesList
-                )
+                workoutViewModel.updateWorkout(editWorkoutFragmentCoordinatorLayout, it, workout)
             }
             closeFragment()
         }
@@ -290,9 +302,9 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.editWorkoutFragmentFABAddExercise -> getAllExercises(allExerciseName)
+            R.id.editWorkoutFragmentFABAddExercise -> getAllExercises()
             R.id.editWorkoutFragmentFABSave -> {
-                if (workoutNameFromList != null) {
+                if (workoutIdFromList != null) {
                     updateWorkout()
                 } else {
                     saveWorkout()

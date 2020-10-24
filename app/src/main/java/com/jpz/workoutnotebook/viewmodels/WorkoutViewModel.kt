@@ -5,10 +5,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.WorkoutHelper
-import com.jpz.workoutnotebook.models.Exercise
+import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
 import org.koin.java.KoinJavaComponent
-import java.util.*
 
 class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
 
@@ -20,22 +19,25 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
 
     // --- CREATE ---
 
-    fun createWorkout(
-        coordinatorLayout: CoordinatorLayout, userId: String, workoutName: String?,
-        workoutDate: Date?, exercisesList: ArrayList<Exercise>?
-    ) = workoutHelper.createWorkout(userId, workoutName, workoutDate, exercisesList)
-        ?.addOnSuccessListener { _ ->
-            myUtils.showSnackBar(
-                coordinatorLayout,
-                coordinatorLayout.context.getString(R.string.new_workout_created, workoutName)
-            )
-            Log.d(TAG, "DocumentSnapshot written with name: $workoutName")
-        }?.addOnFailureListener { e ->
-            Log.e(TAG, "Error writing document", e)
-        }
+    fun createWorkout(coordinatorLayout: CoordinatorLayout, userId: String, workout: Workout) =
+        workoutHelper.createWorkout(userId, workout)
+            ?.addOnSuccessListener { documentReference ->
+                // Set workoutId
+                workoutHelper.updateWorkoutIdAfterCreate(userId, documentReference)
+                // Inform the user
+                myUtils.showSnackBar(
+                    coordinatorLayout, coordinatorLayout.context.getString(
+                        R.string.new_workout_created, workout.workoutName
+                    )
+                )
+                Log.d(TAG, "DocumentSnapshot written with name: ${documentReference.id}")
+            }?.addOnFailureListener { e ->
+                Log.e(TAG, "Error writing document", e)
+            }
 
     // --- READ ---
 
+    // TODO use id
     fun getWorkout(userId: String, workoutName: String) =
         workoutHelper.getWorkout(userId, workoutName)?.addOnFailureListener { e ->
             Log.d(TAG, "get failed with ", e)
@@ -50,13 +52,12 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
     // --- UPDATE ---
 
     fun updateWorkout(
-        coordinatorLayout: CoordinatorLayout, userId: String,
-        workoutName: String?, workoutDate: Date?, exercisesList: ArrayList<Exercise>?
-    ) = workoutHelper.updateWorkout(userId, workoutName, workoutDate, exercisesList)
+        coordinatorLayout: CoordinatorLayout, userId: String, workout: Workout
+    ) = workoutHelper.updateWorkout(userId, workout)
         ?.addOnSuccessListener { _ ->
             myUtils.showSnackBar(
                 coordinatorLayout, coordinatorLayout.context.getString(
-                    R.string.workout_updated, workoutName
+                    R.string.workout_updated, workout.workoutName
                 )
             )
             Log.d(TAG, "DocumentSnapshot successfully updated!")
