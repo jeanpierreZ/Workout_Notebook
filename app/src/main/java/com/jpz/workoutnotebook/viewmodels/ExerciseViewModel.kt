@@ -5,10 +5,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.ExerciseHelper
-import com.jpz.workoutnotebook.models.Series
+import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.utils.MyUtils
 import org.koin.java.KoinJavaComponent.inject
-import java.util.*
 
 class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel() {
 
@@ -20,20 +19,21 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
 
     // --- CREATE ---
 
-    fun createExercise(
-        coordinatorLayout: CoordinatorLayout, userId: String, exerciseName: String?,
-        restNextSet: Int?, restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
-    ) = exerciseHelper.createExercise(
-        userId, exerciseName, restNextSet, restNextExercise, editable, seriesList
-    )?.addOnSuccessListener { _ ->
-        myUtils.showSnackBar(
-            coordinatorLayout,
-            coordinatorLayout.context.getString(R.string.new_exercise_created, exerciseName)
-        )
-        Log.d(TAG, "DocumentSnapshot written with name: $exerciseName")
-    }?.addOnFailureListener { e ->
-        Log.e(TAG, "Error writing document", e)
-    }
+    fun createExercise(coordinatorLayout: CoordinatorLayout, userId: String, exercise: Exercise) =
+        exerciseHelper.createExercise(userId, exercise)
+            ?.addOnSuccessListener { documentReference ->
+                // Set exerciseId
+                exerciseHelper.updateExerciseIdAfterCreateExercise(userId, documentReference)
+                // Inform the user
+                myUtils.showSnackBar(
+                    coordinatorLayout, coordinatorLayout.context.getString(
+                        R.string.new_exercise_created, exercise.exerciseName
+                    )
+                )
+                Log.d(TAG, "DocumentSnapshot written with name: ${documentReference.id}")
+            }?.addOnFailureListener { e ->
+                Log.e(TAG, "Error writing document", e)
+            }
 
     // --- READ ---
 
@@ -50,20 +50,16 @@ class ExerciseViewModel(private val exerciseHelper: ExerciseHelper) : ViewModel(
 
     // --- UPDATE ---
 
-    fun updateExercise(
-        coordinatorLayout: CoordinatorLayout, userId: String, exerciseName: String?,
-        restNextSet: Int?, restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
-    ) = exerciseHelper.updateExercise(
-        userId, exerciseName, restNextSet, restNextExercise, editable, seriesList
-    )
-        ?.addOnSuccessListener { _ ->
-            myUtils.showSnackBar(
-                coordinatorLayout, coordinatorLayout.context.getString(
-                    R.string.exercise_updated, exerciseName
+    fun updateExercise(coordinatorLayout: CoordinatorLayout, userId: String, exercise: Exercise) =
+        exerciseHelper.updateExercise(userId, exercise)
+            ?.addOnSuccessListener {
+                myUtils.showSnackBar(
+                    coordinatorLayout, coordinatorLayout.context.getString(
+                        R.string.exercise_updated, exercise.exerciseName
+                    )
                 )
-            )
-            Log.d(TAG, "DocumentSnapshot successfully updated!")
-        }?.addOnFailureListener { e ->
-            Log.e(TAG, "Error updating document", e)
-        }
+                Log.d(TAG, "DocumentSnapshot successfully updated!")
+            }?.addOnFailureListener { e ->
+                Log.e(TAG, "Error updating document", e)
+            }
 }

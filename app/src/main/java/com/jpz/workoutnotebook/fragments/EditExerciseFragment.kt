@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.EditActivity.Companion.EXERCISE_NAME
+import com.jpz.workoutnotebook.activities.EditActivity.Companion.EXERCISE_ID
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditExerciseBinding
@@ -41,7 +41,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private var exercise = Exercise()
 
     private var userId: String? = null
-    private var exerciseNameFromList: String? = null
+    private var exerciseIdFromList: String? = null
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
@@ -64,20 +64,12 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        exerciseNameFromList = arguments?.getString(EXERCISE_NAME)
-        Log.d(TAG, "exerciseNameFromList = $exerciseNameFromList")
+        exerciseIdFromList = arguments?.getString(EXERCISE_ID)
+        Log.d(TAG, "exerciseIdFromList = $exerciseIdFromList")
 
-        if (exerciseNameFromList != null) {
+        if (exerciseIdFromList != null) {
             // If the user click on an exercise in the list, bind data with this exercise
-            userId?.let {
-                exerciseViewModel.getExercise(it, exerciseNameFromList!!)
-                    ?.addOnSuccessListener { documentSnapshot ->
-                        exercise = documentSnapshot.toObject(Exercise::class.java)!!
-                        Log.d(TAG, "exercise  = $exercise")
-                        binding.exercise = exercise
-                        configureRecyclerView()
-                    }
-            }
+            userId?.let { getExerciseDataToObject(it, exerciseIdFromList!!) }
         } else {
             // Else create an empty new exercise
             binding.exercise = exercise
@@ -94,6 +86,21 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
         editExerciseFragmentFABAddSeries.setOnClickListener(this)
         editExerciseFragmentFABSave.setOnClickListener(this)
+    }
+
+    //--------------------------------------------------------------------------------------
+    // Get the exercise data to Exercise Object from Firebase
+
+    private fun getExerciseDataToObject(userId: String, exerciseIdFromList: String) {
+        // Get data
+        exerciseViewModel.getExercise(userId, exerciseIdFromList)
+            ?.addOnSuccessListener { documentSnapshot ->
+                exercise = documentSnapshot.toObject(Exercise::class.java)!!
+                Log.d(TAG, "exercise  = $exercise")
+                binding.exercise = exercise
+                // Display data in the recyclerView
+                configureRecyclerView()
+            }
     }
 
     //----------------------------------------------------------------------------------
@@ -167,9 +174,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             )
         } else {
             Log.d(TAG, "exercise = $exercise")
-            if (userId != null) {
+            userId?.let {
                 // Check if an exerciseName already exists
-                exerciseViewModel.getListOfExercises(userId!!)
+                exerciseViewModel.getListOfExercises(it)
                     ?.whereEqualTo(EXERCISE_NAME_FIELD, exercise.exerciseName)
                     ?.get()
                     ?.addOnSuccessListener { documents ->
@@ -177,9 +184,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                             // There isn't document with this exerciseName so create the exercise
                             Log.d(TAG, "documents.isEmpty")
                             exerciseViewModel.createExercise(
-                                editExerciseFragmentCoordinatorLayout,
-                                userId!!, exercise.exerciseName, exercise.restNextSet,
-                                exercise.restNextExercise, true, exercise.seriesList
+                                editExerciseFragmentCoordinatorLayout, it, exercise
                             )
                             closeFragment()
                         } else {
@@ -209,9 +214,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         } else {
             userId?.let {
                 exerciseViewModel.updateExercise(
-                    editExerciseFragmentCoordinatorLayout, it, exercise.exerciseName,
-                    exercise.restNextSet, exercise.restNextExercise,
-                    exercise.editable, exercise.seriesList
+                    editExerciseFragmentCoordinatorLayout, it, exercise
                 )
             }
             closeFragment()
@@ -234,7 +237,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             R.id.editExerciseFragmentFABAddSeries ->
                 itemSeriesAdapter?.addASeries(editExerciseFragmentRecyclerView)
             R.id.editExerciseFragmentFABSave -> {
-                if (exerciseNameFromList != null) {
+                if (exerciseIdFromList != null) {
                     updateExercise()
                 } else {
                     saveExercise()

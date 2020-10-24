@@ -66,7 +66,7 @@ class EditProfileFragment : BaseProfileFragment() {
     }
 
     //--------------------------------------------------------------------------------------
-    // Display the user data from Firebase
+    // Get the user data to User Object from Firebase
 
     private fun getUserDataToObject(userId: String?) {
         userId?.let {

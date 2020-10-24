@@ -5,6 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Exercise(
+    var exerciseId: String? = null,
     var exerciseName: String? = null,
     var restNextSet: Int? = null,
     var restNextExercise: Int? = null,

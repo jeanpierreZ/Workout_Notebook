@@ -67,8 +67,8 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         }
 
         listSportsFragmentFABAdd.setOnClickListener {
-            if (isAnExercise != null) {
-                callback?.addOrUpdateItem(isAnExercise!!, null)
+            isAnExercise?.let {
+                callback?.addOrUpdateItem(it, null)
             }
         }
 
@@ -183,11 +183,13 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     //----------------------------------------------------------------------------------
     // Interface for callbacks item Adapters
 
-    override fun onClickExerciseName(exerciseName: String?, position: Int) {
-        if (exerciseName != null) {
-            isAnExercise?.let { callback?.addOrUpdateItem(it, exerciseName) }
+    override fun onClickExercise(exerciseId: String?, position: Int) {
+        exerciseId?.let {
+            isAnExercise?.let { isAnExercise -> callback?.addOrUpdateItem(isAnExercise, it) }
         }
     }
+
+    // TODO use Id
 
     override fun onClickWorkoutName(workoutName: String?, position: Int) {
         if (workoutName != null) {
@@ -207,7 +209,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
     // Declare our interface that will be implemented by any container activity
     interface ItemListener {
-        fun addOrUpdateItem(isAnExercise: Boolean, itemName: String?)
+        fun addOrUpdateItem(isAnExercise: Boolean, item: String?)
     }
 
     // Create callback to parent activity

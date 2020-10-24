@@ -24,7 +24,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
     companion object {
         private val TAG = EditActivity::class.java.simpleName
         const val IS_AN_EXERCISE = "IS_AN_EXERCISE"
-        const val EXERCISE_NAME = "EXERCISE_NAME"
+        const val EXERCISE_ID = "EXERCISE_ID"
         const val WORKOUT_NAME = "WORKOUT_NAME"
     }
 
@@ -111,10 +111,10 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
             .commit()
     }
 
-    private fun displayEditExerciseFragment(exerciseName: String?) {
+    private fun displayEditExerciseFragment(exerciseId: String?) {
         val editExerciseFragment = EditExerciseFragment()
         val bundle = Bundle()
-        bundle.putString(EXERCISE_NAME, exerciseName)
+        bundle.putString(EXERCISE_ID, exerciseId)
         editExerciseFragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()
@@ -138,11 +138,11 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
     //--------------------------------------------------------------------------------------
     // Callback from ListSportsFragment
 
-    override fun addOrUpdateItem(isAnExercise: Boolean, itemName: String?) {
+    override fun addOrUpdateItem(isAnExercise: Boolean, item: String?) {
         if (isAnExercise) {
-            displayEditExerciseFragment(itemName)
+            displayEditExerciseFragment(item)
         } else {
-            displayEditWorkoutFragment(itemName)
+            displayEditWorkoutFragment(item)
         }
     }
 }

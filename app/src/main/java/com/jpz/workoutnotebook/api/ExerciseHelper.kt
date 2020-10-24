@@ -1,43 +1,35 @@
 package com.jpz.workoutnotebook.api
 
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.Exercise
-import com.jpz.workoutnotebook.models.Series
-import java.util.*
 
 class ExerciseHelper {
 
     companion object {
         private const val COLLECTION_NAME = "exercises"
+        private const val EXERCISE_ID_FIELD = "exerciseId"
         private const val EXERCISE_NAME_FIELD = "exerciseName"
     }
 
     // --- CREATE ---
 
-    fun createExercise(
-        userId: String, exerciseName: String?, restNextSet: Int?,
-        restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
-    ): Task<Void>? {
-        val exerciseToCreate =
-            Exercise(exerciseName, restNextSet, restNextExercise, editable, seriesList)
-        return exerciseName?.let {
-            UserHelper.getUsersCollection()
-                ?.document(userId)
-                ?.collection(COLLECTION_NAME)
-                ?.document(it)
-                ?.set(exerciseToCreate)
-        }
-    }
-
-    // --- READ ---
-
-    fun getExercise(userId: String, exerciseName: String): Task<DocumentSnapshot>? =
+    fun createExercise(userId: String, exercise: Exercise): Task<DocumentReference>? =
         UserHelper.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
-            ?.document(exerciseName)
+            ?.add(exercise)
+
+    // --- READ ---
+
+    fun getExercise(userId: String, exerciseId: String): Task<DocumentSnapshot>? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.document(exerciseId)
             ?.get()
 
     // --- QUERY ---
@@ -51,18 +43,22 @@ class ExerciseHelper {
 
     // --- UPDATE ---
 
-    fun updateExercise(
-        userId: String, exerciseName: String?, restNextSet: Int?,
-        restNextExercise: Int?, editable: Boolean, seriesList: ArrayList<Series>?
-    ): Task<Void>? {
-        val exerciseToUpdate =
-            Exercise(exerciseName, restNextSet, restNextExercise, editable, seriesList)
-        return exerciseName?.let {
+    fun updateExerciseIdAfterCreateExercise(
+        userId: String, documentReference: DocumentReference
+    ): Task<Void>? =
+        UserHelper.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.document(documentReference.id)
+            // Use SetOptions.merge() to only update the exerciseId
+            ?.set(hashMapOf(EXERCISE_ID_FIELD to documentReference.id), SetOptions.merge())
+
+    fun updateExercise(userId: String, exercise: Exercise): Task<Void>? =
+        exercise.exerciseId?.let {
             UserHelper.getUsersCollection()
                 ?.document(userId)
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)
-                ?.set(exerciseToUpdate)
+                ?.set(exercise)
         }
-    }
 }
