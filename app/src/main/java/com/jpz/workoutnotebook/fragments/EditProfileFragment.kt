@@ -43,7 +43,7 @@ class EditProfileFragment : BaseProfileFragment() {
         userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")
 
-        getUserData(userId)
+        getUserDataToObject(userId)
 
         baseProfileFragmentPhoto.setOnClickListener {
             addPhotoWithPermissionCheck()
@@ -68,9 +68,9 @@ class EditProfileFragment : BaseProfileFragment() {
     //--------------------------------------------------------------------------------------
     // Display the user data from Firebase
 
-    private fun getUserData(userId: String?) {
-        if (userId != null) {
-            userViewModel.getUser(userId)?.addOnSuccessListener { documentSnapshot ->
+    private fun getUserDataToObject(userId: String?) {
+        userId?.let {
+            userViewModel.getUser(it)?.addOnSuccessListener { documentSnapshot ->
                 user = documentSnapshot.toObject(User::class.java)
                 user?.let { binding.user = user }
             }
@@ -120,8 +120,8 @@ class EditProfileFragment : BaseProfileFragment() {
     private fun updateUser() {
         val user = userId?.let { it ->
             User(
-                it, user?.nickName, user?.name, user?.firstName, user?.age, user?.photoProfile,
-                user?.sports, user?.iFollow, user?.followers, user?.exercises, user?.workouts
+                it, user?.nickName, user?.name, user?.firstName, user?.age,
+                user?.photoProfile, user?.sports, user?.iFollow, user?.followers
             )
         }
         if (user != null) {

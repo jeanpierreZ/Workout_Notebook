@@ -9,8 +9,5 @@ data class User(
     var photoProfile: String? = null,
     var sports: String? = null,
     var iFollow: ArrayList<String>? = ArrayList(),
-    var followers: ArrayList<String>? = ArrayList(),
-    // TODO delete exercises and workouts
-    var exercises: ArrayList<Exercise>? = ArrayList(),
-    var workouts: ArrayList<Workout>? = ArrayList()
+    var followers: ArrayList<String>? = ArrayList()
 )
