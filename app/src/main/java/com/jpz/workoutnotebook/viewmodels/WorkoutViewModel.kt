@@ -37,9 +37,8 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
 
     // --- READ ---
 
-    // TODO use id
-    fun getWorkout(userId: String, workoutName: String) =
-        workoutHelper.getWorkout(userId, workoutName)?.addOnFailureListener { e ->
+    fun getWorkout(userId: String, workoutId: String) =
+        workoutHelper.getWorkout(userId, workoutId)?.addOnFailureListener { e ->
             Log.d(TAG, "get failed with ", e)
         }
 
@@ -54,7 +53,7 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
     fun updateWorkout(
         coordinatorLayout: CoordinatorLayout, userId: String, workout: Workout
     ) = workoutHelper.updateWorkout(userId, workout)
-        ?.addOnSuccessListener { _ ->
+        ?.addOnSuccessListener {
             myUtils.showSnackBar(
                 coordinatorLayout, coordinatorLayout.context.getString(
                     R.string.workout_updated, workout.workoutName

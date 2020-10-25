@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.EditActivity.Companion.WORKOUT_NAME
+import com.jpz.workoutnotebook.activities.EditActivity.Companion.WORKOUT_ID
 import com.jpz.workoutnotebook.adapters.ItemExerciseFromWorkoutAdapter
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditWorkoutBinding
@@ -68,7 +68,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        workoutIdFromList = arguments?.getString(WORKOUT_NAME)
+        workoutIdFromList = arguments?.getString(WORKOUT_ID)
         Log.d(TAG, "workoutIdFromList = $workoutIdFromList")
 
         if (workoutIdFromList != null) {
@@ -198,7 +198,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     // Display the AlertDialog with the list of the exercises, in order to add one to the workout
     private fun addAnExerciseAlertDialog(exercises: ArrayList<Exercise>): Dialog {
-        // Create a list of exercises names to display on the AlertDialog
+        // Create a list of exercise names to display on the AlertDialog
         val exerciseNamesToDisplay = arrayListOf<String>()
         // Add all exercise names to this list
         for (exercise in exercises) {

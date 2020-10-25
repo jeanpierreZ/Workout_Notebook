@@ -25,7 +25,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         private val TAG = EditActivity::class.java.simpleName
         const val IS_AN_EXERCISE = "IS_AN_EXERCISE"
         const val EXERCISE_ID = "EXERCISE_ID"
-        const val WORKOUT_NAME = "WORKOUT_NAME"
+        const val WORKOUT_ID = "WORKOUT_ID"
     }
 
     private val myUtils: MyUtils by inject()
@@ -123,10 +123,10 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
             .commit()
     }
 
-    private fun displayEditWorkoutFragment(workoutName: String?) {
+    private fun displayEditWorkoutFragment(workoutId: String?) {
         val editWorkoutFragment = EditWorkoutFragment()
         val bundle = Bundle()
-        bundle.putString(WORKOUT_NAME, workoutName)
+        bundle.putString(WORKOUT_ID, workoutId)
         editWorkoutFragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()

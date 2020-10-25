@@ -21,7 +21,6 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
@@ -32,13 +31,6 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     }
 
     private var userId: String? = null
-
-    // List of EventDay in calendarView
-    private val events = mutableListOf<EventDay>()
-
-    // List of training session and dates from Firestore
-    private val trainingSessionList = arrayListOf<TrainingSession>()
-    private val trainingSessionDateList: ArrayList<String> = ArrayList()
 
     // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
@@ -61,7 +53,6 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     override fun onResume() {
         super.onResume()
-        addTrainingSessionsToCalendarView()
         configureRecyclerView(arrayListOf())
     }
 
@@ -69,6 +60,8 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         userId = userAuth.getCurrentUser()?.uid
+
+        addTrainingSessionsToCalendarView()
 
         calendarFragmentCalendarView.setOnPreviousPageChangeListener(
             object : OnCalendarPageChangeListener {
@@ -88,8 +81,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
         calendarFragmentCalendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
-                // Clear the list before use it
-                trainingSessionList.clear()
+                val trainingSessionList = arrayListOf<TrainingSession>()
 
                 // Get the eventDay from the calendarView
                 val clickedDayCalendar: Calendar = eventDay.calendar
@@ -177,9 +169,6 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     // Methods to add the training sessions to the current month of the calendar
 
     private fun addTrainingSessionsToCalendarView() {
-        // Clear the list before use it
-        trainingSessionDateList.clear()
-
         userId?.let {
             // Get the list of training sessions from Firestore in real time
             trainingSessionViewModel.getListOfTrainingSessions(it)
@@ -188,12 +177,12 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
                         Log.w(TAG, "Listen failed.", e)
                         return@addSnapshotListener
                     }
+                    val trainingSessionDateList = arrayListOf<String>()
                     if (value != null && !value.isEmpty) {
                         for (doc in value) {
                             // Add each training session date to the list of dates
                             trainingSessionDateList.add(doc.get(TRAINING_SESSION_DATE_FIELD) as String)
                         }
-                        Log.d(TAG, "dateList = $trainingSessionDateList")
                         // Add an event to each training session in calendarView
                         addEventInCurrentMonth(trainingSessionDateList)
                     }
@@ -202,9 +191,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     }
 
     private fun addEventInCurrentMonth(dateList: ArrayList<String>) {
-        // Clear the list before use it
-        events.clear()
-
+        val events = arrayListOf<EventDay>()
         val currentMonth = calendarFragmentCalendarView.currentPageDate.get(Calendar.MONTH)
         Log.d(TAG, "currentMonth = $currentMonth")
 

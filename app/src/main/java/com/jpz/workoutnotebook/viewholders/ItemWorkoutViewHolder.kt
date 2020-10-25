@@ -28,6 +28,7 @@ class ItemWorkoutViewHolder(workout: View) : RecyclerView.ViewHolder(workout) {
         itemView.setOnClickListener {
             // When a click happens, we fire our listener to get the workout position in the list
             if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
+                // TODO pass workout instead of workoutId ?
                 finalCallback.onClickWorkout(workout?.workoutId, adapterPosition)
             }
         }

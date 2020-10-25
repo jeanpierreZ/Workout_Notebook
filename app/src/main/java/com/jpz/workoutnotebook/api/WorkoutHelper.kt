@@ -25,11 +25,11 @@ class WorkoutHelper {
 
     // --- READ ---
 
-    fun getWorkout(userId: String, workoutName: String): Task<DocumentSnapshot>? =
+    fun getWorkout(userId: String, workoutId: String): Task<DocumentSnapshot>? =
         UserHelper.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
-            ?.document(workoutName)
+            ?.document(workoutId)
             ?.get()
 
     // --- QUERY ---

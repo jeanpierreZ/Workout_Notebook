@@ -23,6 +23,7 @@ class ItemWorkoutAdapter(
 
     // Callback
     interface Listener {
+        // TODO pass workout instead of workoutId ?
         fun onClickWorkout(workoutId: String?, position: Int)
     }
 

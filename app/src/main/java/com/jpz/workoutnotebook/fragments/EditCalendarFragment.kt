@@ -7,7 +7,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.toColor
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
@@ -38,7 +37,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     companion object {
         private val TAG = EditCalendarFragment::class.java.simpleName
-        private const val WORKOUT_NAME_FIELD = "workoutName"
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
 
@@ -53,7 +51,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
     private var userId: String? = null
-    private var allWorkoutName = mutableListOf<CharSequence>()
+
+    // TrainingSession properties
+    private var workoutIdChosen: String? = null
+    private var trainingSessionId: String? = null
+
     private var trainingSession: TrainingSession? = null
 
     // Firebase Auth, Firestore and utils
@@ -79,7 +81,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
+        trainingSession = arguments?.getParcelable(TRAINING_SESSION)
+        Log.d(TAG, "trainingSession = $trainingSession")
+        if (trainingSession != null) {
+            setHasOptionsMenu(true)
+        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_edit_calendar, container, false)
     }
@@ -103,39 +109,44 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        trainingSession = arguments?.getParcelable(TRAINING_SESSION)
-        Log.d(TAG, "trainingSession = $trainingSession")
-
-        if (trainingSession != null) {
-            trainingSession!!.trainingSessionDate?.let {
-
-                // Get the date
-                val parsedDate: Date? = sdf.parse(it)
-                Log.d(TAG, "parsedDate = $parsedDate")
-                if (parsedDate != null) {
-                    // Get calendar time from parsedDate
-                    calendar.time = parsedDate
-                    // Set values with the updated calendar
-                    year = calendar.get(Calendar.YEAR)
-                    month = calendar.get(Calendar.MONTH)
-                    day = calendar.get(Calendar.DATE)
-                    hour = calendar.get(Calendar.HOUR)
-                    minute = calendar.get(Calendar.MINUTE)
-                    // Set textViews with date and time
-                    editCalendarFragmentDate.text =
-                        DateFormat.getDateInstance(DateFormat.MEDIUM).format(parsedDate)
-                    editCalendarFragmentTime.text =
-                        DateFormat.getTimeInstance(DateFormat.SHORT).format(parsedDate)
-                }
-                // Set textView with workoutName
-                editCalendarFragmentWorkout.text = trainingSession!!.workout?.workoutName
-            }
-        }
+        // Get TrainingSession data
+        trainingSession?.let { getTrainingSessionData(it) }
 
         editCalendarFragmentButtonWorkout.setOnClickListener(this)
         editCalendarFragmentButtonDate.setOnClickListener(this)
         editCalendarFragmentButtonTime.setOnClickListener(this)
         editCalendarFragmentButtonSave.setOnClickListener(this)
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    private fun getTrainingSessionData(trainingSession: TrainingSession) {
+        trainingSessionId = trainingSession.trainingSessionId
+        workoutIdChosen = trainingSession.workout?.workoutId
+
+        trainingSession.trainingSessionDate?.let {
+            // Get the date
+            val parsedDate: Date? = sdf.parse(it)
+            Log.d(TAG, "parsedDate = $parsedDate")
+
+            parsedDate?.let {
+                // Get calendar time from parsedDate
+                calendar.time = parsedDate
+                // Set values with the updated calendar
+                year = calendar.get(Calendar.YEAR)
+                month = calendar.get(Calendar.MONTH)
+                day = calendar.get(Calendar.DATE)
+                hour = calendar.get(Calendar.HOUR)
+                minute = calendar.get(Calendar.MINUTE)
+                // Set textViews with date and time
+                editCalendarFragmentDate.text =
+                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(parsedDate)
+                editCalendarFragmentTime.text =
+                    DateFormat.getTimeInstance(DateFormat.SHORT).format(parsedDate)
+            }
+            // Set textView with workoutName
+            editCalendarFragmentWorkout.text = trainingSession.workout?.workoutName
+        }
     }
 
     //--------------------------------------------------------------------------------------
@@ -169,9 +180,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //--------------------------------------------------------------------------------------
 
     // Get the list of all workouts
-    private fun getAllWorkouts(allWorkoutName: MutableList<CharSequence>) {
-        // Clear the list before use it
-        allWorkoutName.clear()
+    private fun getAllWorkouts() {
+        val allWorkouts = arrayListOf<Workout>()
 
         userId?.let { it ->
             // Get the workouts from Firestore Query
@@ -184,11 +194,12 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     } else {
                         for (document in documents) {
                             Log.d(TAG, "${document.id} => ${document.data}")
-                            // Add the workouts name to the list
-                            allWorkoutName.add(document.get(WORKOUT_NAME_FIELD) as CharSequence)
+                            val workoutToAdd = document.toObject(Workout::class.java)
+                            // Add the workouts to the list
+                            allWorkouts.add(workoutToAdd)
                         }
-                        // Then show the AlertDialog with the list of workouts
-                        addAWorkoutAlertDialog(allWorkoutName.toTypedArray())
+                        // Then show the AlertDialog
+                        addAWorkoutAlertDialog(allWorkouts)
                     }
                 }
                 ?.addOnFailureListener { exception ->
@@ -197,17 +208,26 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    // Display the AlertDialog with the list of all the workouts
-    private fun addAWorkoutAlertDialog(list: Array<CharSequence>): Dialog {
+    // Display the AlertDialog with the list of the workouts, in order to add one to the training session
+    private fun addAWorkoutAlertDialog(workouts: ArrayList<Workout>): Dialog {
+        // Create a list of workout names to display on the AlertDialog
+        val workoutNamesToDisplay = arrayListOf<String>()
+        // Add all workout names to this list
+        for (workout in workouts) {
+            workout.workoutName?.let { workoutNamesToDisplay.add(it) }
+        }
+
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.setTitle(getString(R.string.add_a_workout))
                 .setNeutralButton(android.R.string.cancel) { dialog, _ ->
                     dialog.dismiss()
                 }
-                .setItems(list) { _, which ->
-                    // Display the workout chosen
-                    editCalendarFragmentWorkout.text = list[which]
+                .setItems(workoutNamesToDisplay.toTypedArray()) { _, which ->
+                    // Retrieve the workoutId from the list position
+                    workoutIdChosen = workouts[which].workoutId
+                    // Display the workout name chosen in textView
+                    editCalendarFragmentWorkout.text = workoutNamesToDisplay[which]
                 }
                 .create()
             builder.show()
@@ -229,18 +249,16 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
             )
-
         } else if (dateToRegister.before(now)) {
             // Cannot create a training session with a previous time
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout,
                 R.string.cannot_create_update_training_session_with_past_date
             )
-
         } else {
-            if (userId != null) {
-                // Check if a trainingSession on this date already exists
-                trainingSessionViewModel.getListOfTrainingSessions(userId!!)
+            userId?.let {
+                // Check if a trainingSession on this date (and time) already exists
+                trainingSessionViewModel.getListOfTrainingSessions(it)
                     ?.whereEqualTo(
                         TRAINING_SESSION_DATE_FIELD,
                         getTrainingSessionDateInSDFFormat(dateToRegister)
@@ -248,22 +266,25 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
-                            // There isn't document with this trainingSessionDate so create it
+                            // There is no document with this trainingSessionDate so create it
                             Log.d(TAG, "documents.isEmpty")
-                            // Retrieve the workout from its name
-                            workoutViewModel.getWorkout(
-                                userId!!, editCalendarFragmentWorkout.text as String
-                            )
+                            // Retrieve the workout from its id
+                            workoutIdChosen?.let { workoutIdChosen ->
+                                workoutViewModel.getWorkout(it, workoutIdChosen)
+                            }
                                 ?.addOnSuccessListener { documentSnapshot ->
                                     val workoutToAdd =
                                         documentSnapshot.toObject(Workout::class.java)
                                     if (workoutToAdd != null) {
                                         // Create the training session
-                                        trainingSessionViewModel.createTrainingSession(
-                                            editCalendarFragmentCoordinatorLayout,
-                                            userId!!,
+                                        val trainingSession = TrainingSession(
+                                            null,
                                             getTrainingSessionDateInSDFFormat(dateToRegister),
                                             workoutToAdd
+                                        )
+                                        trainingSessionViewModel.createTrainingSession(
+                                            editCalendarFragmentCoordinatorLayout,
+                                            it, trainingSession
                                         )
                                     }
                                 }
@@ -298,35 +319,60 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
             )
-
         } else if (dateToRegister.before(now)) {
             // Cannot update a training session with a previous time
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout,
                 R.string.cannot_create_update_training_session_with_past_date
             )
-
         } else {
-            userId?.let { it ->
-                // Retrieve the workout from its name
-                workoutViewModel.getWorkout(
-                    it, editCalendarFragmentWorkout.text as String
-                )
-                    ?.addOnSuccessListener { documentSnapshot ->
-                        val workoutToUpdate =
-                            documentSnapshot.toObject(Workout::class.java)
-                        if (workoutToUpdate != null) {
-                            // Update the training session
-                            trainingSessionViewModel.updateTrainingSession(
+            userId?.let {
+                // Check if a trainingSession on this date (and time) already exists
+                trainingSessionViewModel.getListOfTrainingSessions(it)
+                    ?.whereEqualTo(
+                        TRAINING_SESSION_DATE_FIELD,
+                        getTrainingSessionDateInSDFFormat(dateToRegister)
+                    )
+                    ?.get()
+                    ?.addOnSuccessListener { documents ->
+                        if (documents.isEmpty) {
+                            // There is no document with this trainingSessionDate so update it
+                            Log.d(TAG, "documents.isEmpty")
+                            userId?.let {
+                                // Retrieve the workout from its id
+                                workoutIdChosen?.let { workoutIdChosen ->
+                                    workoutViewModel.getWorkout(it, workoutIdChosen)
+                                }?.addOnSuccessListener { documentSnapshot ->
+                                    val workoutToUpdate =
+                                        documentSnapshot.toObject(Workout::class.java)
+                                    if (workoutToUpdate != null) {
+                                        // Update the training session
+                                        val trainingSession = TrainingSession(
+                                            trainingSessionId,
+                                            getTrainingSessionDateInSDFFormat(dateToRegister),
+                                            workoutToUpdate
+                                        )
+                                        trainingSessionViewModel.updateTrainingSession(
+                                            editCalendarFragmentCoordinatorLayout,
+                                            it,
+                                            trainingSession
+                                        )
+                                    }
+                                }
+                            }
+                            closeFragment()
+                        } else {
+                            // The same trainingSessionDate exists, choose another time
+                            myUtils.showSnackBar(
                                 editCalendarFragmentCoordinatorLayout,
-                                it,
-                                getTrainingSessionDateInSDFFormat(dateToRegister),
-                                workoutToUpdate
+                                R.string.training_session_time_already_exists
                             )
+                            for (document in documents) {
+                                Log.d(TAG, "${document.id} => ${document.data}")
+                            }
                         }
                     }
             }
-            closeFragment()
         }
     }
 
@@ -357,7 +403,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     // Delete the training session
                     trainingSessionViewModel.deleteATrainingSession(
-                        editCalendarFragmentCoordinatorLayout, userId, trainingSession, it
+                        editCalendarFragmentCoordinatorLayout, userId, trainingSession
                     )
                     closeFragment()
                 }
@@ -371,7 +417,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.editCalendarFragmentButtonWorkout -> getAllWorkouts(allWorkoutName)
+            R.id.editCalendarFragmentButtonWorkout -> getAllWorkouts()
 
             R.id.editCalendarFragmentButtonDate -> {
                 val datePicker = DatePickerFragment()
