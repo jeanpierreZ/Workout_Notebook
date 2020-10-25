@@ -55,8 +55,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     // TrainingSession properties
     private var workoutIdChosen: String? = null
     private var trainingSessionId: String? = null
+    private var trainingDateToUpdate: String? = null
 
     private var trainingSession: TrainingSession? = null
+    private var toUpdate = false
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
@@ -123,8 +125,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private fun getTrainingSessionData(trainingSession: TrainingSession) {
         trainingSessionId = trainingSession.trainingSessionId
         workoutIdChosen = trainingSession.workout?.workoutId
+        trainingDateToUpdate = trainingSession.trainingSessionDate
+        toUpdate = true
 
-        trainingSession.trainingSessionDate?.let {
+        trainingDateToUpdate?.let {
             // Get the date
             val parsedDate: Date? = sdf.parse(it)
             Log.d(TAG, "parsedDate = $parsedDate")
@@ -235,29 +239,26 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     }
 
     //----------------------------------------------------------------------------------
-    // Methods to save or update a training session
+    // Methods to create or update a training session
 
-    private fun saveTrainingSession() {
-        val nowCalendar = Calendar.getInstance()
-        val now: Date = nowCalendar.time
+    private fun createOrUpdateTrainingSession(toUpdate: Boolean) {
         val dateToRegister = calendar.time
 
-        if (editCalendarFragmentDate.text.isNullOrEmpty()
-            || editCalendarFragmentTime.text.isNullOrEmpty()
-            || editCalendarFragmentWorkout.text.isNullOrEmpty()
-        ) {
-            myUtils.showSnackBar(
-                editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
-            )
-        } else if (dateToRegister.before(now)) {
-            // Cannot create a training session with a previous time
-            myUtils.showSnackBar(
-                editCalendarFragmentCoordinatorLayout,
-                R.string.cannot_create_update_training_session_with_past_date
-            )
-        } else {
-            userId?.let {
-                // Check if a trainingSession on this date (and time) already exists
+        if (checkIfATextViewIsEmpty()) {
+            return
+        }
+
+        if (checkIfDateToRegisterBeforeNow(dateToRegister)) {
+            return
+        }
+
+        userId?.let { it ->
+            // If it is an update and it is the same date, update the training session
+            if (trainingDateToUpdate == getTrainingSessionDateInSDFFormat(dateToRegister) && toUpdate) {
+                createOrUpdateToFirestore(it, dateToRegister, toUpdate)
+            } else {
+                // If the date is different and it is not an update,
+                // check if a trainingSession on this date (and time) already exists
                 trainingSessionViewModel.getListOfTrainingSessions(it)
                     ?.whereEqualTo(
                         TRAINING_SESSION_DATE_FIELD,
@@ -266,29 +267,9 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
-                            // There is no document with this trainingSessionDate so create it
+                            // There is no document with this trainingSessionDate so create or update it
                             Log.d(TAG, "documents.isEmpty")
-                            // Retrieve the workout from its id
-                            workoutIdChosen?.let { workoutIdChosen ->
-                                workoutViewModel.getWorkout(it, workoutIdChosen)
-                            }
-                                ?.addOnSuccessListener { documentSnapshot ->
-                                    val workoutToAdd =
-                                        documentSnapshot.toObject(Workout::class.java)
-                                    if (workoutToAdd != null) {
-                                        // Create the training session
-                                        val trainingSession = TrainingSession(
-                                            null,
-                                            getTrainingSessionDateInSDFFormat(dateToRegister),
-                                            workoutToAdd
-                                        )
-                                        trainingSessionViewModel.createTrainingSession(
-                                            editCalendarFragmentCoordinatorLayout,
-                                            it, trainingSession
-                                        )
-                                    }
-                                }
-                            closeFragment()
+                            createOrUpdateToFirestore(it, dateToRegister, toUpdate)
                         } else {
                             // The same trainingSessionDate exists, choose another time
                             myUtils.showSnackBar(
@@ -299,81 +280,66 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                 Log.d(TAG, "${document.id} => ${document.data}")
                             }
                         }
-                    }
-                    ?.addOnFailureListener { exception ->
-                        Log.w(TAG, "Error getting documents: ", exception)
                     }
             }
         }
     }
 
-    private fun updateTrainingSession() {
-        val nowCalendar = Calendar.getInstance()
-        val now: Date = nowCalendar.time
-        val dateToRegister = calendar.time
+    private fun createOrUpdateToFirestore(userId: String, dateToRegister: Date, toUpdate: Boolean) {
+        // Retrieve the workout from its id
+        workoutIdChosen?.let { workoutIdChosen ->
+            workoutViewModel.getWorkout(userId, workoutIdChosen)
+        }
+            ?.addOnSuccessListener { documentSnapshot ->
+                val thisWorkout = documentSnapshot.toObject(Workout::class.java)
+                thisWorkout?.let { _ ->
+                    if (toUpdate) {
+                        // Update the training session
+                        val trainingSession = TrainingSession(
+                            trainingSessionId, getTrainingSessionDateInSDFFormat(dateToRegister),
+                            thisWorkout
+                        )
+                        trainingSessionViewModel.updateTrainingSession(
+                            editCalendarFragmentCoordinatorLayout, userId, trainingSession
+                        )
+                    } else {
+                        // Create the training session
+                        val trainingSession = TrainingSession(
+                            null, getTrainingSessionDateInSDFFormat(dateToRegister),
+                            thisWorkout
+                        )
+                        trainingSessionViewModel.createTrainingSession(
+                            editCalendarFragmentCoordinatorLayout, userId, trainingSession
+                        )
+                    }
+                }
+            }
+        closeFragment()
+    }
 
-        if (editCalendarFragmentDate.text.isNullOrEmpty()
+    private fun checkIfATextViewIsEmpty(): Boolean {
+        return if (editCalendarFragmentDate.text.isNullOrEmpty()
             || editCalendarFragmentTime.text.isNullOrEmpty()
             || editCalendarFragmentWorkout.text.isNullOrEmpty()
         ) {
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
             )
-        } else if (dateToRegister.before(now)) {
+            true
+        } else false
+    }
+
+    private fun checkIfDateToRegisterBeforeNow(dateToRegister: Date): Boolean {
+        val nowCalendar = Calendar.getInstance()
+        val now: Date = nowCalendar.time
+        return if (dateToRegister.before(now)) {
             // Cannot update a training session with a previous time
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout,
                 R.string.cannot_create_update_training_session_with_past_date
             )
-        } else {
-            userId?.let {
-                // Check if a trainingSession on this date (and time) already exists
-                trainingSessionViewModel.getListOfTrainingSessions(it)
-                    ?.whereEqualTo(
-                        TRAINING_SESSION_DATE_FIELD,
-                        getTrainingSessionDateInSDFFormat(dateToRegister)
-                    )
-                    ?.get()
-                    ?.addOnSuccessListener { documents ->
-                        if (documents.isEmpty) {
-                            // There is no document with this trainingSessionDate so update it
-                            Log.d(TAG, "documents.isEmpty")
-                            userId?.let {
-                                // Retrieve the workout from its id
-                                workoutIdChosen?.let { workoutIdChosen ->
-                                    workoutViewModel.getWorkout(it, workoutIdChosen)
-                                }?.addOnSuccessListener { documentSnapshot ->
-                                    val workoutToUpdate =
-                                        documentSnapshot.toObject(Workout::class.java)
-                                    if (workoutToUpdate != null) {
-                                        // Update the training session
-                                        val trainingSession = TrainingSession(
-                                            trainingSessionId,
-                                            getTrainingSessionDateInSDFFormat(dateToRegister),
-                                            workoutToUpdate
-                                        )
-                                        trainingSessionViewModel.updateTrainingSession(
-                                            editCalendarFragmentCoordinatorLayout,
-                                            it,
-                                            trainingSession
-                                        )
-                                    }
-                                }
-                            }
-                            closeFragment()
-                        } else {
-                            // The same trainingSessionDate exists, choose another time
-                            myUtils.showSnackBar(
-                                editCalendarFragmentCoordinatorLayout,
-                                R.string.training_session_time_already_exists
-                            )
-                            for (document in documents) {
-                                Log.d(TAG, "${document.id} => ${document.data}")
-                            }
-                        }
-                    }
-            }
-        }
+            true
+        } else false
     }
 
     //----------------------------------------------------------------------------------
@@ -429,12 +395,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 timePicker.show(childFragmentManager, TimePickerFragment::class.java.simpleName)
             }
 
-            R.id.editCalendarFragmentButtonSave ->
-                if (trainingSession != null) {
-                    updateTrainingSession()
-                } else {
-                    saveTrainingSession()
-                }
+            R.id.editCalendarFragmentButtonSave -> createOrUpdateTrainingSession(toUpdate)
         }
     }
 }
