@@ -45,6 +45,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     private var userId: String? = null
     private var workoutIdFromList: String? = null
+    private var workoutNameToUpdate: String? = null
+    private var toUpdate = false
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
@@ -89,7 +91,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     }
 
     //--------------------------------------------------------------------------------------
-    // Get the exercise data to Workout Object from Firebase
+    // Get the workout data to Workout Object from Firestore
 
     private fun getWorkoutDataToObject(userId: String, workoutIdFromList: String) {
         // Get data
@@ -98,6 +100,9 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 workout = documentSnapshot.toObject(Workout::class.java)!!
                 Log.d(TAG, "workout  = $workout")
                 binding.workout = workout
+                // Get initial workout name to compare it later
+                workoutNameToUpdate = workout.workoutName
+                toUpdate = true
                 // Display data in the recyclerView
                 configureRecyclerView()
             }
@@ -236,28 +241,29 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     }
 
     //----------------------------------------------------------------------------------
-    // Methods to save or update a workout
+    // Methods to create or update a workout
 
-    private fun saveWorkout() {
-        if (workout.workoutName.isNullOrEmpty() || workout.workoutName.isNullOrBlank()) {
-            myUtils.showSnackBar(
-                editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
-            )
-        } else {
-            Log.d(TAG, "workout = $workout")
-            userId?.let {
-                // Check if a workoutName already exists
+    private fun createOrUpdateWorkout(toUpdate: Boolean) {
+        if (checkIfWorkoutNameIsEmpty()) {
+            return
+        }
+
+        Log.d(TAG, "workout = $workout")
+        userId?.let {
+            // If it is an update and it is the same name, update the workout
+            if (workoutNameToUpdate == workout.workoutName && toUpdate) {
+                createOrUpdateToFirestore(it, toUpdate)
+            } else {
+                // If the name is different and it is not an update,
+                // check if a workoutName already exists
                 workoutViewModel.getListOfExercises(it)
                     ?.whereEqualTo(WORKOUT_NAME_FIELD, workout.workoutName)
                     ?.get()
                     ?.addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
-                            // There is no document with this workoutName so create the workout
+                            // There is no document with this workoutName so create or update it
                             Log.d(TAG, "documents.isEmpty")
-                            workoutViewModel.createWorkout(
-                                editWorkoutFragmentCoordinatorLayout, it, workout
-                            )
-                            closeFragment()
+                            createOrUpdateToFirestore(it, toUpdate)
                         } else {
                             // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
@@ -276,17 +282,24 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun updateWorkout() {
-        if (workout.workoutName.isNullOrEmpty() || workout.workoutName.isNullOrBlank()) {
+    private fun createOrUpdateToFirestore(userId: String, toUpdate: Boolean) {
+        if (toUpdate) {
+            // Update the workout
+            workoutViewModel.updateWorkout(editWorkoutFragmentCoordinatorLayout, userId, workout)
+        } else {
+            // Create the workout
+            workoutViewModel.createWorkout(editWorkoutFragmentCoordinatorLayout, userId, workout)
+        }
+        closeFragment()
+    }
+
+    private fun checkIfWorkoutNameIsEmpty(): Boolean {
+        return if (workout.workoutName.isNullOrEmpty() || workout.workoutName.isNullOrBlank()) {
             myUtils.showSnackBar(
                 editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
             )
-        } else {
-            userId?.let {
-                workoutViewModel.updateWorkout(editWorkoutFragmentCoordinatorLayout, it, workout)
-            }
-            closeFragment()
-        }
+            true
+        } else false
     }
 
     //----------------------------------------------------------------------------------
@@ -303,13 +316,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.editWorkoutFragmentFABAddExercise -> getAllExercises()
-            R.id.editWorkoutFragmentFABSave -> {
-                if (workoutIdFromList != null) {
-                    updateWorkout()
-                } else {
-                    saveWorkout()
-                }
-            }
+            R.id.editWorkoutFragmentFABSave -> createOrUpdateWorkout(toUpdate)
         }
     }
 }

@@ -125,6 +125,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private fun getTrainingSessionData(trainingSession: TrainingSession) {
         trainingSessionId = trainingSession.trainingSessionId
         workoutIdChosen = trainingSession.workout?.workoutId
+        // Get initial training session date to compare it later
         trainingDateToUpdate = trainingSession.trainingSessionDate
         toUpdate = true
 
