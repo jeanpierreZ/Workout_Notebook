@@ -23,8 +23,7 @@ class ItemWorkoutAdapter(
 
     // Callback
     interface Listener {
-        // TODO pass workout instead of workoutId ?
-        fun onClickWorkout(workoutId: String?, position: Int)
+        fun onClickWorkout(workout: Workout?, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemWorkoutViewHolder {
@@ -46,14 +45,17 @@ class ItemWorkoutAdapter(
             // Get the documentReference from the position to delete and undo delete it
             val documentReference: DocumentReference = snapshots.getSnapshot(position).reference
 
-            documentReference.delete().addOnSuccessListener {
-                Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
-                if (recentlyDeletedItem != null) {
-                    showUndoSnackbar(
-                        coordinatorLayout, context, recentlyDeletedItem, documentReference
-                    )
+            documentReference.delete()
+                .addOnSuccessListener {
+                    Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
+                    if (recentlyDeletedItem != null) {
+                        showUndoSnackbar(
+                            coordinatorLayout, context, recentlyDeletedItem, documentReference
+                        )
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                    }
                 }
-            }
+                .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
         }
     }
 

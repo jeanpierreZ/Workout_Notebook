@@ -43,9 +43,10 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     private var itemExerciseAdapter: ItemExerciseAdapter? = null
     private var itemWorkoutAdapter: ItemWorkoutAdapter? = null
 
-    private var isAnExercise: Boolean? = null
+    private var isAnExercise = false
 
     private var callback: ItemListener? = null
+    private var callbackWorkout: WorkoutListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,27 +58,29 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        isAnExercise = arguments?.getBoolean(IS_AN_EXERCISE)
+        // Boolean from EditActivity used to display UI for exercises or workouts
+        isAnExercise = arguments?.getBoolean(IS_AN_EXERCISE)!!
         Log.d(TAG, "isAnExercise = $isAnExercise")
 
-        if (isAnExercise != null && isAnExercise as Boolean) {
+        if (isAnExercise) {
             listSportsFragmentTitle.setText(R.string.exercises)
         } else {
             listSportsFragmentTitle.setText(R.string.workouts)
         }
 
         listSportsFragmentFABAdd.setOnClickListener {
-            isAnExercise?.let {
-                callback?.addOrUpdateItem(it, null)
+
+            // addOrUpdateItem used for Exercise temporary
+            if (isAnExercise) {
+                callback?.addOrUpdateItem(isAnExercise, null)
+
+            } else {
+                callbackWorkout?.addOrUpdateWorkout(null)
             }
         }
 
         val userId = userAuth.getCurrentUser()?.uid
-        userId?.let {
-            isAnExercise?.let { isAnExercise ->
-                configureRecyclerView(isAnExercise, it)
-            }
-        }
+        userId?.let { configureRecyclerView(isAnExercise, it) }
         swipeToDeleteAnItem()
     }
 
@@ -184,19 +187,15 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     // Interface for callbacks item Adapters
 
     override fun onClickExercise(exerciseId: String?, position: Int) {
-        exerciseId?.let {
-            isAnExercise?.let { isAnExercise -> callback?.addOrUpdateItem(isAnExercise, it) }
-        }
+        exerciseId?.let { callback?.addOrUpdateItem(isAnExercise, it) }
     }
 
-    override fun onClickWorkout(workoutId: String?, position: Int) {
-        workoutId?.let {
-            isAnExercise?.let { isAnExercise -> callback?.addOrUpdateItem(isAnExercise, it) }
-        }
+    override fun onClickWorkout(workout: Workout?, position: Int) {
+        workout?.let { callbackWorkout?.addOrUpdateWorkout(it) }
     }
 
     //----------------------------------------------------------------------------------
-    // Interface for callback to parent activity and associated methods
+    // Interfaces for callbacks to parent activity and associated methods
     // when click on add button or on an item in the list
 
     override fun onAttach(context: Context) {
@@ -205,16 +204,22 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         callbackToParentActivity()
     }
 
-    // Declare our interface that will be implemented by any container activity
+    // Declare our interfaces that will be implemented by any container activity
     interface ItemListener {
         fun addOrUpdateItem(isAnExercise: Boolean, item: String?)
     }
 
-    // Create callback to parent activity
+    interface WorkoutListener {
+        fun addOrUpdateWorkout(workout: Workout?)
+    }
+
+    // Create callbacks to parent activity
     private fun callbackToParentActivity() {
         try {
-            // Parent activity will automatically subscribe to callback
+            // Parent activity will automatically subscribe to callbacks
             callback = activity as ItemListener?
+            callbackWorkout = activity as WorkoutListener?
+
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement ItemListener")
         }
