@@ -91,7 +91,6 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     }
 
     //--------------------------------------------------------------------------------------
-    // Get the workout data to Workout Object from Firestore
 
     private fun getWorkoutFromBundle(workout: Workout?) {
         // Get data

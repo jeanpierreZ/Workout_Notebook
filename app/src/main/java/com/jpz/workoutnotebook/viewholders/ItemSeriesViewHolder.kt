@@ -42,8 +42,8 @@ class ItemSeriesViewHolder(private val binding: SeriesItemBinding) :
             Unit.KG.stringValue, Unit.LB.stringValue, Unit.M.stringValue, Unit.KM.stringValue,
             Unit.FT.stringValue, Unit.YD.stringValue, Unit.ML.stringValue, Unit.BLANK.stringValue
         )
-//        val adapter = ArrayAdapter(context, R.layout.unit_list_item, items)
-        val adapter = ArrayAdapter(context, R.layout.unit_list_item, R.id.unitListItemTextView, items)
+        val adapter =
+            ArrayAdapter(context, R.layout.unit_list_item, R.id.unitListItemTextView, items)
         seriesItemAutoCompleteTextView?.setText(series.unit, false)
         (seriesItemUnit?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }

@@ -45,7 +45,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
     private var isAnExercise = false
 
-    private var callback: ItemListener? = null
+    private var callbackExercise: ExerciseListener? = null
     private var callbackWorkout: WorkoutListener? = null
 
     override fun onCreateView(
@@ -69,11 +69,8 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         }
 
         listSportsFragmentFABAdd.setOnClickListener {
-
-            // addOrUpdateItem used for Exercise temporary
             if (isAnExercise) {
-                callback?.addOrUpdateItem(isAnExercise, null)
-
+                callbackExercise?.addOrUpdateExercise(null)
             } else {
                 callbackWorkout?.addOrUpdateWorkout(null)
             }
@@ -184,10 +181,10 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     }
 
     //----------------------------------------------------------------------------------
-    // Interface for callbacks item Adapters
+    // Interface for callbacks Exercise and Workout Adapters
 
-    override fun onClickExercise(exerciseId: String?, position: Int) {
-        exerciseId?.let { callback?.addOrUpdateItem(isAnExercise, it) }
+    override fun onClickExercise(exercise: Exercise?, position: Int) {
+        exercise?.let { callbackExercise?.addOrUpdateExercise(it) }
     }
 
     override fun onClickWorkout(workout: Workout?, position: Int) {
@@ -205,8 +202,8 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     }
 
     // Declare our interfaces that will be implemented by any container activity
-    interface ItemListener {
-        fun addOrUpdateItem(isAnExercise: Boolean, item: String?)
+    interface ExerciseListener {
+        fun addOrUpdateExercise(exercise: Exercise?)
     }
 
     interface WorkoutListener {
@@ -217,7 +214,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     private fun callbackToParentActivity() {
         try {
             // Parent activity will automatically subscribe to callbacks
-            callback = activity as ItemListener?
+            callbackExercise = activity as ExerciseListener?
             callbackWorkout = activity as WorkoutListener?
 
         } catch (e: ClassCastException) {

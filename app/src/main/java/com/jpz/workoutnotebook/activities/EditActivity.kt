@@ -13,6 +13,7 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
 import com.jpz.workoutnotebook.fragments.*
+import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
@@ -20,12 +21,13 @@ import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
-class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener, ListSportsFragment.WorkoutListener {
+class EditActivity : AppCompatActivity(), ListSportsFragment.ExerciseListener,
+    ListSportsFragment.WorkoutListener {
 
     companion object {
         private val TAG = EditActivity::class.java.simpleName
         const val IS_AN_EXERCISE = "IS_AN_EXERCISE"
-        const val EXERCISE_ID = "EXERCISE_ID"
+        const val EXERCISE = "EXERCISE"
         const val WORKOUT = "WORKOUT"
     }
 
@@ -112,10 +114,10 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener, ListS
             .commit()
     }
 
-    private fun displayEditExerciseFragment(exerciseId: String?) {
+    private fun displayEditExerciseFragment(exercise: Exercise?) {
         val editExerciseFragment = EditExerciseFragment()
         val bundle = Bundle()
-        bundle.putString(EXERCISE_ID, exerciseId)
+        bundle.putParcelable(EXERCISE, exercise)
         editExerciseFragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()
@@ -139,10 +141,8 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener, ListS
     //--------------------------------------------------------------------------------------
     // Callbacks from ListSportsFragment
 
-    override fun addOrUpdateItem(isAnExercise: Boolean, item: String?) {
-        if (isAnExercise) {
-            displayEditExerciseFragment(item)
-        }
+    override fun addOrUpdateExercise(exercise: Exercise?) {
+        displayEditExerciseFragment(exercise)
     }
 
     override fun addOrUpdateWorkout(workout: Workout?) {
