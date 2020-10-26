@@ -3,6 +3,8 @@ package com.jpz.workoutnotebook.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -15,7 +17,6 @@ import com.jpz.workoutnotebook.fragments.CalendarFragment
 import com.jpz.workoutnotebook.fragments.SportsFragment
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_EDIT_PROFILE
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
@@ -45,6 +46,9 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     private var pageSelected = 0
     private val myUtils: MyUtils by inject()
 
+    private var startActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,26 +58,23 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         configureTabLayout()
         animateFAB()
 
-        mainActivityFABEditProfile.setOnClickListener(this)
-        mainActivityFABAddCalendar.setOnClickListener(this)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            RC_EDIT_PROFILE -> {
-                if (resultCode == RESULT_OK) {
+        // Used to handle intent from startForResultEditActivityForProfile()
+        startActivityForResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK) {
                     myUtils.showSnackBar(
                         mainActivityCoordinatorLayout, R.string.user_data_updated
                     )
-                } else if (resultCode == RESULT_CANCELED) {
+                } else if (result.resultCode == RESULT_CANCELED) {
                     myUtils.showSnackBar(
                         mainActivityCoordinatorLayout, R.string.update_data_canceled
                     )
                 }
             }
-        }
+
+        mainActivityFABEditProfile.setOnClickListener(this)
+        mainActivityFABAddCalendar.setOnClickListener(this)
     }
 
     //--------------------------------------------------------------------------------------
@@ -187,10 +188,10 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startActivity(intent)
     }
 
-    private fun startEditActivityForProfile() {
+    private fun startForResultEditActivityForProfile() {
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, EDIT_PROFILE_FRAGMENT)
-        startActivityForResult(intent, RC_EDIT_PROFILE)
+        startActivityForResult.launch(intent)
     }
 
     //--------------------------------------------------------------------------------------
@@ -212,7 +213,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     // Implement listener from CalendarFragment to show a snackBar below the FAB
     override fun cannotUpdatePreviousTrainingSession() {
         myUtils.showSnackBar(
-            mainActivityCoordinatorLayout, R.string.cannot_create_update_training_session_with_past_date
+            mainActivityCoordinatorLayout,
+            R.string.cannot_create_update_training_session_with_past_date
         )
     }
 
@@ -220,7 +222,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.mainActivityFABEditProfile -> startEditActivityForProfile()
+            R.id.mainActivityFABEditProfile -> startForResultEditActivityForProfile()
             R.id.mainActivityFABAddCalendar -> startEditActivityForCalendar(null)
         }
     }
