@@ -9,12 +9,13 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_CHOOSE_PHOTO
 import kotlinx.android.synthetic.main.fragment_base_profile.*
 import org.koin.android.ext.android.inject
 import permissions.dispatcher.*
@@ -37,6 +38,26 @@ class EditProfileFragment : BaseProfileFragment() {
     // Boolean used if the user has chosen a photo
     private var newPhotoAdded: Boolean = false
 
+    private var startActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        startActivityForResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    // Uri of picture selected by user
+                    uriPictureSelected = result.data?.data
+                    Log.e(TAG, "result = $result, result.data?.data = ${result.data?.data}")
+                    // Display the user photo with data
+                    uriPictureSelected?.let { displayNewPhoto(it) }
+                    newPhotoAdded = true
+                }
+            }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -51,17 +72,6 @@ class EditProfileFragment : BaseProfileFragment() {
 
         baseProfileFragmentFABSave.setOnClickListener {
             saveUpdatedData()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == RC_CHOOSE_PHOTO) {
-            // Uri of picture selected by user
-            uriPictureSelected = data?.data
-            // Display the user photo with data
-            uriPictureSelected?.let { displayNewPhoto(it) }
-            newPhotoAdded = true
         }
     }
 
@@ -83,7 +93,7 @@ class EditProfileFragment : BaseProfileFragment() {
     @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
     fun addPhoto() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, RC_CHOOSE_PHOTO)
+        startActivityForResult.launch(intent)
     }
 
     private fun uploadPhotoInFirebaseAndUpdateUser() {
