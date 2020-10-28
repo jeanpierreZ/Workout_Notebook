@@ -91,7 +91,7 @@ dependencies {
 
     // PermissionsDispatcher
     implementation "org.permissionsdispatcher:permissionsdispatcher:4.8.0"
-    kapt "org.permissionsdispatcher:permissionsdispatcher-processor:4.8.0"
+    implementation "org.permissionsdispatcher:permissionsdispatcher-ktx:1.0.1"
 
     // SwipeDecorator
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'

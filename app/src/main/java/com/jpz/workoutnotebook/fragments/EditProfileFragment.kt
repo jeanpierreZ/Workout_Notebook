@@ -3,6 +3,7 @@ package com.jpz.workoutnotebook.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -18,7 +19,10 @@ import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.fragment_base_profile.*
 import org.koin.android.ext.android.inject
-import permissions.dispatcher.*
+import permissions.dispatcher.PermissionRequest
+import permissions.dispatcher.RuntimePermissions
+import permissions.dispatcher.ktx.PermissionsRequester
+import permissions.dispatcher.ktx.constructPermissionsRequest
 
 
 @RuntimePermissions
@@ -41,16 +45,32 @@ class EditProfileFragment : BaseProfileFragment() {
     private var startActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
+    // To request permission
+    private lateinit var permissionsRequester: PermissionsRequester
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // constructPermissionsRequest must be invoked every time an activity is created
+        permissionsRequester = constructPermissionsRequest(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            onShowRationale = ::showRationaleForReadExternalStorage,
+            onPermissionDenied = ::onReadExternalStorageDenied,
+            onNeverAskAgain = ::onPermissionNeverAskAgain
+        ) {
+            addPhoto()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        // Used to handle intent from addPhoto()
         startActivityForResult =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult())
             { result: ActivityResult ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     // Uri of picture selected by user
                     uriPictureSelected = result.data?.data
-                    Log.e(TAG, "result = $result, result.data?.data = ${result.data?.data}")
+                    Log.d(TAG, "uriPictureSelected = $uriPictureSelected")
                     // Display the user photo with data
                     uriPictureSelected?.let { displayNewPhoto(it) }
                     newPhotoAdded = true
@@ -67,7 +87,7 @@ class EditProfileFragment : BaseProfileFragment() {
         getUserDataToObject(userId)
 
         baseProfileFragmentPhoto.setOnClickListener {
-            addPhotoWithPermissionCheck()
+            permissionsRequester.launch()
         }
 
         baseProfileFragmentFABSave.setOnClickListener {
@@ -90,8 +110,7 @@ class EditProfileFragment : BaseProfileFragment() {
     //--------------------------------------------------------------------------------------
     // Update / save data
 
-    @NeedsPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun addPhoto() {
+    private fun addPhoto() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult.launch(intent)
     }
@@ -168,17 +187,11 @@ class EditProfileFragment : BaseProfileFragment() {
     //--------------------------------------------------------------------------------------
     // Permissions
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        onRequestPermissionsResult(requestCode, grantResults)
+    private fun onReadExternalStorageDenied() {
+        myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.permission_denied)
     }
 
-    @OnShowRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun showRationaleForReadExternalStorage(request: PermissionRequest) {
+    private fun showRationaleForReadExternalStorage(request: PermissionRequest) {
         AlertDialog.Builder(activity)
             .setTitle(R.string.permission_needed)
             .setMessage(R.string.rationale_permission_read_external_storage)
@@ -191,13 +204,7 @@ class EditProfileFragment : BaseProfileFragment() {
             .show()
     }
 
-    @OnPermissionDenied(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onReadExternalStorageDenied() {
-        myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.permission_denied)
-    }
-
-    @OnNeverAskAgain(Manifest.permission.READ_EXTERNAL_STORAGE)
-    fun onPermissionNeverAskAgain() {
+    private fun onPermissionNeverAskAgain() {
         myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.never_ask_again)
     }
 }
