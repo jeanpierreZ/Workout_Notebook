@@ -31,7 +31,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@color/colorPrimaryLight"
-            app:layout_constraintBottom_toBottomOf="@+id/sportsFragmentGuidelineFifty"/>
+            app:layout_constraintBottom_toBottomOf="@+id/sportsFragmentGuidelineFifty" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/sportsFragmentTitle"
@@ -84,6 +84,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/exercises"
+            android:textColor="@color/colorTextPrimary"
+            app:iconTint="@color/colorTextPrimary"
             app:layout_constraintBottom_toTopOf="@+id/sportsFragmentWorkoutsButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -95,6 +97,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/workouts"
+            android:textColor="@color/colorTextPrimary"
+            app:iconTint="@color/colorTextPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

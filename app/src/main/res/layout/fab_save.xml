@@ -6,4 +6,5 @@
     android:layout_gravity="bottom|end"
     android:layout_margin="@dimen/fab_margin"
     app:backgroundTint="@color/colorAccentLight"
+    android:contentDescription="@string/save"
     app:srcCompat="@drawable/ic_baseline_save_24" />

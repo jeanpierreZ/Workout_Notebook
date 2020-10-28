@@ -6,7 +6,7 @@
     android:layout_margin="2dp"
     app:cardCornerRadius="4dp">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/sportItemName"
         style="@style/SubTitleTextViewTheme"
         android:layout_width="match_parent"

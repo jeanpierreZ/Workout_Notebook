@@ -11,12 +11,13 @@
     <string name="error_no_internet">No internet connection</string>
     <string name="error_unknown_error">An unknown error has occurred</string>
 
-    <!-- Main Activity -->
+    <!-- Main Activity  && contentDescription -->
     <string name="disconnect">Sign out?</string>
     <string name="user_data_updated">User data updated</string>
     <string name="update_data_canceled">Update data canceled</string>
     <string name="edit_profile">Edit profile</string>
     <string name="add">add</string>
+    <string name="save">save</string>
 
     <!-- Profile Fragment -->
     <string name="profile_photo">Photo chosen for profile</string>
@@ -76,6 +77,7 @@
     <string name="training_sessions">Training sessions</string>
     <string name="new_training_session_created">Training session for %s is created</string>
     <string name="add_training_session">Add a training session</string>
+    <string name="update_training_session">Update a training session</string>
     <string name="date_training_session">Date</string>
     <string name="time_training_session">Time</string>
     <string name="training_session_updated">Training session is updated</string>

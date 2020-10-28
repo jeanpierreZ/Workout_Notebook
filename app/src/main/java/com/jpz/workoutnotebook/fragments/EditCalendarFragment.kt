@@ -151,6 +151,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             }
             // Set textView with workoutName
             editCalendarFragmentWorkout.text = trainingSession.workout?.workoutName
+            // Set title for update
+            editCalendarFragmentTitle.text = getString(R.string.update_training_session)
         }
     }
 

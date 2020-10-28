@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.4" />
+                app:layout_constraintGuide_percent="0.45" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/editExerciseFragmentName"
@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/title_text_margin"
                 android:layout_marginEnd="@dimen/title_text_margin"
+                android:layout_marginTop="@dimen/title_text_margin"
                 android:hint="@string/exercise_name"
                 app:counterEnabled="true"
                 app:counterMaxLength="30"
