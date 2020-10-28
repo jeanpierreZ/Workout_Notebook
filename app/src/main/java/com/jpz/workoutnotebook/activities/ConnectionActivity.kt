@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
@@ -12,7 +14,6 @@ import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.api.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.utils.RequestCodes.Companion.RC_SIGN_IN
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.activity_connection.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -41,6 +42,9 @@ class ConnectionActivity : AppCompatActivity() {
         AuthUI.IdpConfig.FacebookBuilder().build()
     )
 
+    private var startActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_connection)
@@ -57,46 +61,44 @@ class ConnectionActivity : AppCompatActivity() {
                 startSignInActivity()
             }
         }
-    }
 
-    //--------------------------------------------------------------------------------------
-
-    @SuppressLint("SwitchIntDef")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
-            if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
-                myUtils.showSnackBar(
-                    connectionActivityCoordinatorLayout,
-                    R.string.authentication_succeed
-                )
-                createUser()
-                startMainActivity()
-            } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                if (response == null) {
+        @SuppressLint("SwitchIntDef")
+        // Used to handle intent from startSignInActivity()
+        startActivityForResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result: ActivityResult ->
+                val response = IdpResponse.fromResultIntent(result.data)
+                if (result.resultCode == Activity.RESULT_OK) {
+                    // Successfully signed in
                     myUtils.showSnackBar(
                         connectionActivityCoordinatorLayout,
-                        R.string.sign_in_cancelled
+                        R.string.authentication_succeed
                     )
+                    createUser()
+                    startMainActivity()
                 } else {
-                    when (response.error?.errorCode) {
-                        ErrorCodes.NO_NETWORK -> myUtils.showSnackBar(
+                    // Sign in failed. If response is null the user canceled the
+                    // sign-in flow using the back button. Otherwise check
+                    // response.getError().getErrorCode() and handle the error.
+                    if (response == null) {
+                        myUtils.showSnackBar(
                             connectionActivityCoordinatorLayout,
-                            R.string.error_no_internet
+                            R.string.sign_in_cancelled
                         )
-                        ErrorCodes.UNKNOWN_ERROR -> myUtils.showSnackBar(
-                            connectionActivityCoordinatorLayout,
-                            R.string.error_unknown_error
-                        )
+                    } else {
+                        when (response.error?.errorCode) {
+                            ErrorCodes.NO_NETWORK -> myUtils.showSnackBar(
+                                connectionActivityCoordinatorLayout,
+                                R.string.error_no_internet
+                            )
+                            ErrorCodes.UNKNOWN_ERROR -> myUtils.showSnackBar(
+                                connectionActivityCoordinatorLayout,
+                                R.string.error_unknown_error
+                            )
+                        }
                     }
                 }
             }
-        }
     }
 
     //--------------------------------------------------------------------------------------
@@ -104,15 +106,13 @@ class ConnectionActivity : AppCompatActivity() {
     // Method to launch Sign-In Activity
     private fun startSignInActivity() {
         // Create and launch sign-in intent
-        startActivityForResult(
-            AuthUI.getInstance()
-                .createSignInIntentBuilder()
-                .setTheme(R.style.AppThemeFirebaseAuth)
-                .setAvailableProviders(providers)
-                .setIsSmartLockEnabled(false, true)
-                .build(),
-            RC_SIGN_IN
-        )
+        val intent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setTheme(R.style.AppThemeFirebaseAuth)
+            .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false, true)
+            .build()
+        startActivityForResult.launch(intent)
     }
 
     //--------------------------------------------------------------------------------------
