@@ -2,8 +2,6 @@ package com.jpz.workoutnotebook.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AlertDialog
@@ -317,7 +315,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     }
                 }
             }
-        closeFragment()
+        activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
     }
 
     private fun checkIfATextViewIsEmpty(): Boolean {
@@ -353,15 +351,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         return sdf.format(dateToRegister)
     }
 
-    //----------------------------------------------------------------------------------
-
-    private fun closeFragment() {
-        editCalendarFragmentProgressBar.visibility = View.VISIBLE
-        Handler(Looper.getMainLooper()).postDelayed({
-            activity?.onBackPressed()
-        }, 2000)
-    }
-
     //--------------------------------------------------------------------------------------
 
     private fun deleteATrainingSession(userId: String, trainingSession: TrainingSession) {
@@ -374,7 +363,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     trainingSessionViewModel.deleteATrainingSession(
                         editCalendarFragmentCoordinatorLayout, userId, trainingSession
                     )
-                    closeFragment()
+                    activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ ->
                 }

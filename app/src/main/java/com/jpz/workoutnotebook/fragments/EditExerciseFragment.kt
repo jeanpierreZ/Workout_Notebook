@@ -2,8 +2,6 @@ package com.jpz.workoutnotebook.fragments
 
 import android.graphics.Canvas
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -215,7 +213,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 exerciseViewModel.createExercise(editExerciseFragmentCoordinatorLayout, userId, it)
             }
         }
-        closeFragment()
+        activity?.let { myUtils.closeFragment(editExerciseFragmentProgressBar, it) }
     }
 
     private fun checkIfExerciseNameIsEmpty(): Boolean {
@@ -225,15 +223,6 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             )
             true
         } else false
-    }
-
-    //----------------------------------------------------------------------------------
-
-    private fun closeFragment() {
-        editExerciseFragmentProgressBar.visibility = View.VISIBLE
-        Handler(Looper.getMainLooper()).postDelayed({
-            activity?.onBackPressed()
-        }, 2000)
     }
 
     //----------------------------------------------------------------------------------
