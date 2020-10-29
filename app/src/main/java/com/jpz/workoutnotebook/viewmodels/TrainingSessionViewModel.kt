@@ -4,12 +4,12 @@ import android.util.Log
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.api.TrainingSessionHelper
+import com.jpz.workoutnotebook.repositories.TrainingSessionRepository
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.utils.MyUtils
 import org.koin.java.KoinJavaComponent
 
-class TrainingSessionViewModel(private val trainingSessionHelper: TrainingSessionHelper) :
+class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSessionRepository) :
     ViewModel() {
 
     companion object {
@@ -22,10 +22,10 @@ class TrainingSessionViewModel(private val trainingSessionHelper: TrainingSessio
 
     fun createTrainingSession(
         coordinatorLayout: CoordinatorLayout, userId: String, trainingSession: TrainingSession
-    ) = trainingSessionHelper.createTrainingSession(userId, trainingSession)
+    ) = trainingSessionRepository.createTrainingSession(userId, trainingSession)
         ?.addOnSuccessListener { documentReference ->
             // Set trainingSessionId
-            trainingSessionHelper.updateTrainingSessionIdAfterCreate(userId, documentReference)
+            trainingSessionRepository.updateTrainingSessionIdAfterCreate(userId, documentReference)
             // Inform the user
             myUtils.showSnackBar(
                 coordinatorLayout, coordinatorLayout.context.getString(
@@ -40,13 +40,13 @@ class TrainingSessionViewModel(private val trainingSessionHelper: TrainingSessio
     // --- QUERY ---
 
     fun getListOfTrainingSessions(userId: String) =
-        trainingSessionHelper.getListOfTrainingSessions(userId)
+        trainingSessionRepository.getListOfTrainingSessions(userId)
 
     // --- UPDATE ---
 
     fun updateTrainingSession(
         coordinatorLayout: CoordinatorLayout, userId: String, trainingSession: TrainingSession
-    ) = trainingSessionHelper.updateTrainingSession(userId, trainingSession)
+    ) = trainingSessionRepository.updateTrainingSession(userId, trainingSession)
         ?.addOnSuccessListener {
             myUtils.showSnackBar(coordinatorLayout, R.string.training_session_updated)
             Log.d(TAG, "DocumentSnapshot successfully updated!")
@@ -58,7 +58,7 @@ class TrainingSessionViewModel(private val trainingSessionHelper: TrainingSessio
 
     fun deleteATrainingSession(
         coordinatorLayout: CoordinatorLayout, userId: String, trainingSession: TrainingSession
-    ) = trainingSessionHelper.deleteATrainingSession(userId, trainingSession)
+    ) = trainingSessionRepository.deleteATrainingSession(userId, trainingSession)
         ?.addOnSuccessListener {
             myUtils.showSnackBar(coordinatorLayout, R.string.training_session_deleted)
             Log.d(TAG, "DocumentSnapshot successfully deleted!")

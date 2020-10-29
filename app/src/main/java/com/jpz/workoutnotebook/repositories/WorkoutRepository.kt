@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.api
+package com.jpz.workoutnotebook.repositories
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
@@ -7,7 +7,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.Workout
 
-class WorkoutHelper {
+class WorkoutRepository {
 
     companion object {
         private const val COLLECTION_NAME = "workouts"
@@ -18,7 +18,7 @@ class WorkoutHelper {
     // --- CREATE ---
 
     fun createWorkout(userId: String, workout: Workout): Task<DocumentReference>? =
-        UserHelper.getUsersCollection()
+        UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
             ?.add(workout)
@@ -26,7 +26,7 @@ class WorkoutHelper {
     // --- READ ---
 
     fun getWorkout(userId: String, workoutId: String): Task<DocumentSnapshot>? =
-        UserHelper.getUsersCollection()
+        UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
             ?.document(workoutId)
@@ -35,10 +35,10 @@ class WorkoutHelper {
     // --- QUERY ---
 
     fun getListOfExercises(userId: String): Query? =
-        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+        UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
 
     fun getOrderedListOfExercises(userId: String): Query? =
-        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+        UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
             ?.orderBy(WORKOUT_NAME_FIELD, Query.Direction.ASCENDING)
 
     // --- UPDATE ---
@@ -46,7 +46,7 @@ class WorkoutHelper {
     fun updateWorkoutIdAfterCreate(
         userId: String, documentReference: DocumentReference
     ): Task<Void>? =
-        UserHelper.getUsersCollection()
+        UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
             ?.document(documentReference.id)
@@ -55,7 +55,7 @@ class WorkoutHelper {
 
     fun updateWorkout(userId: String, workout: Workout): Task<Void>? =
         workout.workoutId?.let {
-            UserHelper.getUsersCollection()
+            UserRepository.getUsersCollection()
                 ?.document(userId)
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)

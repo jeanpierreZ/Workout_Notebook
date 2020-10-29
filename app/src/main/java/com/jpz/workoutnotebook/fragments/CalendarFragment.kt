@@ -13,7 +13,7 @@ import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ItemTrainingSessionAdapter
-import com.jpz.workoutnotebook.api.UserAuth
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_calendar.*

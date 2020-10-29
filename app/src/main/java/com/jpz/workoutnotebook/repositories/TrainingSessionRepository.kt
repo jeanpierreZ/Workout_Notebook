@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.api
+package com.jpz.workoutnotebook.repositories
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
@@ -6,7 +6,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.TrainingSession
 
-class TrainingSessionHelper {
+class TrainingSessionRepository {
 
     companion object {
         const val COLLECTION_NAME = "trainingSessions"
@@ -18,7 +18,7 @@ class TrainingSessionHelper {
     fun createTrainingSession(
         userId: String, trainingSession: TrainingSession
     ): Task<DocumentReference>? =
-        UserHelper.getUsersCollection()
+        UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
             ?.add(trainingSession)
@@ -26,14 +26,14 @@ class TrainingSessionHelper {
     // --- QUERY ---
 
     fun getListOfTrainingSessions(userId: String): Query? =
-        UserHelper.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+        UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
 
     // --- UPDATE ---
 
     fun updateTrainingSessionIdAfterCreate(
         userId: String, documentReference: DocumentReference
     ): Task<Void>? =
-        UserHelper.getUsersCollection()
+        UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
             ?.document(documentReference.id)
@@ -42,7 +42,7 @@ class TrainingSessionHelper {
 
     fun updateTrainingSession(userId: String, trainingSession: TrainingSession): Task<Void>? =
         trainingSession.trainingSessionId?.let {
-            UserHelper.getUsersCollection()
+            UserRepository.getUsersCollection()
                 ?.document(userId)
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)
@@ -53,7 +53,7 @@ class TrainingSessionHelper {
 
     fun deleteATrainingSession(userId: String, trainingSession: TrainingSession): Task<Void>? {
         return trainingSession.trainingSessionId?.let {
-            UserHelper.getUsersCollection()
+            UserRepository.getUsersCollection()
                 ?.document(userId)
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)

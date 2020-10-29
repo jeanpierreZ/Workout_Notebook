@@ -4,12 +4,12 @@ import android.util.Log
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.api.WorkoutHelper
+import com.jpz.workoutnotebook.repositories.WorkoutRepository
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
 import org.koin.java.KoinJavaComponent
 
-class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
+class WorkoutViewModel(private val workoutRepository: WorkoutRepository) : ViewModel() {
 
     companion object {
         private val TAG = WorkoutViewModel::class.java.simpleName
@@ -20,10 +20,10 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
     // --- CREATE ---
 
     fun createWorkout(coordinatorLayout: CoordinatorLayout, userId: String, workout: Workout) =
-        workoutHelper.createWorkout(userId, workout)
+        workoutRepository.createWorkout(userId, workout)
             ?.addOnSuccessListener { documentReference ->
                 // Set workoutId
-                workoutHelper.updateWorkoutIdAfterCreate(userId, documentReference)
+                workoutRepository.updateWorkoutIdAfterCreate(userId, documentReference)
                 // Inform the user
                 myUtils.showSnackBar(
                     coordinatorLayout, coordinatorLayout.context.getString(
@@ -38,21 +38,21 @@ class WorkoutViewModel(private val workoutHelper: WorkoutHelper) : ViewModel() {
     // --- READ ---
 
     fun getWorkout(userId: String, workoutId: String) =
-        workoutHelper.getWorkout(userId, workoutId)?.addOnFailureListener { e ->
+        workoutRepository.getWorkout(userId, workoutId)?.addOnFailureListener { e ->
             Log.d(TAG, "get failed with ", e)
         }
 
     // --- QUERY ---
 
-    fun getOrderedListOfExercises(userId: String) = workoutHelper.getOrderedListOfExercises(userId)
+    fun getOrderedListOfExercises(userId: String) = workoutRepository.getOrderedListOfExercises(userId)
 
-    fun getListOfExercises(userId: String) = workoutHelper.getListOfExercises(userId)
+    fun getListOfExercises(userId: String) = workoutRepository.getListOfExercises(userId)
 
     // --- UPDATE ---
 
     fun updateWorkout(
         coordinatorLayout: CoordinatorLayout, userId: String, workout: Workout
-    ) = workoutHelper.updateWorkout(userId, workout)
+    ) = workoutRepository.updateWorkout(userId, workout)
         ?.addOnSuccessListener {
             myUtils.showSnackBar(
                 coordinatorLayout, coordinatorLayout.context.getString(

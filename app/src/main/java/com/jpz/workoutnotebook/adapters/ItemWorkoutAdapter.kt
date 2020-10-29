@@ -64,8 +64,7 @@ class ItemWorkoutAdapter(
         recentlyDeletedItem: Workout, documentReference: DocumentReference
     ) {
         val snackbar: Snackbar = Snackbar.make(
-            coordinatorLayout, context.getString(R.string.workout_deleted),
-            Snackbar.LENGTH_LONG
+            coordinatorLayout, context.getString(R.string.workout_deleted), Snackbar.LENGTH_LONG
         )
         // Set action to undo delete the workout swiped
         snackbar.setAction(context.getString(R.string.undo)) {

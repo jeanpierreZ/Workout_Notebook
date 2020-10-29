@@ -1,11 +1,11 @@
-package com.jpz.workoutnotebook.api
+package com.jpz.workoutnotebook.repositories
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.jpz.workoutnotebook.models.User
 
 
-class UserHelper {
+class UserRepository {
 
     companion object {
         private const val COLLECTION_NAME = "users"

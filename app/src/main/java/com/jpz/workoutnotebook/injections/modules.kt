@@ -1,6 +1,6 @@
 package com.jpz.workoutnotebook.injections
 
-import com.jpz.workoutnotebook.api.*
+import com.jpz.workoutnotebook.repositories.*
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
@@ -17,7 +17,7 @@ val moduleUserAuth = module {
 
 val moduleUserHelper = module {
     // Instance of UserHelper
-    single { UserHelper() }
+    single { UserRepository() }
 }
 
 val moduleUserStoragePhoto = module {
@@ -32,7 +32,7 @@ val moduleUserViewModel = module {
 
 val moduleTrainingSessionHelper = module {
     // Instance of TrainingHelper
-    single { TrainingSessionHelper() }
+    single { TrainingSessionRepository() }
 }
 
 val moduleTrainingSessionViewModel = module {
@@ -42,7 +42,7 @@ val moduleTrainingSessionViewModel = module {
 
 val moduleWorkoutHelper = module {
     // Instance of WorkoutHelper
-    single { WorkoutHelper() }
+    single { WorkoutRepository() }
 }
 
 val moduleWorkoutViewModel = module {
@@ -52,7 +52,7 @@ val moduleWorkoutViewModel = module {
 
 val moduleExerciseHelper = module {
     // Instance of ExerciseHelper
-    single { ExerciseHelper() }
+    single { ExerciseRepository() }
 }
 
 val moduleExerciseViewModel = module {

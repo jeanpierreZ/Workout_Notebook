@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.api
+package com.jpz.workoutnotebook.repositories
 
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference

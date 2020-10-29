@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.api
+package com.jpz.workoutnotebook.repositories
 
 import android.app.Activity
 import android.content.Intent

@@ -18,7 +18,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.IS_AN_EXERCISE
 import com.jpz.workoutnotebook.adapters.ItemExerciseAdapter
 import com.jpz.workoutnotebook.adapters.ItemWorkoutAdapter
-import com.jpz.workoutnotebook.api.UserAuth
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel

@@ -50,8 +50,7 @@ class ItemSeriesAdapter(private var list: ArrayList<Series>, private var context
         coordinatorLayout: CoordinatorLayout, position: Int, recentlyDeletedItem: Series?
     ) {
         val snackbar: Snackbar = Snackbar.make(
-            coordinatorLayout, context.getString(R.string.series_deleted),
-            Snackbar.LENGTH_LONG
+            coordinatorLayout, context.getString(R.string.series_deleted), Snackbar.LENGTH_LONG
         )
         // Set action to undo delete the series swiped
         snackbar.setAction(context.getString(R.string.undo)) {

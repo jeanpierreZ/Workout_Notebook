@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.WORKOUT
 import com.jpz.workoutnotebook.adapters.ItemExerciseFromWorkoutAdapter
-import com.jpz.workoutnotebook.api.UserAuth
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditWorkoutBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout

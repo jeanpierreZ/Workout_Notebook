@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.api.UserAuth
-import com.jpz.workoutnotebook.api.UserStoragePhoto
+import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.repositories.UserStoragePhoto
 import com.jpz.workoutnotebook.databinding.FragmentBaseProfileBinding
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import org.koin.android.ext.android.inject
