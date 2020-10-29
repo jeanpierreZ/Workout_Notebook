@@ -13,8 +13,8 @@ import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ItemTrainingSessionAdapter
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.models.TrainingSession
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_calendar.*
 import org.koin.android.ext.android.inject
@@ -81,43 +81,9 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
         calendarFragmentCalendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
-                val trainingSessionList = arrayListOf<TrainingSession>()
-
                 // Get the eventDay from the calendarView
                 val clickedDayCalendar: Calendar = eventDay.calendar
-
-                // Get year, month and day from the eventDay
-                val yearOfTraining = clickedDayCalendar.get(Calendar.YEAR)
-                val monthOfTraining = clickedDayCalendar.get(Calendar.MONTH)
-                val dayOfTraining = clickedDayCalendar.get(Calendar.DATE)
-
-                userId?.let {
-                    // Get the list of training sessions from Firestore
-                    trainingSessionViewModel.getListOfTrainingSessions(it)
-                        // Filter the list with parsed dates
-                        ?.whereGreaterThanOrEqualTo(
-                            TRAINING_SESSION_DATE_FIELD,
-                            getDateOfTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
-                        )
-                        ?.whereLessThan(
-                            TRAINING_SESSION_DATE_FIELD,
-                            getDayAfterTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
-                        )
-                        ?.get()
-                        ?.addOnSuccessListener { documents ->
-                            for (document in documents) {
-                                val trainingSession = document.toObject(TrainingSession::class.java)
-                                Log.d(TAG, "trainingSession = $trainingSession")
-                                // Add each training session to the list
-                                trainingSessionList.add(trainingSession)
-                            }
-                            // Pass the list to the recyclerView
-                            configureRecyclerView(trainingSessionList)
-                        }
-                        ?.addOnFailureListener { exception ->
-                            Log.w(TAG, "Error getting documents: ", exception)
-                        }
-                }
+                trainingSessionsFromOnDayClick(clickedDayCalendar)
             }
         })
     }
@@ -217,6 +183,47 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     }
 
     //--------------------------------------------------------------------------------------
+    // Method to add the training sessions to the recyclerView when click on a day
+
+    private fun trainingSessionsFromOnDayClick(clickedDayCalendar: Calendar) {
+        val trainingSessionList = arrayListOf<TrainingSession>()
+
+        // Get year, month and day from the eventDay
+        val yearOfTraining = clickedDayCalendar.get(Calendar.YEAR)
+        val monthOfTraining = clickedDayCalendar.get(Calendar.MONTH)
+        val dayOfTraining = clickedDayCalendar.get(Calendar.DATE)
+
+        userId?.let {
+            // Get the list of training sessions from Firestore
+            trainingSessionViewModel.getListOfTrainingSessions(it)
+                // Filter the list with parsed dates
+                ?.whereGreaterThanOrEqualTo(
+                    TRAINING_SESSION_DATE_FIELD,
+                    getDateOfTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
+                )
+                ?.whereLessThan(
+                    TRAINING_SESSION_DATE_FIELD,
+                    getDayAfterTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
+                )
+                ?.get()
+                ?.addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val trainingSession = document.toObject(TrainingSession::class.java)
+                        Log.d(TAG, "trainingSession = $trainingSession")
+                        // Add each training session to the list
+                        trainingSessionList.add(trainingSession)
+                    }
+                    // Pass the list to the recyclerView
+                    configureRecyclerView(trainingSessionList)
+                }
+                ?.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
+    }
+
+    //--------------------------------------------------------------------------------------
+    // Interface for callbacks from ItemTrainingSessionAdapter
 
     override fun onClickTrainingSession(trainingSession: TrainingSession, position: Int) {
         if (trainingSession.trainingSessionDate != null) {
