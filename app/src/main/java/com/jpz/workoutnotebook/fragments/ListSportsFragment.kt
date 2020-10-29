@@ -18,9 +18,9 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.IS_AN_EXERCISE
 import com.jpz.workoutnotebook.adapters.ItemExerciseAdapter
 import com.jpz.workoutnotebook.adapters.ItemWorkoutAdapter
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -45,8 +45,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
     private var isAnExercise = false
 
-    private var callbackExercise: ExerciseListener? = null
-    private var callbackWorkout: WorkoutListener? = null
+    private var callback: ItemListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,9 +69,9 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
         listSportsFragmentFABAdd.setOnClickListener {
             if (isAnExercise) {
-                callbackExercise?.addOrUpdateExercise(null)
+                callback?.addOrUpdateExercise(null)
             } else {
-                callbackWorkout?.addOrUpdateWorkout(null)
+                callback?.addOrUpdateWorkout(null)
             }
         }
 
@@ -184,39 +183,34 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     // Interface for callbacks Exercise and Workout Adapters
 
     override fun onClickExercise(exercise: Exercise?, position: Int) {
-        exercise?.let { callbackExercise?.addOrUpdateExercise(it) }
+        exercise?.let { callback?.addOrUpdateExercise(it) }
     }
 
     override fun onClickWorkout(workout: Workout?, position: Int) {
-        workout?.let { callbackWorkout?.addOrUpdateWorkout(it) }
+        workout?.let { callback?.addOrUpdateWorkout(it) }
     }
 
     //----------------------------------------------------------------------------------
-    // Interfaces for callbacks to parent activity and associated methods
+    // Interface for callback to parent activity and associated methods
     // when click on add button or on an item in the list
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // Call the methods that creating callback after being attached to parent activity
+        // Call the method that creating callback after being attached to parent activity
         callbackToParentActivity()
     }
 
-    // Declare our interfaces that will be implemented by any container activity
-    interface ExerciseListener {
+    // Declare our interface that will be implemented by any container activity
+    interface ItemListener {
         fun addOrUpdateExercise(exercise: Exercise?)
-    }
-
-    interface WorkoutListener {
         fun addOrUpdateWorkout(workout: Workout?)
     }
 
-    // Create callbacks to parent activity
+    // Create callback to parent activity
     private fun callbackToParentActivity() {
         try {
-            // Parent activity will automatically subscribe to callbacks
-            callbackExercise = activity as ExerciseListener?
-            callbackWorkout = activity as WorkoutListener?
-
+            // Parent activity will automatically subscribe to callback
+            callback = activity as ItemListener?
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement ItemListener")
         }

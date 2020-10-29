@@ -50,12 +50,23 @@
         <item name="android:textSize">@dimen/exercise_text_size</item>
     </style>
 
-    <!-- EditButtonText Theme -->
-    <style name="EditButtonTheme" parent="Widget.MaterialComponents.Button.TextButton">
+    <!-- EditButton Theme -->
+    <style name="EditButtonTheme" parent="Widget.MaterialComponents.Button">
         <item name="icon">@drawable/ic_baseline_edit_24</item>
         <item name="android:layout_marginStart">@dimen/edit_button_margin</item>
         <item name="android:layout_marginEnd">@dimen/edit_button_margin</item>
         <item name="android:textSize">@dimen/subtitle_text_size</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="iconTint">@color/colorTextPrimary</item>
+    </style>
+
+    <!-- StartTrainingSessionButton Theme -->
+    <style name="StartTrainingSessionButtonTheme" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_marginStart">@dimen/edit_button_margin</item>
+        <item name="android:layout_marginEnd">@dimen/edit_button_margin</item>
+        <item name="android:textSize">@dimen/subtitle_text_size</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="cornerRadius">@dimen/fab_margin</item>
     </style>
 
     <!-- Button Icon Theme -->

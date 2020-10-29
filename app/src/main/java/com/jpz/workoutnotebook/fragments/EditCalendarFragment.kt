@@ -8,9 +8,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.DatePickerFragment.Companion.BUNDLE_KEY_DAY
 import com.jpz.workoutnotebook.utils.DatePickerFragment.Companion.BUNDLE_KEY_MONTH

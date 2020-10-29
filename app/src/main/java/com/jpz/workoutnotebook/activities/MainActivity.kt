@@ -23,8 +23,7 @@ import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener,
-    CalendarFragment.TrainingSessionListener,
-    View.OnClickListener {
+    CalendarFragment.TrainingSessionListener, View.OnClickListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -38,6 +37,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val EDIT = "EDIT"
         const val EDIT_PROFILE_FRAGMENT = "EDIT_PROFILE_FRAGMENT"
         const val EDIT_CALENDAR_FRAGMENT = "EDIT_CALENDAR_FRAGMENT"
+        const val TRAINING_SESSION_FRAGMENT = "TRAINING_SESSION_FRAGMENT"
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
@@ -123,9 +123,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
         // Then display the tab icon in white for the first page
         mainActivityTabLayout.getTabAt(Tabs.SPORTS.position)?.icon?.let {
-            DrawableCompat.setTint(
-                it, colorIconWhite
-            )
+            DrawableCompat.setTint(it, colorIconWhite)
         }
     }
 
@@ -188,6 +186,13 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startActivity(intent)
     }
 
+    private fun startEditActivityForTrainingSession(trainingSession: TrainingSession?) {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, TRAINING_SESSION_FRAGMENT)
+        intent.putExtra(TRAINING_SESSION, trainingSession)
+        startActivity(intent)
+    }
+
     private fun startForResultEditActivityForProfile() {
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, EDIT_PROFILE_FRAGMENT)
@@ -197,12 +202,17 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     //--------------------------------------------------------------------------------------
 
     // Implement listener from SportsFragment to consult the list of exercises or workouts
-    override fun onClickedSportsFragmentButton(button: String?) {
+    override fun onClickedExerciseOrWorkoutButton(button: String?) {
         if (button == getString(R.string.exercises)) {
             startEditActivityForExerciseOrWorkout(EXERCISES)
         } else {
             startEditActivityForExerciseOrWorkout(WORKOUTS)
         }
+    }
+
+    // Implement listener from SportsFragment to start the training session
+    override fun onClickedTrainingSessionButton(trainingSession: TrainingSession) {
+        startEditActivityForTrainingSession(trainingSession)
     }
 
     // Implement listener from CalendarFragment to update a training session

@@ -11,6 +11,7 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_CALENDAR_F
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_PROFILE_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
 import com.jpz.workoutnotebook.fragments.*
 import com.jpz.workoutnotebook.models.Exercise
@@ -21,8 +22,7 @@ import kotlinx.android.synthetic.main.activity_edit.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
-class EditActivity : AppCompatActivity(), ListSportsFragment.ExerciseListener,
-    ListSportsFragment.WorkoutListener {
+class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     companion object {
         private val TAG = EditActivity::class.java.simpleName
@@ -80,6 +80,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ExerciseListener,
         var fragment = Fragment()
         val editProfileFragment = EditProfileFragment()
         val editCalendarFragment = EditCalendarFragment()
+        val trainingSessionFragment = TrainingSessionFragment()
         val listSportsFragment = ListSportsFragment()
         val bundle = Bundle()
 
@@ -88,6 +89,11 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ExerciseListener,
 
             EDIT_CALENDAR_FRAGMENT -> {
                 fragment = editCalendarFragment
+                bundle.putParcelable(TRAINING_SESSION, trainingSession)
+            }
+
+            TRAINING_SESSION_FRAGMENT -> {
+                fragment = trainingSessionFragment
                 bundle.putParcelable(TRAINING_SESSION, trainingSession)
             }
 

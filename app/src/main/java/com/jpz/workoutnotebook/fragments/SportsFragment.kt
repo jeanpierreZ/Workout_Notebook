@@ -6,9 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_sports.*
@@ -26,9 +27,11 @@ class SportsFragment : Fragment() {
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
 
+    private var userId: String? = null
+
     private var callback: SportsFragmentButtonListener? = null
 
-    private var userId: String? = null
+    private var trainingSession: TrainingSession? = null
 
     // SimpleDateFormat is used to compare the dates in the trainingSessionList
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
@@ -52,16 +55,16 @@ class SportsFragment : Fragment() {
 
         displayNextTrainingSessionDate()
 
-        sportsFragmentCardView.setOnClickListener {
-            Toast.makeText(activity, "CardView", Toast.LENGTH_SHORT).show()
+        sportsFragmentTrainingSessionButton.setOnClickListener {
+            trainingSession?.let { callback?.onClickedTrainingSessionButton(it) }
         }
 
         sportsFragmentExercisesButton.setOnClickListener {
-            callback?.onClickedSportsFragmentButton(getString(R.string.exercises))
+            callback?.onClickedExerciseOrWorkoutButton(getString(R.string.exercises))
         }
 
         sportsFragmentWorkoutsButton.setOnClickListener {
-            callback?.onClickedSportsFragmentButton(getString(R.string.workouts))
+            callback?.onClickedExerciseOrWorkoutButton(getString(R.string.workouts))
         }
     }
 
@@ -78,6 +81,8 @@ class SportsFragment : Fragment() {
             trainingSessionViewModel.getListOfTrainingSessions(it)
                 // Filter the list with upcoming parsed dates
                 ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+                ?.orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+                ?.limit(1)
                 ?.addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         Log.w(TAG, "Listen failed.", e)
@@ -86,22 +91,21 @@ class SportsFragment : Fragment() {
 
                     if (snapshot != null && !snapshot.isEmpty) {
                         val list = snapshot.documents
-                        // Get next trainingSessionDate
-                        val trainingSessionDate: String? =
-                            list[0].getString(TRAINING_SESSION_DATE_FIELD)
-
-                        if (trainingSessionDate != null) {
-                            // Format date and display it
-                            val nextDate: Date = sdf.parse(trainingSessionDate)!!
-                            sportsFragmentDate.text =
-                                DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
-                                    .format(nextDate)
-                        } else {
-                            sportsFragmentDate.text =
-                                getString(R.string.no_upcoming_training_session)
+                        // Get the training session object
+                        list[0].reference.get().addOnCompleteListener { document ->
+                            trainingSession = document.result?.toObject(TrainingSession::class.java)
+                            // Get next trainingSessionDate
+                            trainingSession?.trainingSessionDate?.let { trainingSessionDate ->
+                                // Format date and display it
+                                val nextDate: Date = sdf.parse(trainingSessionDate)!!
+                                sportsFragmentDate.text = DateFormat.getDateTimeInstance(
+                                    DateFormat.MEDIUM, DateFormat.SHORT
+                                ).format(nextDate)
+                            }
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
                     } else {
+                        sportsFragmentDate.text = getString(R.string.no_upcoming_training_session)
                         Log.d(TAG, "Current data: null")
                     }
                 }
@@ -119,7 +123,8 @@ class SportsFragment : Fragment() {
 
     // Declare our interface that will be implemented by any container activity
     interface SportsFragmentButtonListener {
-        fun onClickedSportsFragmentButton(button: String?)
+        fun onClickedExerciseOrWorkoutButton(button: String?)
+        fun onClickedTrainingSessionButton(trainingSession: TrainingSession)
     }
 
     // Create callback to parent activity
