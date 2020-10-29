@@ -88,4 +88,8 @@
     <string name="training_session_deleted">Training session deleted</string>
     <string name="training_session_time_already_exists">A training session at this time already exists, please choose another time</string>
     <string name="cannot_create_update_training_session_with_past_date">Cannot create or update a training session with a past date</string>
+
+    <!-- Edit Calendar Fragment -->
+    <string name="go">GO</string>
+    <string name="start_rest_time">Start the rest time</string>
 </resources>

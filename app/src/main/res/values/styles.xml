@@ -50,6 +50,15 @@
         <item name="android:textSize">@dimen/exercise_text_size</item>
     </style>
 
+    <!-- Circle TextView Theme -->
+    <style name="CircleTextViewTheme" parent="Widget.MaterialComponents.TextView">
+        <item name="android:background">@drawable/circle</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/exercise_text_size</item>
+    </style>
+
     <!-- EditButton Theme -->
     <style name="EditButtonTheme" parent="Widget.MaterialComponents.Button">
         <item name="icon">@drawable/ic_baseline_edit_24</item>
@@ -79,5 +88,11 @@
         <item name="android:paddingBottom">@dimen/button_icon_padding_normal</item>
         <item name="android:paddingEnd">@dimen/button_icon_padding_reduce</item>
         <item name="android:paddingTop">@dimen/button_icon_padding_normal</item>
+    </style>
+
+    <!-- SessionButton Theme -->
+    <style name="SessionButtonTheme" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="iconTint">@color/colorTextPrimary</item>
     </style>
 </resources>

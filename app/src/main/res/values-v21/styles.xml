@@ -19,4 +19,9 @@
         <item name="android:textColor">@color/colorTextPrimary</item>
         <item name="cornerRadius">@dimen/fab_margin</item>
     </style>
+
+    <!-- SessionButton Theme -->
+    <style name="SessionButtonTheme" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/colorPrimaryDark</item>
+    </style>
 </resources>

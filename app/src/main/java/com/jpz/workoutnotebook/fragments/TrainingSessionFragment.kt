@@ -27,5 +27,14 @@ class TrainingSessionFragment : Fragment() {
         val trainingSession: TrainingSession? = arguments?.getParcelable(TRAINING_SESSION)
 
         trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
+
+        if (trainingSession?.workout?.exercisesList != null && trainingSession.workout?.exercisesList!!.isNotEmpty()) {
+            trainingSessionFragmentExerciseName.text =
+                trainingSession.workout?.exercisesList!![0].exerciseName
+
+            trainingSessionFragmentRestTime.text = trainingSession.workout?.exercisesList!![0].restNextSet.toString()
+
+        }
+
     }
 }
