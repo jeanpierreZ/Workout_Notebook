@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
-            android:text="Date of next training session"
+            android:hint="@string/next_training_session"
             app:layout_constraintBottom_toTopOf="@+id/sportsFragmentCardView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,12 +70,12 @@
             app:layout_constraintTop_toBottomOf="@+id/sportsFragmentDate">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/sportsFragmentNextWorkout"
+                android:id="@+id/sportsFragmentNextTrainingSession"
                 style="@style/SubTitleTextViewTheme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Workout for next training session" />
+                android:text="@string/start_next_training_session" />
         </androidx.cardview.widget.CardView>
 
         <com.google.android.material.button.MaterialButton

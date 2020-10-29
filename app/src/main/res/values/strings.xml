@@ -36,6 +36,8 @@
 
     <!-- Sports Fragment -->
     <string name="next_training_session">Next training session</string>
+    <string name="no_upcoming_training_session">No upcoming training session</string>
+    <string name="start_next_training_session">Start the next training session</string>
     <string name="exercises">Exercises</string>
     <string name="workouts">Workouts</string>
 
