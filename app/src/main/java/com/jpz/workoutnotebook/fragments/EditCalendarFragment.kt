@@ -190,7 +190,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         userId?.let { it ->
             // Get the workouts from Firestore Query
-            workoutViewModel.getOrderedListOfExercises(it)?.get()
+            workoutViewModel.getOrderedListOfWorkouts(it)?.get()
                 ?.addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         myUtils.showSnackBar(

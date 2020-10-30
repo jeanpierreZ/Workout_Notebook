@@ -34,10 +34,10 @@ class WorkoutRepository {
 
     // --- QUERY ---
 
-    fun getListOfExercises(userId: String): Query? =
+    fun getListOfWorkouts(userId: String): Query? =
         UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
 
-    fun getOrderedListOfExercises(userId: String): Query? =
+    fun getOrderedListOfWorkouts(userId: String): Query? =
         UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
             ?.orderBy(WORKOUT_NAME_FIELD, Query.Direction.ASCENDING)
 

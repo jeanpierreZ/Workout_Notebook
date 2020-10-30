@@ -99,7 +99,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
         } else {
             // Create the adapter by passing the list of workouts of the user
-            list = workoutViewModel.getOrderedListOfExercises(userId)
+            list = workoutViewModel.getOrderedListOfWorkouts(userId)
 
             if (list != null) {
                 itemWorkoutAdapter =

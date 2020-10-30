@@ -44,9 +44,9 @@ class WorkoutViewModel(private val workoutRepository: WorkoutRepository) : ViewM
 
     // --- QUERY ---
 
-    fun getOrderedListOfExercises(userId: String) = workoutRepository.getOrderedListOfExercises(userId)
+    fun getOrderedListOfWorkouts(userId: String) = workoutRepository.getOrderedListOfWorkouts(userId)
 
-    fun getListOfExercises(userId: String) = workoutRepository.getListOfExercises(userId)
+    fun getListOfWorkouts(userId: String) = workoutRepository.getListOfWorkouts(userId)
 
     // --- UPDATE ---
 

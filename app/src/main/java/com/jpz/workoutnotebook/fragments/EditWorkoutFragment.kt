@@ -248,7 +248,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             } else {
                 // If the name is different and it is not an update,
                 // check if a workoutName already exists
-                workoutViewModel.getListOfExercises(it)
+                workoutViewModel.getListOfWorkouts(it)
                     ?.whereEqualTo(WORKOUT_NAME_FIELD, workout?.workoutName)
                     ?.get()
                     ?.addOnSuccessListener { documents ->
