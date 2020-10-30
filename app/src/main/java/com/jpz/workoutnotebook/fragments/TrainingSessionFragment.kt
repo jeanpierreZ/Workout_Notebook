@@ -1,10 +1,11 @@
 package com.jpz.workoutnotebook.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -12,6 +13,23 @@ import kotlinx.android.synthetic.main.fragment_training_session.*
 
 
 class TrainingSessionFragment : Fragment() {
+
+    private var timerRunning = false
+
+    private var timeLeftInMillis: Long = 6000L
+
+    private var countDownTimer = object : CountDownTimer(timeLeftInMillis, 1000) {
+        override fun onTick(millisUntilFinished: Long) {
+            timeLeftInMillis = millisUntilFinished
+
+            updateCountDownText()
+        }
+
+        override fun onFinish() {
+            timerRunning = false
+            trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,9 +50,37 @@ class TrainingSessionFragment : Fragment() {
             trainingSessionFragmentExerciseName.text =
                 trainingSession.workout?.exercisesList!![0].exerciseName
 
-            trainingSessionFragmentRestTime.text = trainingSession.workout?.exercisesList!![0].restNextSet.toString()
+            trainingSessionFragmentRestTime.text =
+                trainingSession.workout?.exercisesList!![0].restNextSet.toString()
+        }
 
+        trainingSessionFragmentStartRestTime.setOnClickListener {
+            if (timerRunning) {
+                pauseTimer()
+            } else {
+                startTimer()
+            }
         }
 
     }
+
+    //--------------------------------------------------------------------------------------
+
+    private fun startTimer() {
+        countDownTimer.start()
+        timerRunning = true
+        trainingSessionFragmentStartRestTime.text = getString(R.string.pause)
+    }
+
+    private fun pauseTimer() {
+        countDownTimer.cancel()
+        timerRunning = false
+        trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
+    }
+
+    private fun updateCountDownText() {
+        val seconds = (timeLeftInMillis / 1000).toInt()
+        trainingSessionFragmentRestTime.text = seconds.toString()
+    }
+
 }
