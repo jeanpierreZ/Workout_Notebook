@@ -12,13 +12,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.EXERCISE
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditExerciseBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -37,6 +39,11 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private lateinit var binding: FragmentEditExerciseBinding
 
     private var exercise: Exercise? = null
+
+    // Get the previous exercise data to update the workouts that contain it
+    private var previousExercise: Exercise? = null
+    private val mapper = jacksonObjectMapper()
+    private var jsonPreviousExercise: String? = null
 
     private var userId: String? = null
     private var exerciseNameToUpdate: String? = null
@@ -89,6 +96,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     //--------------------------------------------------------------------------------------
 
     private fun getExerciseFromBundle(exercise: Exercise?) {
+        // Get the Exercise object and convert it to JSON format
+        jsonPreviousExercise = mapper.writeValueAsString(exercise)
         // Get data
         binding.exercise = exercise
         // Get initial workout name to compare it later
@@ -162,7 +171,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
     // Methods to create or update an exercise
 
-    private fun createOrUpdateExercise(toUpdate: Boolean) {
+    private fun createOrUpdateExercise() {
         if (checkIfExerciseNameIsEmpty()) {
             return
         }
@@ -171,7 +180,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         userId?.let {
             // If it is an update and it is the same name, update the exercise
             if (exerciseNameToUpdate == exercise?.exerciseName && toUpdate) {
-                createOrUpdateToFirestore(it, toUpdate)
+                createOrUpdateToFirestore(it)
             } else {
                 // If the name is different and it is not an update,
                 // check if an exerciseName already exists
@@ -182,7 +191,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                         if (documents.isEmpty) {
                             // There is no document with this exerciseName so create the exercise
                             Log.d(TAG, "documents.isEmpty")
-                            createOrUpdateToFirestore(it, toUpdate)
+                            createOrUpdateToFirestore(it)
                         } else {
                             // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
@@ -201,11 +210,18 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun createOrUpdateToFirestore(userId: String, toUpdate: Boolean) {
+    private fun createOrUpdateToFirestore(userId: String) {
         if (toUpdate) {
             // Update the exercise
             exercise?.let {
-                exerciseViewModel.updateExercise(editExerciseFragmentCoordinatorLayout, userId, it)
+                // Convert the JSON data to Exercise object
+                previousExercise = jsonPreviousExercise?.let { json -> mapper.readValue(json) }
+                previousExercise?.let { previousExercise ->
+                    Log.d(TAG, "previousExercise = $previousExercise")
+                    exerciseViewModel.updateExercise(
+                        editExerciseFragmentCoordinatorLayout, userId, previousExercise, it
+                    )
+                }
             }
         } else {
             // Create the exercise
@@ -231,7 +247,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         when (v?.id) {
             R.id.editExerciseFragmentFABAddSeries ->
                 itemSeriesAdapter?.addASeries(editExerciseFragmentRecyclerView)
-            R.id.editExerciseFragmentFABSave -> createOrUpdateExercise(toUpdate)
+            R.id.editExerciseFragmentFABSave -> createOrUpdateExercise()
         }
     }
 }
