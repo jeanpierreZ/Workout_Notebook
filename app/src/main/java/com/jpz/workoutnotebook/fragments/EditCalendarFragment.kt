@@ -298,7 +298,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         // Update the training session
                         val trainingSession = TrainingSession(
                             trainingSessionId, getTrainingSessionDateInSDFFormat(dateToRegister),
-                            thisWorkout
+                            false, thisWorkout
                         )
                         trainingSessionViewModel.updateTrainingSession(
                             editCalendarFragmentCoordinatorLayout, userId, trainingSession
@@ -307,7 +307,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         // Create the training session
                         val trainingSession = TrainingSession(
                             null, getTrainingSessionDateInSDFFormat(dateToRegister),
-                            thisWorkout
+                            false, thisWorkout
                         )
                         trainingSessionViewModel.createTrainingSession(
                             editCalendarFragmentCoordinatorLayout, userId, trainingSession

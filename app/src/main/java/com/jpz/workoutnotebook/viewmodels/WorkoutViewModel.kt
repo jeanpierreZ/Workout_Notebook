@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.repositories.WorkoutRepository
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.repositories.WorkoutRepository
 import com.jpz.workoutnotebook.utils.MyUtils
 import org.koin.java.KoinJavaComponent
 
@@ -44,15 +44,17 @@ class WorkoutViewModel(private val workoutRepository: WorkoutRepository) : ViewM
 
     // --- QUERY ---
 
-    fun getOrderedListOfWorkouts(userId: String) = workoutRepository.getOrderedListOfWorkouts(userId)
+    fun getOrderedListOfWorkouts(userId: String) =
+        workoutRepository.getOrderedListOfWorkouts(userId)
 
     fun getListOfWorkouts(userId: String) = workoutRepository.getListOfWorkouts(userId)
 
     // --- UPDATE ---
 
     fun updateWorkout(
-        coordinatorLayout: CoordinatorLayout, userId: String, workout: Workout
-    ) = workoutRepository.updateWorkout(userId, workout)
+        coordinatorLayout: CoordinatorLayout,
+        userId: String, previousWorkout: Workout, workout: Workout
+    ) = workoutRepository.updateWorkout(userId, previousWorkout, workout)
         ?.addOnSuccessListener {
             myUtils.showSnackBar(
                 coordinatorLayout, coordinatorLayout.context.getString(

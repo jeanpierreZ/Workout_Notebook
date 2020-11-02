@@ -14,13 +14,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.WORKOUT
 import com.jpz.workoutnotebook.adapters.ItemExerciseFromWorkoutAdapter
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.databinding.FragmentEditWorkoutBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
@@ -41,8 +43,12 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     private var workout: Workout? = null
 
-    private var userId: String? = null
+    // Get the previous workout data to update the training sessions that contain it
+    private var previousWorkout: Workout? = null
+    private val mapper = jacksonObjectMapper()
+    private var jsonPreviousWorkout: String? = null
 
+    private var userId: String? = null
     private var workoutNameToUpdate: String? = null
     private var toUpdate = false
 
@@ -91,6 +97,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     //--------------------------------------------------------------------------------------
 
     private fun getWorkoutFromBundle(workout: Workout?) {
+        // Get the Workout object and convert it to JSON format
+        jsonPreviousWorkout = mapper.writeValueAsString(workout)
         // Get data
         binding.workout = workout
         // Get initial workout name to compare it later
@@ -278,7 +286,14 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         if (toUpdate) {
             // Update the workout
             workout?.let {
-                workoutViewModel.updateWorkout(editWorkoutFragmentCoordinatorLayout, userId, it)
+                // Convert the JSON data to Workout object
+                previousWorkout = jsonPreviousWorkout?.let { json -> mapper.readValue(json) }
+                previousWorkout?.let { previousWorkout ->
+                    Log.d(TAG, "previousWorkout = $previousWorkout")
+                    workoutViewModel.updateWorkout(
+                        editWorkoutFragmentCoordinatorLayout, userId, previousWorkout, it
+                    )
+                }
             }
         } else {
             // Create the workout

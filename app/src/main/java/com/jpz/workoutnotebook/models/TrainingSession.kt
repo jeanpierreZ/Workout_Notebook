@@ -7,5 +7,6 @@ import kotlinx.android.parcel.Parcelize
 data class TrainingSession(
     var trainingSessionId: String? = null,
     var trainingSessionDate: String? = null,
+    var trainingSessionCompleted: Boolean = false,
     var workout: Workout? = null
 ) : Parcelable

@@ -81,8 +81,10 @@ class ExerciseRepository {
                             // For each workout
                             workoutRepository.getWorkout(userId, document.id)
                                 ?.addOnSuccessListener { doc ->
-                                    // Get workout object
+                                    // Get Workout object to update
                                     val workout = doc.toObject(Workout::class.java)
+                                    // Get a workout before changes, which is used to update the training sessions
+                                    val previousWorkout = doc.toObject(Workout::class.java)
                                     // Get the position of this exercise in the list
                                     val index: Int? =
                                         workout?.exercisesList?.indexOf(previousExercise)
@@ -92,12 +94,19 @@ class ExerciseRepository {
                                     }
                                     // Update this exercise in the workout
                                     workout?.let {
-                                        workoutRepository.updateWorkout(userId, workout)
-                                            ?.addOnSuccessListener {
-                                                Log.d(TAG, "DocumentSnapshot successfully updated!")
-                                            }?.addOnFailureListener { e ->
-                                                Log.e(TAG, "Error updating document", e)
-                                            }
+                                        if (previousWorkout != null) {
+                                            workoutRepository.updateWorkout(
+                                                userId, previousWorkout, workout
+                                            )
+                                                ?.addOnSuccessListener {
+                                                    Log.d(
+                                                        TAG,
+                                                        "DocumentSnapshot successfully updated!"
+                                                    )
+                                                }?.addOnFailureListener { e ->
+                                                    Log.e(TAG, "Error updating document", e)
+                                                }
+                                        }
                                     }
                                 }
                                 ?.addOnFailureListener { e ->
