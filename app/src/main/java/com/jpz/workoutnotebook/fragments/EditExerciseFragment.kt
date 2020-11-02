@@ -230,6 +230,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             }
         }
         activity?.let { myUtils.closeFragment(editExerciseFragmentProgressBar, it) }
+        editExerciseFragmentFABSave.isEnabled = false
+        editExerciseFragmentFABAddSeries.isEnabled = false
     }
 
     private fun checkIfExerciseNameIsEmpty(): Boolean {

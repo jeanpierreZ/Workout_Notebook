@@ -302,6 +302,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             }
         }
         activity?.let { myUtils.closeFragment(editWorkoutFragmentProgressBar, it) }
+        editWorkoutFragmentFABSave.isEnabled = false
+        editWorkoutFragmentFABAddExercise.isEnabled = false
     }
 
     private fun checkIfWorkoutNameIsEmpty(): Boolean {

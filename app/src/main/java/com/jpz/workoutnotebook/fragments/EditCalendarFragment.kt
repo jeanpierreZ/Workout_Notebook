@@ -314,8 +314,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         )
                     }
                 }
+                activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
+                editCalendarFragmentButtonSave.isEnabled = false
+                setHasOptionsMenu(false)
             }
-        activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
     }
 
     private fun checkIfATextViewIsEmpty(): Boolean {
@@ -364,6 +366,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         editCalendarFragmentCoordinatorLayout, userId, trainingSession
                     )
                     activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
+                    editCalendarFragmentButtonSave.isEnabled = false
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ ->
                 }
