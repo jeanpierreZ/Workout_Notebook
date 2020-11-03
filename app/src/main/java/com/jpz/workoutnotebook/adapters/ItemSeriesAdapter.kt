@@ -64,4 +64,14 @@ class ItemSeriesAdapter(private var list: ArrayList<Series>, private var context
         notifyItemInserted(position)
         notifyItemRangeChanged(position, itemCount)
     }
+
+    //----------------------------------------------------------------------------------
+    // For TrainingSessionFragment
+
+    fun nextSeries(recyclerView: RecyclerView) {
+        // Notify that the data has changed
+        notifyItemInserted(itemCount)
+        // Scroll to the bottom of the list
+        recyclerView.smoothScrollToPosition(itemCount)
+    }
 }

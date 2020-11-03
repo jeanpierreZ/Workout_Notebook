@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
+import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
+import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
 import kotlinx.android.synthetic.main.fragment_training_session.*
 
@@ -22,6 +25,10 @@ class TrainingSessionFragment : Fragment() {
     private var countDownTimer: CountDownTimer? = null
     private var timerRunning = false
     private var timeLeftInMillis: Long = 0L
+
+    private var itemSeriesAdapter: ItemSeriesAdapter? = null
+
+    private var seriesList: ArrayList<Series>? = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +44,22 @@ class TrainingSessionFragment : Fragment() {
         val trainingSession: TrainingSession? = arguments?.getParcelable(TRAINING_SESSION)
         trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
 
+        configureRecyclerView()
+
         if (trainingSession?.workout?.exercisesList != null && trainingSession.workout?.exercisesList!!.isNotEmpty()) {
+            // Display the exercise name
             trainingSessionFragmentExerciseName.text =
                 trainingSession.workout?.exercisesList!![0].exerciseName
+
+            // Go
+            trainingSessionFragmentGo.setOnClickListener {
+                if (trainingSession.workout?.exercisesList?.get(0)?.seriesList != null) {
+                    // Add the first series of exercise
+                    seriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![0])
+                    // Display the first series
+                    itemSeriesAdapter?.nextSeries(trainingSessionFragmentRecyclerView)
+                }
+            }
 
             val restTime = trainingSession.workout?.exercisesList!![0].restNextSet.toString()
             // Display rest time
@@ -57,6 +77,18 @@ class TrainingSessionFragment : Fragment() {
                 }
             }
         }
+    }
+
+    //----------------------------------------------------------------------------------
+    // Configure RecyclerView, Adapter & LayoutManager
+
+    private fun configureRecyclerView() {
+        // Create the adapter by passing the list of series of the user
+        itemSeriesAdapter = activity?.let { seriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
+        // Attach the adapter to the recyclerView to populate the series
+        trainingSessionFragmentRecyclerView?.adapter = itemSeriesAdapter
+        // Set layout manager to position the series
+        trainingSessionFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
     }
 
     //--------------------------------------------------------------------------------------
