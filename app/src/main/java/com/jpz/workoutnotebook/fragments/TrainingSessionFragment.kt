@@ -26,9 +26,11 @@ class TrainingSessionFragment : Fragment() {
     private var timerRunning = false
     private var timeLeftInMillis: Long = 0L
 
-    private var itemSeriesAdapter: ItemSeriesAdapter? = null
+    private var currentItemSeriesAdapter: ItemSeriesAdapter? = null
+    private var nextItemSeriesAdapter: ItemSeriesAdapter? = null
 
-    private var seriesList: ArrayList<Series>? = ArrayList()
+    private var currentSeriesList: ArrayList<Series>? = ArrayList()
+    private var nextSeriesList: ArrayList<Series>? = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,8 +46,6 @@ class TrainingSessionFragment : Fragment() {
         val trainingSession: TrainingSession? = arguments?.getParcelable(TRAINING_SESSION)
         trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
 
-        configureRecyclerView()
-
         if (trainingSession?.workout?.exercisesList != null && trainingSession.workout?.exercisesList!!.isNotEmpty()) {
             // Display the exercise name
             trainingSessionFragmentExerciseName.text =
@@ -55,10 +55,16 @@ class TrainingSessionFragment : Fragment() {
             trainingSessionFragmentGo.setOnClickListener {
                 if (trainingSession.workout?.exercisesList?.get(0)?.seriesList != null) {
                     // Add the first series of exercise
-                    seriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![0])
+                    currentSeriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![0])
                     // Display the first series
-                    itemSeriesAdapter?.nextSeries(trainingSessionFragmentRecyclerView)
+                    configureCurrentRecyclerView()
+
+                    // Add the second series of exercise
+                    nextSeriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![1])
+                    // Display the add series
+                    configureNextRecyclerView()
                 }
+                trainingSessionFragmentGo.isEnabled = false
             }
 
             val restTime = trainingSession.workout?.exercisesList!![0].restNextSet.toString()
@@ -82,13 +88,24 @@ class TrainingSessionFragment : Fragment() {
     //----------------------------------------------------------------------------------
     // Configure RecyclerView, Adapter & LayoutManager
 
-    private fun configureRecyclerView() {
+    private fun configureCurrentRecyclerView() {
         // Create the adapter by passing the list of series of the user
-        itemSeriesAdapter = activity?.let { seriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
+        currentItemSeriesAdapter =
+            activity?.let { currentSeriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
         // Attach the adapter to the recyclerView to populate the series
-        trainingSessionFragmentRecyclerView?.adapter = itemSeriesAdapter
+        trainingSessionFragmentCurrentRecyclerView?.adapter = currentItemSeriesAdapter
         // Set layout manager to position the series
-        trainingSessionFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        trainingSessionFragmentCurrentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+    }
+
+    private fun configureNextRecyclerView() {
+        // Create the adapter by passing the list of series of the user
+        nextItemSeriesAdapter =
+            activity?.let { nextSeriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
+        // Attach the adapter to the recyclerView to populate the series
+        trainingSessionFragmentNextRecyclerView?.adapter = nextItemSeriesAdapter
+        // Set layout manager to position the series
+        trainingSessionFragmentNextRecyclerView?.layoutManager = LinearLayoutManager(activity)
     }
 
     //--------------------------------------------------------------------------------------

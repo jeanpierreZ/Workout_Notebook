@@ -40,11 +40,11 @@
             android:layout_margin="@dimen/fab_margin"
             android:hint="@string/exercise_name"
             android:textAlignment="center"
-            app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentRecyclerView"
+            app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentCurrentRecyclerView"
             app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentGo" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/trainingSessionFragmentRecyclerView"
+            android:id="@+id/trainingSessionFragmentCurrentRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentStartRestTime"
@@ -61,17 +61,24 @@
             app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentRestTime"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentRecyclerView" />
+            app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentCurrentRecyclerView" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/trainingSessionFragmentRestTime"
             style="@style/CircleTextViewTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentNextRecyclerView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentStartRestTime" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trainingSessionFragmentNextRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentRestTime" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
