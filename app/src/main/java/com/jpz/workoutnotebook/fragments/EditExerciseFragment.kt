@@ -113,7 +113,11 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private fun configureRecyclerView() {
         // Create the adapter by passing the list of series of the user
         itemSeriesAdapter =
-            activity?.let { exercise?.seriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
+            activity?.let {
+                exercise?.seriesList?.let { seriesList ->
+                    ItemSeriesAdapter(seriesList, false, null, it)
+                }
+            }
         // Attach the adapter to the recyclerView to populate the series
         editExerciseFragmentRecyclerView?.adapter = itemSeriesAdapter
         // Set layout manager to position the series

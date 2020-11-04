@@ -9,4 +9,5 @@
     <color name="colorTextPrimary">#000000</color>
     <color name="colorTextSecondary">#ffffff</color>
     <color name="colorDecorSwipeRed">#B23121</color>
+    <color name="colorSeriesDisabled">#9e9e9e</color>
 </resources>

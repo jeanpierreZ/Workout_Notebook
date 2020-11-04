@@ -9,23 +9,53 @@ import com.google.android.material.snackbar.Snackbar
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.databinding.SeriesItemBinding
 import com.jpz.workoutnotebook.models.Series
+import com.jpz.workoutnotebook.viewholders.ItemSeriesDisabledViewHolder
 import com.jpz.workoutnotebook.viewholders.ItemSeriesViewHolder
 
 
-class ItemSeriesAdapter(private var list: ArrayList<Series>, private var context: Context) :
-    RecyclerView.Adapter<ItemSeriesViewHolder>() {
+class ItemSeriesAdapter(
+    private var list: ArrayList<Series>, private val isDisabled: Boolean,
+    private val seriesDisabledName: String?, private var context: Context
+) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemSeriesViewHolder {
+    companion object {
+        const val TYPE_SERIES = 1
+        const val TYPE_SERIES_DISABLED = 2
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         context = parent.context
         val inflater = LayoutInflater.from(context)
-        return ItemSeriesViewHolder(SeriesItemBinding.inflate(inflater, parent, false))
+        val view = SeriesItemBinding.inflate(inflater, parent, false)
+        return if (viewType == TYPE_SERIES) {
+            ItemSeriesViewHolder(view)
+        } else {
+            // For disabled item series
+            ItemSeriesDisabledViewHolder(view)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (getItemViewType(position) == TYPE_SERIES) {
+            (holder as ItemSeriesViewHolder).updateSeries(list[position], context)
+        } else {
+            // For disabled item series
+            (holder as ItemSeriesDisabledViewHolder).updateSeriesDisabled(
+                list[position], seriesDisabledName, context
+            )
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (isDisabled) {
+            TYPE_SERIES_DISABLED
+        } else {
+            TYPE_SERIES
+        }
     }
 
     override fun getItemCount(): Int = list.size
-
-    override fun onBindViewHolder(holder: ItemSeriesViewHolder, position: Int) {
-        holder.updateSeries(list[position], context)
-    }
 
     fun addASeries(recyclerView: RecyclerView) {
         // Add a new series to the list

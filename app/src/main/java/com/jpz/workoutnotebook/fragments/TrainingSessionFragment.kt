@@ -32,6 +32,8 @@ class TrainingSessionFragment : Fragment() {
     private var currentSeriesList: ArrayList<Series>? = ArrayList()
     private var nextSeriesList: ArrayList<Series>? = ArrayList()
 
+    private var seriesDisabledName: String? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,6 +63,8 @@ class TrainingSessionFragment : Fragment() {
 
                     // Add the second series of exercise
                     nextSeriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![1])
+                    seriesDisabledName =
+                        trainingSession.workout?.exercisesList?.get(0)?.seriesList!![1].seriesName
                     // Display the add series
                     configureNextRecyclerView()
                 }
@@ -91,7 +95,11 @@ class TrainingSessionFragment : Fragment() {
     private fun configureCurrentRecyclerView() {
         // Create the adapter by passing the list of series of the user
         currentItemSeriesAdapter =
-            activity?.let { currentSeriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
+            activity?.let {
+                currentSeriesList?.let { currentSeriesList ->
+                    ItemSeriesAdapter(currentSeriesList, false, null, it)
+                }
+            }
         // Attach the adapter to the recyclerView to populate the series
         trainingSessionFragmentCurrentRecyclerView?.adapter = currentItemSeriesAdapter
         // Set layout manager to position the series
@@ -101,7 +109,11 @@ class TrainingSessionFragment : Fragment() {
     private fun configureNextRecyclerView() {
         // Create the adapter by passing the list of series of the user
         nextItemSeriesAdapter =
-            activity?.let { nextSeriesList?.let { it1 -> ItemSeriesAdapter(it1, it) } }
+            activity?.let {
+                nextSeriesList?.let { nextSeriesList ->
+                    ItemSeriesAdapter(nextSeriesList, true, seriesDisabledName, it)
+                }
+            }
         // Attach the adapter to the recyclerView to populate the series
         trainingSessionFragmentNextRecyclerView?.adapter = nextItemSeriesAdapter
         // Set layout manager to position the series
