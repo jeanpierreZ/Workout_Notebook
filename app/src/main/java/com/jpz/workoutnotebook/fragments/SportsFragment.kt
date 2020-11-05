@@ -94,13 +94,18 @@ class SportsFragment : Fragment() {
                         // Get the training session object
                         list[0].reference.get().addOnCompleteListener { document ->
                             trainingSession = document.result?.toObject(TrainingSession::class.java)
-                            // Get next trainingSessionDate
+                            // Get next trainingSessionDate and the workout name
                             trainingSession?.trainingSessionDate?.let { trainingSessionDate ->
-                                // Format date and display it
+                                // Format date and display it with the workout name
                                 val nextDate: Date = sdf.parse(trainingSessionDate)!!
-                                sportsFragmentDate.text = DateFormat.getDateTimeInstance(
+                                val dateStringFormatted: String = DateFormat.getDateTimeInstance(
                                     DateFormat.MEDIUM, DateFormat.SHORT
                                 ).format(nextDate)
+                                val workoutName: String? = trainingSession?.workout?.workoutName
+                                sportsFragmentDate.text = getString(
+                                    R.string.next_training_session_data,
+                                    workoutName, dateStringFormatted
+                                )
                             }
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
