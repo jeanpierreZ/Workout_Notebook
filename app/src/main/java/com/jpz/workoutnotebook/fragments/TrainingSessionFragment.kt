@@ -2,7 +2,6 @@ package com.jpz.workoutnotebook.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,10 +17,6 @@ import kotlinx.android.synthetic.main.fragment_training_session.*
 
 
 class TrainingSessionFragment : Fragment() {
-
-    companion object {
-        private val TAG = TrainingSessionFragment::class.java.simpleName
-    }
 
     private var countDownTimer: CountDownTimer? = null
     private var timerRunning = false
@@ -133,7 +128,10 @@ class TrainingSessionFragment : Fragment() {
     // CountDownTimer
 
     private fun startTimer() {
-        Log.d(TAG, "timeLeftInMillis = $timeLeftInMillis")
+        // If the rest time is equal to 0, pass 1L to allow the countDownTimer to start
+        if (timeLeftInMillis == 0L) {
+            timeLeftInMillis = 1L
+        }
         countDownTimer = object : CountDownTimer(timeLeftInMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 timeLeftInMillis = millisUntilFinished
