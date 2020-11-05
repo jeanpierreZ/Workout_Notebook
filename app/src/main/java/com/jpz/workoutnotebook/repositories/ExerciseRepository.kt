@@ -90,7 +90,7 @@ class ExerciseRepository {
                                         workout?.exercisesList?.indexOf(previousExercise)
                                     // Update this exercise in the list
                                     index?.let {
-                                        workout.exercisesList?.set(index, exercise)
+                                        workout.exercisesList.set(index, exercise)
                                     }
                                     // Update this exercise in the workout
                                     workout?.let {

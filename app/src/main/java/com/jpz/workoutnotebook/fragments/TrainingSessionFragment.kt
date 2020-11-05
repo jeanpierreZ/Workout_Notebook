@@ -75,7 +75,7 @@ class TrainingSessionFragment : Fragment() {
             // Display rest time
             trainingSessionFragmentRestTime.text = restTime
             // Set the countDownTimer with restTime
-            trainingSession.workout?.exercisesList!![0].restNextSet?.toLong()?.times(1000)?.let {
+            trainingSession.workout?.exercisesList!![0].restNextSet.toLong().times(1000).let {
                 timeLeftInMillis = it
             }
 

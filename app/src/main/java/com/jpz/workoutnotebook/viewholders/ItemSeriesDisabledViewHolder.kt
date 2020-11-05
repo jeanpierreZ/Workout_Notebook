@@ -1,7 +1,6 @@
 package com.jpz.workoutnotebook.viewholders
 
 import android.content.Context
-import android.graphics.Color
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.core.content.ContextCompat

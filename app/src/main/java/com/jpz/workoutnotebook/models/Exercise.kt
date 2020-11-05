@@ -7,8 +7,8 @@ import kotlinx.android.parcel.Parcelize
 data class Exercise(
     var exerciseId: String? = null,
     var exerciseName: String? = null,
-    var restNextSet: Int? = null,
-    var restNextExercise: Int? = null,
+    var restNextSet: Int = 0,
+    var restNextExercise: Int = 0,
     var editable: Boolean = true,
-    var seriesList: ArrayList<Series>? = ArrayList()
+    var seriesList: ArrayList<Series> = ArrayList()
 ) : Parcelable

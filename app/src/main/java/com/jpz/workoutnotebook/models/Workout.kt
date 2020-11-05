@@ -7,5 +7,5 @@ import kotlinx.android.parcel.Parcelize
 data class Workout(
     var workoutId: String? = null,
     var workoutName: String? = null,
-    var exercisesList: ArrayList<Exercise>? = ArrayList()
+    var exercisesList: ArrayList<Exercise> = ArrayList()
 ) : Parcelable

@@ -180,6 +180,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             return
         }
 
+        if (checkIfSeriesListIsEmpty()) {
+            return
+        }
+
         Log.d(TAG, "exercise = $exercise")
         userId?.let {
             // If it is an update and it is the same name, update the exercise
@@ -242,6 +246,15 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         return if (exercise?.exerciseName.isNullOrEmpty() || exercise?.exerciseName.isNullOrBlank()) {
             myUtils.showSnackBar(
                 editExerciseFragmentCoordinatorLayout, R.string.exercise_name_cannot_be_blank
+            )
+            true
+        } else false
+    }
+
+    private fun checkIfSeriesListIsEmpty(): Boolean {
+        return if (exercise?.seriesList.isNullOrEmpty()) {
+            myUtils.showSnackBar(
+                editExerciseFragmentCoordinatorLayout, R.string.sets_cannot_be_empty
             )
             true
         } else false
