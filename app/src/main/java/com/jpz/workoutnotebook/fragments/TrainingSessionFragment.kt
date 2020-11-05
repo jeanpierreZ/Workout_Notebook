@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
+import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
 import kotlinx.android.synthetic.main.fragment_training_session.*
@@ -45,39 +46,47 @@ class TrainingSessionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val trainingSession: TrainingSession? = arguments?.getParcelable(TRAINING_SESSION)
+        val trainingSession = arguments?.getParcelable<TrainingSession>(TRAINING_SESSION)
+
+        // Display the workout name
         trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
 
-        if (trainingSession?.workout?.exercisesList != null && trainingSession.workout?.exercisesList!!.isNotEmpty()) {
-            // Display the exercise name
-            trainingSessionFragmentExerciseName.text =
-                trainingSession.workout?.exercisesList!![0].exerciseName
+        val exercisesSize: Int = trainingSession?.workout?.exercisesList?.size!!
+        val firstExercise: Exercise = trainingSession.workout?.exercisesList!![0]
 
-            // Go
-            trainingSessionFragmentGo.setOnClickListener {
-                if (trainingSession.workout?.exercisesList?.get(0)?.seriesList != null) {
-                    // Add the first series of exercise
-                    currentSeriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![0])
-                    // Display the first series
-                    configureCurrentRecyclerView()
+        // Display the first exercise name
+        trainingSessionFragmentExerciseName.text = firstExercise.exerciseName
 
-                    // Add the second series of exercise
-                    nextSeriesList?.add(trainingSession.workout?.exercisesList?.get(0)?.seriesList!![1])
-                    seriesDisabledName =
-                        trainingSession.workout?.exercisesList?.get(0)?.seriesList!![1].seriesName
-                    // Display the add series
-                    configureNextRecyclerView()
-                }
-                trainingSessionFragmentGo.isEnabled = false
+        // Go
+        trainingSessionFragmentGo.setOnClickListener {
+            val seriesSize: Int = firstExercise.seriesList.size
+
+            // Add the first series of the first exercise
+            currentSeriesList?.add(firstExercise.seriesList[0])
+            // Display the first series
+            configureCurrentRecyclerView()
+
+            // Check if there is a second series
+            if (seriesSize > 1) {
+                // Add the second series of exercise
+                nextSeriesList?.add(firstExercise.seriesList[1])
+                seriesDisabledName = firstExercise.seriesList[1].seriesName
+                // Display the second series
+                configureNextRecyclerView()
+                // Get rest time from restNextSet
+                restTime(firstExercise.restNextSet.toString())
+
+                // Check if there is a second exercise
+            } else if (exercisesSize > 1) {
+                // Display the second exercise name
+                trainingSessionFragmentNextExerciseName.text =
+                    trainingSession.workout?.exercisesList!![1].exerciseName
+                trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
+                // Get rest time from restNextExercise
+                restTime(firstExercise.restNextExercise.toString())
             }
 
-            val restTime = trainingSession.workout?.exercisesList!![0].restNextSet.toString()
-            // Display rest time
-            trainingSessionFragmentRestTime.text = restTime
-            // Set the countDownTimer with restTime
-            trainingSession.workout?.exercisesList!![0].restNextSet.toLong().times(1000).let {
-                timeLeftInMillis = it
-            }
+            trainingSessionFragmentGo.isEnabled = false
 
             trainingSessionFragmentStartRestTime.setOnClickListener {
                 if (timerRunning) {
@@ -149,5 +158,12 @@ class TrainingSessionFragment : Fragment() {
     private fun updateCountDownText() {
         val seconds = (timeLeftInMillis / 1000).toInt()
         trainingSessionFragmentRestTime.text = seconds.toString()
+    }
+
+    private fun restTime(restTime: String) {
+        // Display the rest time
+        trainingSessionFragmentRestTime.text = restTime
+        // Set the countDownTimer with restTime
+        timeLeftInMillis = restTime.toLong().times(1000)
     }
 }

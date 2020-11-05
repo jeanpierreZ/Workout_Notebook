@@ -102,7 +102,7 @@ class SportsFragment : Fragment() {
                                     DateFormat.MEDIUM, DateFormat.SHORT
                                 ).format(nextDate)
                                 val workoutName: String? = trainingSession?.workout?.workoutName
-                                sportsFragmentDate.text = getString(
+                                sportsFragmentTrainingSession.text = getString(
                                     R.string.next_training_session_data,
                                     workoutName, dateStringFormatted
                                 )
@@ -110,7 +110,8 @@ class SportsFragment : Fragment() {
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
                     } else {
-                        sportsFragmentDate.text = getString(R.string.no_upcoming_training_session)
+                        sportsFragmentTrainingSession.text =
+                            getString(R.string.no_upcoming_training_session)
                         Log.d(TAG, "Current data: null")
                     }
                 }

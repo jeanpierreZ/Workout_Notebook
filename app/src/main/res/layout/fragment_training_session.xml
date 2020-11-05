@@ -80,6 +80,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentRestTime" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/trainingSessionFragmentNextExerciseName"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:hint="@string/exercise_name"
+            android:textAlignment="center"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentRestTime" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
