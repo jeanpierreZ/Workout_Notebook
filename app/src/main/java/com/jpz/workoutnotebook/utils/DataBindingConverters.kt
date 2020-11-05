@@ -14,32 +14,33 @@ class DataBindingConverters {
 
         @InverseMethod("convertIntegerToString")
         @JvmStatic
-        fun convertStringToInteger(value: String): Int? {
+        fun convertStringToInteger(value: String): Int {
             if (TextUtils.isEmpty(value) || !TextUtils.isDigitsOnly(value)) {
-                return null
+                return 0
             }
-            return value.toIntOrNull()
+            return value.toInt()
         }
 
         @JvmStatic
-        fun convertIntegerToString(value: Int?): String {
-            return value?.toString() ?: ""
+        fun convertIntegerToString(value: Int): String {
+            return value.toString()
         }
 
         //----------------------------------------------------------------------------------
 
         @InverseMethod("convertDoubleToString")
         @JvmStatic
-        fun convertStringToDouble(value: String): Double? {
+        fun convertStringToDouble(value: String): Double {
             if (TextUtils.isEmpty(value)) {
-                return null
+                return 0.0
+
             }
-            return value.toDoubleOrNull()
+            return value.toDouble()
         }
 
         @JvmStatic
-        fun convertDoubleToString(value: Double?): String {
-            return value?.toString() ?: ""
+        fun convertDoubleToString(value: Double): String {
+            return value.toString()
         }
 
         //----------------------------------------------------------------------------------
@@ -49,7 +50,6 @@ class DataBindingConverters {
         fun loadImage(view: ImageView, profileImage: String?) {
             Glide.with(view.context)
                 .load(profileImage)
-                .apply(RequestOptions.placeholderOf(R.drawable.ic_person_add))
                 .error(R.drawable.ic_person_add)
                 .circleCrop()
                 .into(view)
