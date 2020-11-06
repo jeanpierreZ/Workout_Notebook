@@ -115,7 +115,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         itemSeriesAdapter =
             activity?.let {
                 exercise?.seriesList?.let { seriesList ->
-                    ItemSeriesAdapter(seriesList, false, null, it)
+                    ItemSeriesAdapter(
+                        seriesList, isDisabled = false, isForTrainingSession = false,
+                        seriesDisabledName = null, noOfSeries = null, context = it
+                    )
                 }
             }
         // Attach the adapter to the recyclerView to populate the series

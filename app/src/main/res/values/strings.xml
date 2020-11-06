@@ -96,4 +96,5 @@
     <string name="go">GO</string>
     <string name="start_rest_time">Start the rest time</string>
     <string name="pause">PAUSE</string>
+    <string name="save_training_session">Save the training session</string>
 </resources>

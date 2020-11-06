@@ -50,6 +50,7 @@ class DataBindingConverters {
         fun loadImage(view: ImageView, profileImage: String?) {
             Glide.with(view.context)
                 .load(profileImage)
+                .apply(RequestOptions.placeholderOf(R.drawable.ic_person_add))
                 .error(R.drawable.ic_person_add)
                 .circleCrop()
                 .into(view)

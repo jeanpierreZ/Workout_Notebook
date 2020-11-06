@@ -14,8 +14,8 @@ import com.jpz.workoutnotebook.viewholders.ItemSeriesViewHolder
 
 
 class ItemSeriesAdapter(
-    private var list: ArrayList<Series>, private val isDisabled: Boolean,
-    private val seriesDisabledName: String?, private var context: Context
+    private var list: ArrayList<Series>, private val isDisabled: Boolean, private val isForTrainingSession: Boolean,
+    private val seriesDisabledName: String?,private val noOfSeries: Int?, private var context: Context
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -38,7 +38,11 @@ class ItemSeriesAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == TYPE_SERIES) {
-            (holder as ItemSeriesViewHolder).updateSeries(list[position], context)
+            if (isForTrainingSession) {
+                (holder as ItemSeriesViewHolder).updateSeriesForTrainingSession(list[position],noOfSeries, context)
+            } else {
+                (holder as ItemSeriesViewHolder).updateSeries(list[position], context)
+            }
         } else {
             // For disabled item series
             (holder as ItemSeriesDisabledViewHolder).updateSeriesDisabled(

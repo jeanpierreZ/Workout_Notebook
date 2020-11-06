@@ -31,7 +31,16 @@ class ItemSeriesViewHolder(private val binding: SeriesItemBinding) :
     fun updateSeries(series: Series, context: Context) {
         binding.series = series
         // Rename setName
-        val setNamePosition = adapterPosition + 1
+        val setNamePosition = adapterPosition.plus(1)
+        series.seriesName = context.getString(R.string.number_set, setNamePosition)
+        // Show menu from setItemUnit to choose a unit
+        dropDownMenu(context, series)
+    }
+
+    fun updateSeriesForTrainingSession(series: Series, noOfSeries: Int?, context: Context) {
+        binding.series = series
+        // Rename setName
+        val setNamePosition = noOfSeries?.plus(1)
         series.seriesName = context.getString(R.string.number_set, setNamePosition)
         // Show menu from setItemUnit to choose a unit
         dropDownMenu(context, series)
