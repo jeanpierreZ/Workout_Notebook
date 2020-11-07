@@ -25,7 +25,7 @@
             style="@style/SessionButtonTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_margin="@dimen/exercise_widget_margin"
             android:text="@string/go"
             app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentExerciseName"
             app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,7 @@
             style="@style/SubTitleTextViewTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_margin="@dimen/exercise_widget_margin"
             android:hint="@string/exercise_name"
             android:textAlignment="center"
             app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentCurrentRecyclerView"
@@ -55,7 +55,7 @@
             style="@style/SessionButtonTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_margin="@dimen/exercise_widget_margin"
             android:text="@string/start_rest_time"
             app:icon="@drawable/ic_baseline_timer_24"
             app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentRestTime"
@@ -68,29 +68,30 @@
             style="@style/CircleTextViewTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentNextRecyclerView"
+            app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentNextExerciseName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentStartRestTime" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/trainingSessionFragmentNextRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentRestTime" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/trainingSessionFragmentNextExerciseName"
             style="@style/SubTitleTextViewTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_margin="@dimen/exercise_widget_margin"
             android:hint="@string/exercise_name"
             android:textAlignment="center"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/trainingSessionFragmentNextRecyclerView"
             app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentRestTime" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trainingSessionFragmentNextRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/button_icon_padding_reduce"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentNextExerciseName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

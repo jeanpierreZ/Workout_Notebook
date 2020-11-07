@@ -1,5 +1,6 @@
 package com.jpz.workoutnotebook.fragments
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
@@ -113,6 +115,11 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentCurrentRecyclerView?.adapter = currentItemSeriesAdapter
         // Set layout manager to position the series
         trainingSessionFragmentCurrentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        trainingSessionFragmentCurrentRecyclerView.layoutManager =
+            object : LinearLayoutManager(context) {
+                override fun canScrollVertically(): Boolean = false
+            }
+        trainingSessionFragmentCurrentRecyclerView.hasFixedSize()
     }
 
     // RecyclerView for the next series
@@ -132,6 +139,11 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentNextRecyclerView?.adapter = nextItemSeriesAdapter
         // Set layout manager to position the series
         trainingSessionFragmentNextRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        trainingSessionFragmentNextRecyclerView.layoutManager =
+            object : LinearLayoutManager(context) {
+                override fun canScrollVertically(): Boolean = false
+            }
+        trainingSessionFragmentNextRecyclerView.hasFixedSize()
     }
 
     //--------------------------------------------------------------------------------------
@@ -167,8 +179,12 @@ class TrainingSessionFragment : Fragment() {
     }
 
     private fun updateCountDownText() {
-        val secondsLeft = (timeLeftInMillis / countDownInterval).toInt()
-        trainingSessionFragmentRestTime.text = secondsLeft.toString()
+        if (isFinished) {
+            return
+        } else {
+            val secondsLeft = (timeLeftInMillis / countDownInterval).toInt()
+            trainingSessionFragmentRestTime.text = secondsLeft.toString()
+        }
     }
 
     private fun restTime(restTime: String) {
@@ -215,6 +231,13 @@ class TrainingSessionFragment : Fragment() {
                     trainingSession.workout?.exercisesList!![1].exerciseName
                 trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
 
+                // Add the first series of the second exercise
+                nextSeriesList?.add(trainingSession.workout?.exercisesList!![1].seriesList[0])
+                seriesDisabledName =
+                    trainingSession.workout?.exercisesList!![1].seriesList[0].seriesName
+                // Display this series
+                configureNextRecyclerView()
+
                 // Get rest time from restNextExercise
                 restTime(firstExercise.restNextExercise.toString())
 
@@ -223,11 +246,7 @@ class TrainingSessionFragment : Fragment() {
                 hasNextExercise = true
             }
             else -> {
-                // There is no more series and exercise
-                isFinished = true
-                // Set text button to inform user that he can save the training session
-                trainingSessionFragmentStartRestTime.text =
-                    getString(R.string.save_training_session)
+                sessionTrainingEnds()
             }
         }
         trainingSessionFragmentGo.isEnabled = false
@@ -319,6 +338,13 @@ class TrainingSessionFragment : Fragment() {
                         trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
                     }
 
+                    // Add the first series of this exercise
+                    nextSeriesList?.add(trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].seriesList[0])
+                    seriesDisabledName =
+                        trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].seriesList[0].seriesName
+                    // Display this series
+                    configureNextRecyclerView()
+
                     // Get rest time from restNextExercise
                     restTime(exercise?.restNextExercise.toString())
 
@@ -327,20 +353,35 @@ class TrainingSessionFragment : Fragment() {
                     hasNextExercise = true
                 }
                 else -> {
-                    // There is no more series and exercise
-                    if (trainingSessionFragmentNextExerciseName.visibility == View.VISIBLE) {
-                        trainingSessionFragmentNextExerciseName.visibility = View.INVISIBLE
-                    }
-                    isFinished = true
-                    // Set text button to inform user that he can save the training session
-                    trainingSessionFragmentStartRestTime.text =
-                        getString(R.string.save_training_session)
+                    sessionTrainingEnds()
                 }
             }
         }
     }
 
     //--------------------------------------------------------------------------------------
+    // End and save the training session
+
+    private fun sessionTrainingEnds() {
+        // There is no more series and exercise
+        if (trainingSessionFragmentNextExerciseName.visibility == View.VISIBLE) {
+            trainingSessionFragmentNextExerciseName.visibility = View.INVISIBLE
+        }
+        isFinished = true
+        // Set text button to inform user that he can save the training session
+        activity?.let { activity ->
+            trainingSessionFragmentStartRestTime.setBackgroundColor(
+                ContextCompat.getColor(activity, R.color.colorAccent)
+            )
+            trainingSessionFragmentStartRestTime.setTextColor(
+                ContextCompat.getColor(activity, R.color.colorTextPrimary)
+            )
+            trainingSessionFragmentStartRestTime.iconTint =
+                ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.colorTextPrimary))
+        }
+        trainingSessionFragmentStartRestTime.text = getString(R.string.save_training_session)
+        trainingSessionFragmentRestTime.visibility = View.INVISIBLE
+    }
 
     private fun saveTrainingSession() {
         Toast.makeText(activity, "SAVE TRAINING SESSION", Toast.LENGTH_SHORT).show()
