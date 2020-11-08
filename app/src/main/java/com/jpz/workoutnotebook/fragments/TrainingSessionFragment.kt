@@ -17,6 +17,7 @@ import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
+import com.jpz.workoutnotebook.models.Workout
 import kotlinx.android.synthetic.main.fragment_training_session.*
 
 
@@ -42,7 +43,14 @@ class TrainingSessionFragment : Fragment() {
     // To display the name of the next series
     private var seriesDisabledName: String? = null
 
-    var exercisesListSize: Int = 0
+    // Size of the list of exercises
+    private var exercisesListSize: Int = 0
+
+    // First exercise from the training session
+    private var firstExercise = Exercise()
+
+    // Exercise from the training session
+    private var exercise: Exercise? = null
 
     // To know if there is a next series or exercise and the number of series and exercise
     private var hasNextSeries: Boolean = false
@@ -50,7 +58,12 @@ class TrainingSessionFragment : Fragment() {
     private var hasNextExercise: Boolean = false
     private var noOfExerciseToComplete: Int = 0
 
+    // The workout is finished
     private var isFinished = false
+
+    // To register the data entered by the user
+    private val workoutToComplete = Workout()
+    private var exerciseToComplete = Exercise()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +82,7 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
 
         exercisesListSize = trainingSession?.workout?.exercisesList?.size!!
-        val firstExercise: Exercise = trainingSession?.workout?.exercisesList!![0]
+        firstExercise = trainingSession?.workout?.exercisesList!![0]
 
         // Display the first exercise name
         trainingSessionFragmentExerciseName.text = firstExercise.exerciseName
@@ -78,11 +91,13 @@ class TrainingSessionFragment : Fragment() {
         trainingSession?.let { trainingSession ->
             trainingSessionFragmentGo.setOnClickListener {
                 // Display the first series, the next series or exercise and get rest time data
-                displayTheTwoFirstSeries(firstExercise, exercisesListSize, trainingSession)
+                displayTheFirstSeriesAndNext(firstExercise, exercisesListSize, trainingSession)
 
                 // Enable the countDownTimer button for the rest time
                 trainingSessionFragmentStartRestTime.setOnClickListener {
                     if (isFinished) {
+                        // Save the completed data
+                        saveWorkoutCompleted()
                         saveTrainingSession()
                     } else {
                         if (timerRunning) {
@@ -161,6 +176,8 @@ class TrainingSessionFragment : Fragment() {
             }
 
             override fun onFinish() {
+                // Save the completed data
+                saveWorkoutCompleted()
                 timerRunning = false
                 // Set text button to inform user that he can start again the countDownTimer
                 trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
@@ -197,7 +214,7 @@ class TrainingSessionFragment : Fragment() {
     //--------------------------------------------------------------------------------------
     // Display the training session data
 
-    private fun displayTheTwoFirstSeries(
+    private fun displayTheFirstSeriesAndNext(
         firstExercise: Exercise, exercisesSize: Int, trainingSession: TrainingSession
     ) {
         val seriesListSize: Int = firstExercise.seriesList.size
@@ -255,8 +272,6 @@ class TrainingSessionFragment : Fragment() {
     private fun displayNextSeriesOrExercises(exercisesSize: Int, trainingSession: TrainingSession) {
         Log.d(TAG, "hasNextSeries = $hasNextSeries")
         Log.d(TAG, "hasNextExercise = $hasNextExercise")
-
-        var exercise: Exercise? = null
 
         // Clear the series lists because we display only one item each time
         currentSeriesList?.clear()
@@ -383,7 +398,62 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentRestTime.visibility = View.INVISIBLE
     }
 
+    private fun saveWorkoutCompleted() {
+        // Save the current series in the corresponding exercise
+        when {
+            exercise == null -> {
+                // Get the first exercise data
+                exerciseToComplete = Exercise(
+                    firstExercise.exerciseId, firstExercise.exerciseName,
+                    firstExercise.restNextSet, firstExercise.restNextExercise, true
+                )
+                // Add the first series to complete with the current series
+                currentSeriesList?.get(0)?.let {
+                    exerciseToComplete.seriesList.add(it)
+                }
+            }
+
+            exerciseToComplete.exerciseId == exercise?.exerciseId -> {
+                // Add the next series to complete with the current series
+                currentSeriesList?.get(0)?.let {
+                    exerciseToComplete.seriesList.add(it)
+                }
+            }
+
+            else -> {
+                // Add the previous exercise to the list
+                exerciseToComplete.let { workoutToComplete.exercisesList.add(it) }
+                // Get the current exercise data
+                exerciseToComplete = exercise?.restNextSet?.let { restNextSet ->
+                    exercise?.restNextExercise?.let { restNextExercise ->
+                        Exercise(
+                            exercise?.exerciseId, exercise?.exerciseName,
+                            restNextSet, restNextExercise, true
+                        )
+                    }
+                }!!
+                // Add the first series to complete with the current series
+                currentSeriesList?.get(0)?.let {
+                    exerciseToComplete.seriesList.add(it)
+                }
+            }
+        }
+    }
+
     private fun saveTrainingSession() {
         Toast.makeText(activity, "SAVE TRAINING SESSION", Toast.LENGTH_SHORT).show()
+
+        workoutToComplete.workoutId = trainingSession?.workout?.workoutId
+        workoutToComplete.workoutName = trainingSession?.workout?.workoutName
+
+        // Add the previous exercise in the list
+        exerciseToComplete.let { workoutToComplete.exercisesList.add(it) }
+
+        val trainingSessionToSave = TrainingSession(
+            trainingSession?.trainingSessionId, trainingSession?.trainingSessionDate,
+            true, workoutToComplete
+        )
+
+        Log.d(TAG, "TrainingSessionToSave = $trainingSessionToSave")
     }
 }
