@@ -346,6 +346,8 @@ class TrainingSessionFragment : Fragment() {
             trainingSessionFragmentStartRestTime.setTextColor(
                 ContextCompat.getColor(activity, R.color.colorTextPrimary)
             )
+            trainingSessionFragmentStartRestTime.icon =
+                ContextCompat.getDrawable(activity, R.drawable.ic_baseline_save_24)
             trainingSessionFragmentStartRestTime.iconTint =
                 ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.colorTextPrimary))
         }
