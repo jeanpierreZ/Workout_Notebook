@@ -37,17 +37,14 @@ class TrainingSessionFragment : Fragment() {
     private var currentItemSeriesAdapter: ItemSeriesAdapter? = null
     private var nextItemSeriesAdapter: ItemSeriesAdapter? = null
 
-    private var currentSeriesList: ArrayList<Series>? = ArrayList()
-    private var nextSeriesList: ArrayList<Series>? = ArrayList()
+    private var currentSeriesList: ArrayList<Series> = ArrayList()
+    private var nextSeriesList: ArrayList<Series> = ArrayList()
 
     // To display the name of the next series
     private var seriesDisabledName: String? = null
 
     // Size of the list of exercises
     private var exercisesListSize: Int = 0
-
-    // First exercise from the training session
-    private var firstExercise = Exercise()
 
     // Exercise from the training session
     private var exercise: Exercise? = null
@@ -82,30 +79,35 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
 
         exercisesListSize = trainingSession?.workout?.exercisesList?.size!!
-        firstExercise = trainingSession?.workout?.exercisesList!![0]
 
         // Display the first exercise name
-        trainingSessionFragmentExerciseName.text = firstExercise.exerciseName
+        trainingSessionFragmentExerciseName.text =
+            trainingSession?.workout?.exercisesList!![0].exerciseName
+
+        // Disabled the countDownTimer button to start rest time
+        trainingSessionFragmentStartRestTime.isEnabled = false
 
         // Go
         trainingSession?.let { trainingSession ->
             trainingSessionFragmentGo.setOnClickListener {
-                // Display the first series, the next series or exercise and get rest time data
-                displayTheFirstSeriesAndNext(firstExercise, exercisesListSize, trainingSession)
-
+                // Display the series, the next series or exercise and get rest time data
+                displaySeries(exercisesListSize, trainingSession)
                 // Enable the countDownTimer button for the rest time
-                trainingSessionFragmentStartRestTime.setOnClickListener {
-                    if (isFinished) {
-                        // Save the completed data
-                        saveWorkoutCompleted()
-                        saveTrainingSession()
-                    } else {
-                        if (timerRunning) {
-                            pauseTimer()
-                        } else {
-                            startTimer()
-                        }
-                    }
+                trainingSessionFragmentStartRestTime.isEnabled = true
+            }
+        }
+
+        // Start rest time or save the training session
+        trainingSessionFragmentStartRestTime.setOnClickListener {
+            if (isFinished) {
+                // Save the completed data
+                saveWorkoutCompleted()
+                saveTrainingSession()
+            } else {
+                if (timerRunning) {
+                    pauseTimer()
+                } else {
+                    startTimer()
                 }
             }
         }
@@ -117,15 +119,12 @@ class TrainingSessionFragment : Fragment() {
     // RecyclerView for the current series
     private fun configureCurrentRecyclerView() {
         // Create the adapter by passing the list of current series
-        currentItemSeriesAdapter =
-            activity?.let {
-                currentSeriesList?.let { currentSeriesList ->
-                    ItemSeriesAdapter(
-                        currentSeriesList, isDisabled = false, isForTrainingSession = true,
-                        seriesDisabledName = null, noOfSeries = noOfSeriesToComplete, context = it
-                    )
-                }
-            }
+        currentItemSeriesAdapter = activity?.let {
+            ItemSeriesAdapter(
+                currentSeriesList, isDisabled = false, isForTrainingSession = true,
+                seriesDisabledName = null, noOfSeries = noOfSeriesToComplete, context = it
+            )
+        }
         // Attach the adapter to the recyclerView to populate the series
         trainingSessionFragmentCurrentRecyclerView?.adapter = currentItemSeriesAdapter
         // Set layout manager to position the series
@@ -140,16 +139,13 @@ class TrainingSessionFragment : Fragment() {
     // RecyclerView for the next series
     private fun configureNextRecyclerView() {
         // Create the adapter by passing the list of next series
-        nextItemSeriesAdapter =
-            activity?.let {
-                nextSeriesList?.let { nextSeriesList ->
-                    ItemSeriesAdapter(
-                        nextSeriesList, isDisabled = true, isForTrainingSession = false,
-                        seriesDisabledName = seriesDisabledName, noOfSeries = noOfSeriesToComplete,
-                        context = it
-                    )
-                }
-            }
+        nextItemSeriesAdapter = activity?.let {
+            ItemSeriesAdapter(
+                nextSeriesList, isDisabled = true, isForTrainingSession = false,
+                seriesDisabledName = seriesDisabledName, noOfSeries = noOfSeriesToComplete,
+                context = it
+            )
+        }
         // Attach the adapter to the recyclerView to populate the series
         trainingSessionFragmentNextRecyclerView?.adapter = nextItemSeriesAdapter
         // Set layout manager to position the series
@@ -182,7 +178,7 @@ class TrainingSessionFragment : Fragment() {
                 // Set text button to inform user that he can start again the countDownTimer
                 trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
                 // Display the next series or exercise
-                trainingSession?.let { displayNextSeriesOrExercises(exercisesListSize, it) }
+                trainingSession?.let { displaySeries(exercisesListSize, it) }
             }
         }.start()
         timerRunning = true
@@ -200,13 +196,13 @@ class TrainingSessionFragment : Fragment() {
             return
         } else {
             val secondsLeft = (timeLeftInMillis / countDownInterval).toInt()
-            trainingSessionFragmentRestTime.text = secondsLeft.toString()
+            trainingSessionFragmentRestTime?.text = secondsLeft.toString()
         }
     }
 
     private fun restTime(restTime: String) {
         // Display the rest time
-        trainingSessionFragmentRestTime.text = restTime
+        trainingSessionFragmentRestTime?.text = restTime
         // Set the countDownTimer with restTime
         timeLeftInMillis = restTime.toLong().times(countDownInterval)
     }
@@ -214,68 +210,14 @@ class TrainingSessionFragment : Fragment() {
     //--------------------------------------------------------------------------------------
     // Display the training session data
 
-    private fun displayTheFirstSeriesAndNext(
-        firstExercise: Exercise, exercisesSize: Int, trainingSession: TrainingSession
-    ) {
-        val seriesListSize: Int = firstExercise.seriesList.size
-
-        // Add the first series of the first exercise
-        currentSeriesList?.add(firstExercise.seriesList[0])
-        // Display the first series
-        configureCurrentRecyclerView()
-
-        when {
-            // Check if there is a second series
-            seriesListSize > 1 -> {
-                // Add the second series of exercise
-                nextSeriesList?.add(firstExercise.seriesList[1])
-                seriesDisabledName = firstExercise.seriesList[1].seriesName
-
-                // Display the second series
-                configureNextRecyclerView()
-
-                // Get rest time from restNextSet
-                restTime(firstExercise.restNextSet.toString())
-
-                // For next time
-                hasNextSeries = true
-                hasNextExercise = false
-            }
-            // Check if there is a second exercise
-            exercisesSize > 1 -> {
-                // Display the second exercise name
-                trainingSessionFragmentNextExerciseName.text =
-                    trainingSession.workout?.exercisesList!![1].exerciseName
-                trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
-
-                // Add the first series of the second exercise
-                nextSeriesList?.add(trainingSession.workout?.exercisesList!![1].seriesList[0])
-                seriesDisabledName =
-                    trainingSession.workout?.exercisesList!![1].seriesList[0].seriesName
-                // Display this series
-                configureNextRecyclerView()
-
-                // Get rest time from restNextExercise
-                restTime(firstExercise.restNextExercise.toString())
-
-                // For next time
-                hasNextSeries = false
-                hasNextExercise = true
-            }
-            else -> {
-                sessionTrainingEnds()
-            }
-        }
-        trainingSessionFragmentGo.isEnabled = false
-    }
-
-    private fun displayNextSeriesOrExercises(exercisesSize: Int, trainingSession: TrainingSession) {
-        Log.d(TAG, "hasNextSeries = $hasNextSeries")
-        Log.d(TAG, "hasNextExercise = $hasNextExercise")
-
+    private fun displaySeries(exercisesSize: Int, trainingSession: TrainingSession) {
         // Clear the series lists because we display only one item each time
-        currentSeriesList?.clear()
-        nextSeriesList?.clear()
+        if (currentSeriesList.isNotEmpty()) {
+            currentSeriesList.clear()
+        }
+        if (nextSeriesList.isNotEmpty()) {
+            nextSeriesList.clear()
+        }
 
         // --- Display the current series list ---
 
@@ -287,10 +229,10 @@ class TrainingSessionFragment : Fragment() {
                 noOfSeriesToComplete++
 
                 // Display the next series
-                exercise = trainingSession.workout?.exercisesList?.get(noOfExerciseToComplete)
-                exercise?.seriesList?.get(noOfSeriesToComplete)?.let { currentSeriesList?.add(it) }
+                getNextSeries()
                 configureCurrentRecyclerView()
             }
+
             hasNextExercise -> {
                 // Add the next exercise with the first series to currentList and display it
 
@@ -300,12 +242,18 @@ class TrainingSessionFragment : Fragment() {
                 noOfSeriesToComplete = 0
 
                 // Display the first series of this exercise
-                exercise = trainingSession.workout?.exercisesList?.get(noOfExerciseToComplete)
-                exercise?.seriesList?.get(noOfSeriesToComplete)?.let { currentSeriesList?.add(it) }
+                getNextSeries()
 
-                // Display this exercise name
+                // Display this exercise name and series
                 trainingSessionFragmentExerciseName.text = exercise?.exerciseName
+                configureCurrentRecyclerView()
+            }
 
+            else -> {
+                // Display the first series of the first exercise
+                getNextSeries()
+
+                // Display the first series
                 configureCurrentRecyclerView()
             }
         }
@@ -325,7 +273,7 @@ class TrainingSessionFragment : Fragment() {
 
                     // Add the next series of this exercise
                     exercise?.seriesList?.get(noOfSeriesToCompleteNextTime)?.let { seriesList ->
-                        nextSeriesList?.add(seriesList)
+                        nextSeriesList.add(seriesList)
                     }
                     seriesDisabledName =
                         exercise?.seriesList?.get(noOfSeriesToCompleteNextTime)?.seriesName
@@ -342,6 +290,7 @@ class TrainingSessionFragment : Fragment() {
                     hasNextSeries = true
                     hasNextExercise = false
                 }
+
                 // Check if there is a next exercise
                 exercisesSize > noOfExerciseToCompleteNextTime -> {
 
@@ -352,9 +301,8 @@ class TrainingSessionFragment : Fragment() {
                     if (trainingSessionFragmentNextExerciseName.visibility == View.INVISIBLE) {
                         trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
                     }
-
                     // Add the first series of this exercise
-                    nextSeriesList?.add(trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].seriesList[0])
+                    nextSeriesList.add(trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].seriesList[0])
                     seriesDisabledName =
                         trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].seriesList[0].seriesName
                     // Display this series
@@ -367,11 +315,18 @@ class TrainingSessionFragment : Fragment() {
                     hasNextSeries = false
                     hasNextExercise = true
                 }
+
                 else -> {
                     sessionTrainingEnds()
                 }
             }
         }
+        trainingSessionFragmentGo.isEnabled = false
+    }
+
+    private fun getNextSeries() {
+        exercise = trainingSession?.workout?.exercisesList?.get(noOfExerciseToComplete)
+        exercise?.seriesList?.get(noOfSeriesToComplete)?.let { currentSeriesList.add(it) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -401,43 +356,35 @@ class TrainingSessionFragment : Fragment() {
     private fun saveWorkoutCompleted() {
         // Save the current series in the corresponding exercise
         when {
-            exercise == null -> {
-                // Get the first exercise data
-                exerciseToComplete = Exercise(
-                    firstExercise.exerciseId, firstExercise.exerciseName,
-                    firstExercise.restNextSet, firstExercise.restNextExercise, true
-                )
-                // Add the first series to complete with the current series
-                currentSeriesList?.get(0)?.let {
-                    exerciseToComplete.seriesList.add(it)
-                }
+            exerciseToComplete.exerciseId.isNullOrEmpty() -> {
+                addCurrentExerciseAndSeriesToComplete()
             }
 
             exerciseToComplete.exerciseId == exercise?.exerciseId -> {
                 // Add the next series to complete with the current series
-                currentSeriesList?.get(0)?.let {
-                    exerciseToComplete.seriesList.add(it)
-                }
+                exerciseToComplete.seriesList.add(currentSeriesList[0])
             }
 
             else -> {
                 // Add the previous exercise to the list
                 exerciseToComplete.let { workoutToComplete.exercisesList.add(it) }
-                // Get the current exercise data
-                exerciseToComplete = exercise?.restNextSet?.let { restNextSet ->
-                    exercise?.restNextExercise?.let { restNextExercise ->
-                        Exercise(
-                            exercise?.exerciseId, exercise?.exerciseName,
-                            restNextSet, restNextExercise, true
-                        )
-                    }
-                }!!
-                // Add the first series to complete with the current series
-                currentSeriesList?.get(0)?.let {
-                    exerciseToComplete.seriesList.add(it)
-                }
+                addCurrentExerciseAndSeriesToComplete()
             }
         }
+    }
+
+    private fun addCurrentExerciseAndSeriesToComplete() {
+        // Get the current exercise data
+        exerciseToComplete = exercise?.restNextSet?.let { restNextSet ->
+            exercise?.restNextExercise?.let { restNextExercise ->
+                Exercise(
+                    exercise?.exerciseId, exercise?.exerciseName,
+                    restNextSet, restNextExercise, true
+                )
+            }
+        }!!
+        // Add the first series to complete with the current series
+        exerciseToComplete.seriesList.add(currentSeriesList[0])
     }
 
     private fun saveTrainingSession() {
