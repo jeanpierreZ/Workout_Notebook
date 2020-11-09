@@ -25,6 +25,7 @@ class SportsFragment : Fragment() {
     companion object {
         private val TAG = SportsFragment::class.java.simpleName
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
+        private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
     }
 
     private var userId: String? = null
@@ -79,7 +80,8 @@ class SportsFragment : Fragment() {
 
         userId?.let {
             trainingSessionViewModel.getListOfTrainingSessions(it)
-                // Filter the list with upcoming parsed dates
+                // Filter the list with upcoming parsed dates and training sessions that are not still completed
+                ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
                 ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
                 ?.orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
                 ?.limit(1)
