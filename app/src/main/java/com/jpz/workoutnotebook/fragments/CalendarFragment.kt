@@ -231,10 +231,10 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             val nowCalendar = Calendar.getInstance()
             val now: Date = nowCalendar.time
 
-            if (dateFromTrainingSession!!.before(now)) {
-                callback?.cannotUpdatePreviousTrainingSession()
-            } else {
-                callback?.updateATrainingSession(trainingSession)
+            when {
+                dateFromTrainingSession!!.before(now) -> callback?.cannotUpdatePreviousTrainingSession()
+                trainingSession.trainingSessionCompleted -> callback?.cannotUpdateCompletedTrainingSession()
+                else -> callback?.updateATrainingSession(trainingSession)
             }
         }
     }
@@ -249,10 +249,11 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         callbackToParentActivity()
     }
 
-    // Declare our interfaces that will be implemented by any container activity
+    // Declare our interface and methods that will be implemented by any container activity
     interface TrainingSessionListener {
         fun updateATrainingSession(trainingSession: TrainingSession)
         fun cannotUpdatePreviousTrainingSession()
+        fun cannotUpdateCompletedTrainingSession()
     }
 
     // Create callback to parent activity
@@ -261,7 +262,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             // Parent activity will automatically subscribe to callback
             callback = activity as TrainingSessionListener?
         } catch (e: ClassCastException) {
-            throw ClassCastException("$e must implement ItemListener")
+            throw ClassCastException("$e must implement TrainingSessionListener")
         }
     }
 }

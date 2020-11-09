@@ -228,6 +228,12 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         )
     }
 
+    override fun cannotUpdateCompletedTrainingSession() {
+        myUtils.showSnackBar(
+            mainActivityCoordinatorLayout, R.string.cannot_update_completed_training_session
+        )
+    }
+
     //--------------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {
