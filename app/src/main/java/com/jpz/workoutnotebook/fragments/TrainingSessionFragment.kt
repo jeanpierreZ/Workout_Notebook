@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +17,12 @@ import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_training_session.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class TrainingSessionFragment : Fragment() {
@@ -62,6 +66,13 @@ class TrainingSessionFragment : Fragment() {
     private val workoutToComplete = Workout()
     private var exerciseToComplete = Exercise()
 
+    private var userId: String? = null
+
+    // Firebase Auth, Firestore and utils
+    private val userAuth: UserAuth by inject()
+    private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
+    private val myUtils: MyUtils by inject()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,6 +83,8 @@ class TrainingSessionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        userId = userAuth.getCurrentUser()?.uid
 
         trainingSession = arguments?.getParcelable(TRAINING_SESSION)
 
@@ -390,19 +403,27 @@ class TrainingSessionFragment : Fragment() {
     }
 
     private fun saveTrainingSession() {
-        Toast.makeText(activity, "SAVE TRAINING SESSION", Toast.LENGTH_SHORT).show()
-
+        // Get the workout id and name
         workoutToComplete.workoutId = trainingSession?.workout?.workoutId
         workoutToComplete.workoutName = trainingSession?.workout?.workoutName
 
-        // Add the previous exercise in the list
+        // Add the last exercise completed to the list
         exerciseToComplete.let { workoutToComplete.exercisesList.add(it) }
 
+        // Create the training session to save
         val trainingSessionToSave = TrainingSession(
             trainingSession?.trainingSessionId, trainingSession?.trainingSessionDate,
             true, workoutToComplete
         )
-
         Log.d(TAG, "TrainingSessionToSave = $trainingSessionToSave")
+
+        // Update the training session on Firestore
+        userId?.let {
+            trainingSessionViewModel.updateTrainingSession(
+                trainingSessionFragmentCoordinatorLayout, it, trainingSessionToSave
+            )
+        }
+        activity?.let { myUtils.closeFragment(trainingSessionFragmentProgressBar, it) }
+        trainingSessionFragmentStartRestTime.isEnabled = false
     }
 }

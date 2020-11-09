@@ -85,7 +85,7 @@
     <string name="update_training_session">Update a training session</string>
     <string name="date_training_session">Date</string>
     <string name="time_training_session">Time</string>
-    <string name="training_session_updated">Training session is updated</string>
+    <string name="training_session_updated">Training session updated</string>
     <string name="add_date_time_workout">Add a date, time and workout</string>
     <string name="delete_this_training_session">Delete this training session?</string>
     <string name="training_session_deleted">Training session deleted</string>

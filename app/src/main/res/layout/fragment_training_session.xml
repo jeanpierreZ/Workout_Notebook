@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trainingSessionFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.TrainingSessionFragment">
@@ -94,5 +95,12 @@
             app:layout_constraintTop_toBottomOf="@+id/trainingSessionFragmentNextExerciseName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/trainingSessionFragmentProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
