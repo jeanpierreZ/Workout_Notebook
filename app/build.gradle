@@ -51,6 +51,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    kapt "com.android.databinding:compiler:3.1.4"
 
     // Testing
     testImplementation 'junit:junit:4.12'

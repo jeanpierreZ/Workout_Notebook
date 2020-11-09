@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_training_session.*
+import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -94,7 +96,7 @@ class TrainingSessionFragment : Fragment() {
         exercisesListSize = trainingSession?.workout?.exercisesList?.size!!
 
         // Display the first exercise name
-        trainingSessionFragmentExerciseName.text =
+        trainingSessionFragmentExerciseName?.text =
             trainingSession?.workout?.exercisesList!![0].exerciseName
 
         // Disabled the countDownTimer button to start rest time
@@ -124,6 +126,10 @@ class TrainingSessionFragment : Fragment() {
                 }
             }
         }
+
+        activity?.toolbar?.setNavigationOnClickListener {
+            saveBeforeQuit()
+        }
     }
 
     //----------------------------------------------------------------------------------
@@ -142,11 +148,11 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentCurrentRecyclerView?.adapter = currentItemSeriesAdapter
         // Set layout manager to position the series
         trainingSessionFragmentCurrentRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        trainingSessionFragmentCurrentRecyclerView.layoutManager =
+        trainingSessionFragmentCurrentRecyclerView?.layoutManager =
             object : LinearLayoutManager(context) {
                 override fun canScrollVertically(): Boolean = false
             }
-        trainingSessionFragmentCurrentRecyclerView.hasFixedSize()
+        trainingSessionFragmentCurrentRecyclerView?.hasFixedSize()
     }
 
     // RecyclerView for the next series
@@ -163,11 +169,11 @@ class TrainingSessionFragment : Fragment() {
         trainingSessionFragmentNextRecyclerView?.adapter = nextItemSeriesAdapter
         // Set layout manager to position the series
         trainingSessionFragmentNextRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        trainingSessionFragmentNextRecyclerView.layoutManager =
+        trainingSessionFragmentNextRecyclerView?.layoutManager =
             object : LinearLayoutManager(context) {
                 override fun canScrollVertically(): Boolean = false
             }
-        trainingSessionFragmentNextRecyclerView.hasFixedSize()
+        trainingSessionFragmentNextRecyclerView?.hasFixedSize()
     }
 
     //--------------------------------------------------------------------------------------
@@ -189,19 +195,19 @@ class TrainingSessionFragment : Fragment() {
                 saveWorkoutCompleted()
                 timerRunning = false
                 // Set text button to inform user that he can start again the countDownTimer
-                trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
+                trainingSessionFragmentStartRestTime?.text = getString(R.string.start_rest_time)
                 // Display the next series or exercise
                 trainingSession?.let { displaySeries(exercisesListSize, it) }
             }
         }.start()
         timerRunning = true
-        trainingSessionFragmentStartRestTime.text = getString(R.string.pause)
+        trainingSessionFragmentStartRestTime?.text = getString(R.string.pause)
     }
 
     private fun pauseTimer() {
         countDownTimer?.cancel()
         timerRunning = false
-        trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
+        trainingSessionFragmentStartRestTime?.text = getString(R.string.start_rest_time)
     }
 
     private fun updateCountDownText() {
@@ -258,7 +264,7 @@ class TrainingSessionFragment : Fragment() {
                 getNextSeries()
 
                 // Display this exercise name and series
-                trainingSessionFragmentExerciseName.text = exercise?.exerciseName
+                trainingSessionFragmentExerciseName?.text = exercise?.exerciseName
                 configureCurrentRecyclerView()
             }
 
@@ -292,8 +298,8 @@ class TrainingSessionFragment : Fragment() {
                         exercise?.seriesList?.get(noOfSeriesToCompleteNextTime)?.seriesName
 
                     // Display the next series
-                    if (trainingSessionFragmentNextExerciseName.visibility == View.VISIBLE) {
-                        trainingSessionFragmentNextExerciseName.visibility = View.INVISIBLE
+                    if (trainingSessionFragmentNextExerciseName?.visibility == View.VISIBLE) {
+                        trainingSessionFragmentNextExerciseName?.visibility = View.INVISIBLE
                     }
                     configureNextRecyclerView()
                     // Get rest time from restNextSet
@@ -334,7 +340,7 @@ class TrainingSessionFragment : Fragment() {
                 }
             }
         }
-        trainingSessionFragmentGo.isEnabled = false
+        trainingSessionFragmentGo?.isEnabled = false
     }
 
     private fun getNextSeries() {
@@ -344,6 +350,30 @@ class TrainingSessionFragment : Fragment() {
 
     //--------------------------------------------------------------------------------------
     // End and save the training session
+
+    private fun saveBeforeQuit() {
+        // Create an alert dialog to save the training session before exiting
+        if (!trainingSessionFragmentGo.isEnabled) {
+            activity?.let {
+                AlertDialog.Builder(it)
+                    .setMessage(getString(R.string.save_training_session))
+                    .setPositiveButton(getString(R.string.quit_and_save)) { _, _ ->
+                        // Save the training session
+                        saveWorkoutCompleted()
+                        saveTrainingSession()
+                        myUtils.closeFragment(trainingSessionFragmentProgressBar, it)
+                        trainingSessionFragmentStartRestTime.isEnabled = false
+                    }
+
+                    .setNegativeButton(getString(R.string.quit_without_saving)) { _, _ ->
+                        activity?.onBackPressed()
+                    }
+                    .show()
+            }
+        } else {
+            activity?.onBackPressed()
+        }
+    }
 
     private fun sessionTrainingEnds() {
         // There is no more series and exercise
