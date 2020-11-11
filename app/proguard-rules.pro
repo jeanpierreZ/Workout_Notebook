@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# AACharModel/AAChartCore-Kotlin: add this line to your proguard file:
+#-keep class com.github.aachartmodel.aainfographics.** { *; }

@@ -103,5 +103,8 @@ dependencies {
 
     // Jackson
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.11.3'
+
+    // AAChartModel
+    implementation 'com.github.AAChartModel:AAChartCore-Kotlin:-SNAPSHOT'
 }
 apply plugin: 'com.google.gms.google-services'
