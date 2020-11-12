@@ -178,6 +178,12 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
     // Methods to create or update an exercise
 
+    private fun closeFragment() {
+        activity?.let { myUtils.closeFragment(editExerciseFragmentProgressBar, it) }
+        editExerciseFragmentFABSave.isEnabled = false
+        editExerciseFragmentFABAddSeries.isEnabled = false
+    }
+
     private fun createOrUpdateExercise() {
         if (checkIfExerciseNameIsEmpty()) {
             return
@@ -229,20 +235,42 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 previousExercise = jsonPreviousExercise?.let { json -> mapper.readValue(json) }
                 previousExercise?.let { previousExercise ->
                     Log.d(TAG, "previousExercise = $previousExercise")
-                    exerciseViewModel.updateExercise(
-                        editExerciseFragmentCoordinatorLayout, userId, previousExercise, it
-                    )
+                    exerciseViewModel.updateExercise(userId, previousExercise, it)
+                        ?.addOnSuccessListener {
+                            closeFragment()
+                            myUtils.showSnackBar(
+                                editExerciseFragmentCoordinatorLayout, getString(
+                                    R.string.exercise_updated, exercise?.exerciseName
+                                )
+                            )
+                            Log.d(TAG, "DocumentSnapshot successfully updated!")
+                        }
                 }
             }
         } else {
             // Create the exercise
             exercise?.let {
-                exerciseViewModel.createExercise(editExerciseFragmentCoordinatorLayout, userId, it)
+                exerciseViewModel.createExercise(userId, it)
+                    ?.addOnSuccessListener { documentReference ->
+                        // Set exerciseId
+                        exerciseViewModel.updateExerciseIdAfterCreate(userId, documentReference)
+                            ?.addOnSuccessListener {
+                                Log.d(TAG, "DocumentSnapshot successfully updated!")
+                                Log.d(
+                                    TAG,
+                                    "DocumentSnapshot written with name: ${documentReference.id}"
+                                )
+                                // Inform the user
+                                myUtils.showSnackBar(
+                                    editExerciseFragmentCoordinatorLayout, getString(
+                                        R.string.new_exercise_created, exercise?.exerciseName
+                                    )
+                                )
+                                closeFragment()
+                            }
+                    }
             }
         }
-        activity?.let { myUtils.closeFragment(editExerciseFragmentProgressBar, it) }
-        editExerciseFragmentFABSave.isEnabled = false
-        editExerciseFragmentFABAddSeries.isEnabled = false
     }
 
     private fun checkIfExerciseNameIsEmpty(): Boolean {

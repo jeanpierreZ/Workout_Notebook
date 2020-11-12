@@ -44,9 +44,7 @@ class ExerciseRepository {
 
     // --- UPDATE ---
 
-    fun updateExerciseIdAfterCreate(
-        userId: String, documentReference: DocumentReference
-    ): Task<Void>? =
+    fun updateExerciseIdAfterCreate(userId: String, documentReference: DocumentReference) =
         UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
@@ -89,9 +87,7 @@ class ExerciseRepository {
                                     val index: Int? =
                                         workout?.exercisesList?.indexOf(previousExercise)
                                     // Update this exercise in the list
-                                    index?.let {
-                                        workout.exercisesList.set(index, exercise)
-                                    }
+                                    index?.let { workout.exercisesList.set(index, exercise) }
                                     // Update this exercise in the workout
                                     workout?.let {
                                         if (previousWorkout != null) {
@@ -109,9 +105,7 @@ class ExerciseRepository {
                                         }
                                     }
                                 }
-                                ?.addOnFailureListener { e ->
-                                    Log.d(TAG, "get failed with ", e)
-                                }
+                                ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
                         }
                     }
                 }
