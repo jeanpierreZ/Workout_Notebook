@@ -40,9 +40,7 @@ class TrainingSessionRepository {
 
     // --- UPDATE ---
 
-    fun updateTrainingSessionIdAfterCreate(
-        userId: String, documentReference: DocumentReference
-    ): Task<Void>? =
+    fun updateTrainingSessionIdAfterCreate(userId: String, documentReference: DocumentReference) =
         UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
@@ -50,7 +48,7 @@ class TrainingSessionRepository {
             // Use SetOptions.merge() to only update the trainingSessionId
             ?.set(hashMapOf(TRAINING_SESSION_ID_FIELD to documentReference.id), SetOptions.merge())
 
-    fun updateTrainingSession(userId: String, trainingSession: TrainingSession): Task<Void>? =
+    fun updateTrainingSession(userId: String, trainingSession: TrainingSession) =
         trainingSession.trainingSessionId?.let {
             UserRepository.getUsersCollection()
                 ?.document(userId)
@@ -61,13 +59,12 @@ class TrainingSessionRepository {
 
     // --- DELETE ---
 
-    fun deleteATrainingSession(userId: String, trainingSession: TrainingSession): Task<Void>? {
-        return trainingSession.trainingSessionId?.let {
+    fun deleteATrainingSession(userId: String, trainingSession: TrainingSession) =
+        trainingSession.trainingSessionId?.let {
             UserRepository.getUsersCollection()
                 ?.document(userId)
                 ?.collection(COLLECTION_NAME)
                 ?.document(it)
                 ?.delete()
         }
-    }
 }

@@ -17,9 +17,8 @@ class UserRepository {
     // --- CREATE ---
 
     // Creating the document if it does not already exist or update the userId (which is the same that auth.uid).
-    fun createUser(userId: String, data: HashMap<String, String>): Task<Void>? {
-        return getUsersCollection()?.document(userId)?.set(data, SetOptions.merge())
-    }
+    fun createUser(userId: String, data: HashMap<String, String>) =
+        getUsersCollection()?.document(userId)?.set(data, SetOptions.merge())
 
     // --- READ ---
 
@@ -34,7 +33,5 @@ class UserRepository {
 
     // --- UPDATE ---
 
-    fun updateUser(user: User): Task<Void>? {
-        return getUsersCollection()?.document(user.userId)?.set(user)
-    }
+    fun updateUser(user: User) = getUsersCollection()?.document(user.userId)?.set(user)
 }

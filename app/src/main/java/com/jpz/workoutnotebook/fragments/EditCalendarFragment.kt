@@ -242,7 +242,13 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
     // Methods to create or update a training session
 
-    private fun createOrUpdateTrainingSession(toUpdate: Boolean) {
+    private fun closeFragment() {
+        activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
+        editCalendarFragmentButtonSave.isEnabled = false
+        setHasOptionsMenu(false)
+    }
+
+    private fun createOrUpdateTrainingSession() {
         val dateToRegister = calendar.time
 
         if (checkIfATextViewIsEmpty()) {
@@ -253,10 +259,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             return
         }
 
-        userId?.let { it ->
+        userId?.let {
             // If it is an update and it is the same date, update the training session
             if (trainingDateToUpdate == getTrainingSessionDateInSDFFormat(dateToRegister) && toUpdate) {
-                createOrUpdateToFirestore(it, dateToRegister, toUpdate)
+                createOrUpdateToFirestore(it, dateToRegister)
             } else {
                 // If the date is different and it is not an update,
                 // check if a trainingSession on this date (and time) already exists
@@ -270,7 +276,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         if (documents.isEmpty) {
                             // There is no document with this trainingSessionDate so create or update it
                             Log.d(TAG, "documents.isEmpty")
-                            createOrUpdateToFirestore(it, dateToRegister, toUpdate)
+                            createOrUpdateToFirestore(it, dateToRegister)
                         } else {
                             // The same trainingSessionDate exists, choose another time
                             myUtils.showSnackBar(
@@ -286,7 +292,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun createOrUpdateToFirestore(userId: String, dateToRegister: Date, toUpdate: Boolean) {
+    private fun createOrUpdateToFirestore(userId: String, dateToRegister: Date) {
         // Retrieve the workout from its id
         workoutIdChosen?.let { workoutIdChosen ->
             workoutViewModel.getWorkout(userId, workoutIdChosen)
@@ -300,23 +306,44 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             trainingSessionId, getTrainingSessionDateInSDFFormat(dateToRegister),
                             false, thisWorkout
                         )
-                        trainingSessionViewModel.updateTrainingSession(
-                            editCalendarFragmentCoordinatorLayout, userId, trainingSession
-                        )
+                        trainingSessionViewModel.updateTrainingSession(userId, trainingSession)
+                            ?.addOnSuccessListener {
+                                myUtils.showSnackBar(
+                                    editCalendarFragmentCoordinatorLayout,
+                                    R.string.training_session_updated
+                                )
+                                Log.d(TAG, "DocumentSnapshot successfully updated!")
+                                closeFragment()
+                            }
                     } else {
                         // Create the training session
                         val trainingSession = TrainingSession(
                             null, getTrainingSessionDateInSDFFormat(dateToRegister),
                             false, thisWorkout
                         )
-                        trainingSessionViewModel.createTrainingSession(
-                            editCalendarFragmentCoordinatorLayout, userId, trainingSession
-                        )
+                        trainingSessionViewModel.createTrainingSession(userId, trainingSession)
+                            ?.addOnSuccessListener { documentReference ->
+                                // Set trainingSessionId
+                                trainingSessionViewModel.updateTrainingSessionIdAfterCreate(
+                                    userId, documentReference
+                                )
+                                    ?.addOnSuccessListener {
+                                        Log.d(
+                                            TAG,
+                                            "DocumentSnapshot written with id: ${documentReference.id}"
+                                        )
+                                        // Inform the user
+                                        myUtils.showSnackBar(
+                                            editCalendarFragmentCoordinatorLayout, getString(
+                                                R.string.new_training_session_created,
+                                                trainingSession.workout?.workoutName
+                                            )
+                                        )
+                                        closeFragment()
+                                    }
+                            }
                     }
                 }
-                activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
-                editCalendarFragmentButtonSave.isEnabled = false
-                setHasOptionsMenu(false)
             }
     }
 
@@ -362,11 +389,15 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 .setMessage(getString(R.string.delete_this_training_session))
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     // Delete the training session
-                    trainingSessionViewModel.deleteATrainingSession(
-                        editCalendarFragmentCoordinatorLayout, userId, trainingSession
-                    )
-                    activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
-                    editCalendarFragmentButtonSave.isEnabled = false
+                    trainingSessionViewModel.deleteATrainingSession(userId, trainingSession)
+                        ?.addOnSuccessListener {
+                            myUtils.showSnackBar(
+                                editCalendarFragmentCoordinatorLayout,
+                                R.string.training_session_deleted
+                            )
+                            Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                            closeFragment()
+                        }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ ->
                 }
@@ -390,7 +421,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 timePicker.show(childFragmentManager, TimePickerFragment::class.java.simpleName)
             }
 
-            R.id.editCalendarFragmentButtonSave -> createOrUpdateTrainingSession(toUpdate)
+            R.id.editCalendarFragmentButtonSave -> createOrUpdateTrainingSession()
         }
     }
 }

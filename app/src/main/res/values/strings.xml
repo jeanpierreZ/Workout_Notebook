@@ -100,4 +100,5 @@
     <string name="save_training_session">Save the training session</string>
     <string name="quit_without_saving">Quit without saving</string>
     <string name="quit_and_save">Quit and save</string>
+    <string name="training_session_completed">Training session completed</string>
 </resources>

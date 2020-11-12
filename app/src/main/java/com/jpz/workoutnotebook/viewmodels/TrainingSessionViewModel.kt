@@ -1,13 +1,10 @@
 package com.jpz.workoutnotebook.viewmodels
 
 import android.util.Log
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.ViewModel
-import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.repositories.TrainingSessionRepository
+import com.google.firebase.firestore.DocumentReference
 import com.jpz.workoutnotebook.models.TrainingSession
-import com.jpz.workoutnotebook.utils.MyUtils
-import org.koin.java.KoinJavaComponent
+import com.jpz.workoutnotebook.repositories.TrainingSessionRepository
 
 class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSessionRepository) :
     ViewModel() {
@@ -16,26 +13,11 @@ class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSe
         private val TAG = TrainingSessionViewModel::class.java.simpleName
     }
 
-    private val myUtils: MyUtils by KoinJavaComponent.inject(MyUtils::class.java)
-
     // --- CREATE ---
 
-    fun createTrainingSession(
-        coordinatorLayout: CoordinatorLayout, userId: String, trainingSession: TrainingSession
-    ) = trainingSessionRepository.createTrainingSession(userId, trainingSession)
-        ?.addOnSuccessListener { documentReference ->
-            // Set trainingSessionId
-            trainingSessionRepository.updateTrainingSessionIdAfterCreate(userId, documentReference)
-            // Inform the user
-            myUtils.showSnackBar(
-                coordinatorLayout, coordinatorLayout.context.getString(
-                    R.string.new_training_session_created, trainingSession.workout?.workoutName
-                )
-            )
-            Log.d(TAG, "DocumentSnapshot written with name: ${documentReference.id}")
-        }?.addOnFailureListener { e ->
-            Log.e(TAG, "Error writing document", e)
-        }
+    fun createTrainingSession(userId: String, trainingSession: TrainingSession) =
+        trainingSessionRepository.createTrainingSession(userId, trainingSession)
+            ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- QUERY ---
 
@@ -44,25 +26,17 @@ class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSe
 
     // --- UPDATE ---
 
-    fun updateTrainingSession(
-        coordinatorLayout: CoordinatorLayout, userId: String, trainingSession: TrainingSession
-    ) = trainingSessionRepository.updateTrainingSession(userId, trainingSession)
-        ?.addOnSuccessListener {
-            myUtils.showSnackBar(coordinatorLayout, R.string.training_session_updated)
-            Log.d(TAG, "DocumentSnapshot successfully updated!")
-        }?.addOnFailureListener { e ->
-            Log.e(TAG, "Error updating document", e)
-        }
+    fun updateTrainingSessionIdAfterCreate(userId: String, documentReference: DocumentReference) =
+        trainingSessionRepository.updateTrainingSessionIdAfterCreate(userId, documentReference)
+            ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
+
+    fun updateTrainingSession(userId: String, trainingSession: TrainingSession) =
+        trainingSessionRepository.updateTrainingSession(userId, trainingSession)
+            ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
 
     // --- DELETE ---
 
-    fun deleteATrainingSession(
-        coordinatorLayout: CoordinatorLayout, userId: String, trainingSession: TrainingSession
-    ) = trainingSessionRepository.deleteATrainingSession(userId, trainingSession)
-        ?.addOnSuccessListener {
-            myUtils.showSnackBar(coordinatorLayout, R.string.training_session_deleted)
-            Log.d(TAG, "DocumentSnapshot successfully deleted!")
-        }?.addOnFailureListener { e ->
-            Log.e(TAG, "Error deleted document", e)
-        }
+    fun deleteATrainingSession(userId: String, trainingSession: TrainingSession) =
+        trainingSessionRepository.deleteATrainingSession(userId, trainingSession)
+            ?.addOnFailureListener { e -> Log.e(TAG, "Error deleted document", e) }
 }

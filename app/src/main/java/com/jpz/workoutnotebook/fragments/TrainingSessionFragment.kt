@@ -22,6 +22,7 @@ import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_training_session.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -75,6 +76,7 @@ class TrainingSessionFragment : Fragment() {
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
+    private val myUtils: MyUtils by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -360,6 +362,7 @@ class TrainingSessionFragment : Fragment() {
     private fun closeFragment() {
         trainingSessionFragmentProgressBar.visibility = View.VISIBLE
         Handler(Looper.getMainLooper()).postDelayed({ activity?.finish() }, 2000)
+        trainingSessionFragmentStartRestTime.isEnabled = false
     }
 
     private fun saveBeforeQuit() {
@@ -373,11 +376,8 @@ class TrainingSessionFragment : Fragment() {
                         saveWorkoutCompleted()
                         saveTrainingSession()
                         closeFragment()
-                        trainingSessionFragmentStartRestTime.isEnabled = false
                     }
-                    .setNegativeButton(getString(R.string.quit_without_saving)) { _, _ ->
-                        activity?.finish()
-                    }
+                    .setNegativeButton(getString(R.string.quit_without_saving)) { _, _ -> activity?.finish() }
                     .show()
             }
         } else {
@@ -459,11 +459,15 @@ class TrainingSessionFragment : Fragment() {
 
         // Update the training session on Firestore
         userId?.let {
-            trainingSessionViewModel.updateTrainingSession(
-                trainingSessionFragmentCoordinatorLayout, it, trainingSessionToSave
-            )
+            trainingSessionViewModel.updateTrainingSession(it, trainingSessionToSave)
+                ?.addOnSuccessListener {
+                    myUtils.showSnackBar(
+                        trainingSessionFragmentCoordinatorLayout,
+                        R.string.training_session_completed
+                    )
+                    Log.d(TAG, "DocumentSnapshot successfully updated!")
+                    closeFragment()
+                }
         }
-        closeFragment()
-        trainingSessionFragmentStartRestTime.isEnabled = false
     }
 }
