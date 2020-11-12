@@ -10,15 +10,13 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     // --- CREATE ---
 
     fun createUser(userId: String, data: HashMap<String, String>) =
-        userRepository.createUser(userId, data)?.addOnFailureListener { e ->
-            Log.e("createUser", "Error writing document", e)
-        }
+        userRepository.createUser(userId, data)
+            ?.addOnFailureListener { e -> Log.e("createUser", "Error writing document", e) }
 
     // --- READ ---
 
-    fun getUser(userId: String) = userRepository.getUser(userId)?.addOnFailureListener { e ->
-        Log.d("getUser", "get failed with ", e)
-    }
+    fun getUser(userId: String) = userRepository.getUser(userId)
+        ?.addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
 
     // --- QUERY ---
 
@@ -27,7 +25,6 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     // --- UPDATE ---
 
-    fun updateUser(user: User) = userRepository.updateUser(user)?.addOnFailureListener { e ->
-        Log.e("updateUser", "Error updating document", e)
-    }
+    fun updateUser(user: User) = userRepository.updateUser(user)
+        ?.addOnFailureListener { e -> Log.e("updateUser", "Error updating document", e) }
 }

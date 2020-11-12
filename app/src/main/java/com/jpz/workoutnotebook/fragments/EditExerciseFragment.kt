@@ -237,13 +237,13 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                     Log.d(TAG, "previousExercise = $previousExercise")
                     exerciseViewModel.updateExercise(userId, previousExercise, it)
                         ?.addOnSuccessListener {
-                            closeFragment()
                             myUtils.showSnackBar(
                                 editExerciseFragmentCoordinatorLayout, getString(
                                     R.string.exercise_updated, exercise?.exerciseName
                                 )
                             )
                             Log.d(TAG, "DocumentSnapshot successfully updated!")
+                            closeFragment()
                         }
                 }
             }
@@ -255,10 +255,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                         // Set exerciseId
                         exerciseViewModel.updateExerciseIdAfterCreate(userId, documentReference)
                             ?.addOnSuccessListener {
-                                Log.d(TAG, "DocumentSnapshot successfully updated!")
                                 Log.d(
-                                    TAG,
-                                    "DocumentSnapshot written with name: ${documentReference.id}"
+                                    TAG, "DocumentSnapshot written with id: ${documentReference.id}"
                                 )
                                 // Inform the user
                                 myUtils.showSnackBar(

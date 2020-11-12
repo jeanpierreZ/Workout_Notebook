@@ -243,7 +243,13 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
     // Methods to create or update a workout
 
-    private fun createOrUpdateWorkout(toUpdate: Boolean) {
+    private fun closeFragment() {
+        activity?.let { myUtils.closeFragment(editWorkoutFragmentProgressBar, it) }
+        editWorkoutFragmentFABSave.isEnabled = false
+        editWorkoutFragmentFABAddExercise.isEnabled = false
+    }
+
+    private fun createOrUpdateWorkout() {
         if (checkIfWorkoutNameIsEmpty()) {
             return
         }
@@ -256,7 +262,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         userId?.let {
             // If it is an update and it is the same name, update the workout
             if (workoutNameToUpdate == workout?.workoutName && toUpdate) {
-                createOrUpdateToFirestore(it, toUpdate)
+                createOrUpdateToFirestore(it)
             } else {
                 // If the name is different and it is not an update,
                 // check if a workoutName already exists
@@ -267,7 +273,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                         if (documents.isEmpty) {
                             // There is no document with this workoutName so create or update it
                             Log.d(TAG, "documents.isEmpty")
-                            createOrUpdateToFirestore(it, toUpdate)
+                            createOrUpdateToFirestore(it)
                         } else {
                             // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
@@ -286,7 +292,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun createOrUpdateToFirestore(userId: String, toUpdate: Boolean) {
+    private fun createOrUpdateToFirestore(userId: String) {
         if (toUpdate) {
             // Update the workout
             workout?.let {
@@ -294,20 +300,40 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 previousWorkout = jsonPreviousWorkout?.let { json -> mapper.readValue(json) }
                 previousWorkout?.let { previousWorkout ->
                     Log.d(TAG, "previousWorkout = $previousWorkout")
-                    workoutViewModel.updateWorkout(
-                        editWorkoutFragmentCoordinatorLayout, userId, previousWorkout, it
-                    )
+                    workoutViewModel.updateWorkout(userId, previousWorkout, it)
+                        ?.addOnSuccessListener {
+                            myUtils.showSnackBar(
+                                editWorkoutFragmentCoordinatorLayout, getString(
+                                    R.string.workout_updated, workout?.workoutName
+                                )
+                            )
+                            Log.d(TAG, "DocumentSnapshot successfully updated!")
+                            closeFragment()
+                        }
                 }
             }
         } else {
             // Create the workout
             workout?.let {
-                workoutViewModel.createWorkout(editWorkoutFragmentCoordinatorLayout, userId, it)
+                workoutViewModel.createWorkout(userId, it)
+                    ?.addOnSuccessListener { documentReference ->
+                        // Set workoutId
+                        workoutViewModel.updateWorkoutIdAfterCreate(userId, documentReference)
+                            ?.addOnSuccessListener {
+                                Log.d(
+                                    TAG, "DocumentSnapshot written with id: ${documentReference.id}"
+                                )
+                                // Inform the user
+                                myUtils.showSnackBar(
+                                    editWorkoutFragmentCoordinatorLayout, getString(
+                                        R.string.new_workout_created, workout?.workoutName
+                                    )
+                                )
+                                closeFragment()
+                            }
+                    }
             }
         }
-        activity?.let { myUtils.closeFragment(editWorkoutFragmentProgressBar, it) }
-        editWorkoutFragmentFABSave.isEnabled = false
-        editWorkoutFragmentFABAddExercise.isEnabled = false
     }
 
     private fun checkIfWorkoutNameIsEmpty(): Boolean {
@@ -333,7 +359,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.editWorkoutFragmentFABAddExercise -> getAllExercises()
-            R.id.editWorkoutFragmentFABSave -> createOrUpdateWorkout(toUpdate)
+            R.id.editWorkoutFragmentFABSave -> createOrUpdateWorkout()
         }
     }
 }

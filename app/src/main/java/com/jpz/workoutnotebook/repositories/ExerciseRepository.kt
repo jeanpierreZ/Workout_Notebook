@@ -99,7 +99,8 @@ class ExerciseRepository {
                                                         TAG,
                                                         "DocumentSnapshot successfully updated!"
                                                     )
-                                                }?.addOnFailureListener { e ->
+                                                }
+                                                ?.addOnFailureListener { e ->
                                                     Log.e(TAG, "Error updating document", e)
                                                 }
                                         }

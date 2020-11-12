@@ -45,9 +45,7 @@ class WorkoutRepository {
 
     // --- UPDATE ---
 
-    fun updateWorkoutIdAfterCreate(
-        userId: String, documentReference: DocumentReference
-    ): Task<Void>? =
+    fun updateWorkoutIdAfterCreate(userId: String, documentReference: DocumentReference) =
         UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
@@ -94,14 +92,13 @@ class WorkoutRepository {
                                         )
                                             ?.addOnSuccessListener {
                                                 Log.d(TAG, "DocumentSnapshot successfully updated!")
-                                            }?.addOnFailureListener { e ->
+                                            }
+                                            ?.addOnFailureListener { e ->
                                                 Log.e(TAG, "Error updating document", e)
                                             }
                                     }
                                 }
-                                ?.addOnFailureListener { e ->
-                                    Log.d(TAG, "get failed with ", e)
-                                }
+                                ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
                         }
                     }
                 }
