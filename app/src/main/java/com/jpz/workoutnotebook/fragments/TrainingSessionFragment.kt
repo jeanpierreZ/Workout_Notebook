@@ -3,10 +3,13 @@ package com.jpz.workoutnotebook.fragments
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -19,7 +22,6 @@ import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.repositories.UserAuth
-import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_training_session.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -73,7 +75,6 @@ class TrainingSessionFragment : Fragment() {
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
-    private val myUtils: MyUtils by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,6 +86,15 @@ class TrainingSessionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            // Handle the back button event
+            saveBeforeQuit()
+        }
+        activity?.toolbar?.setNavigationOnClickListener {
+            // Handle the toolbar's up button event
+            saveBeforeQuit()
+        }
 
         userId = userAuth.getCurrentUser()?.uid
 
@@ -125,10 +135,6 @@ class TrainingSessionFragment : Fragment() {
                     startTimer()
                 }
             }
-        }
-
-        activity?.toolbar?.setNavigationOnClickListener {
-            saveBeforeQuit()
         }
     }
 
@@ -351,6 +357,11 @@ class TrainingSessionFragment : Fragment() {
     //--------------------------------------------------------------------------------------
     // End and save the training session
 
+    private fun closeFragment() {
+        trainingSessionFragmentProgressBar.visibility = View.VISIBLE
+        Handler(Looper.getMainLooper()).postDelayed({ activity?.finish() }, 2000)
+    }
+
     private fun saveBeforeQuit() {
         // Create an alert dialog to save the training session before exiting
         if (!trainingSessionFragmentGo.isEnabled) {
@@ -361,17 +372,16 @@ class TrainingSessionFragment : Fragment() {
                         // Save the training session
                         saveWorkoutCompleted()
                         saveTrainingSession()
-                        myUtils.closeFragment(trainingSessionFragmentProgressBar, it)
+                        closeFragment()
                         trainingSessionFragmentStartRestTime.isEnabled = false
                     }
-
                     .setNegativeButton(getString(R.string.quit_without_saving)) { _, _ ->
-                        activity?.onBackPressed()
+                        activity?.finish()
                     }
                     .show()
             }
         } else {
-            activity?.onBackPressed()
+            activity?.finish()
         }
     }
 
@@ -453,7 +463,7 @@ class TrainingSessionFragment : Fragment() {
                 trainingSessionFragmentCoordinatorLayout, it, trainingSessionToSave
             )
         }
-        activity?.let { myUtils.closeFragment(trainingSessionFragmentProgressBar, it) }
+        closeFragment()
         trainingSessionFragmentStartRestTime.isEnabled = false
     }
 }

@@ -21,4 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 # AACharModel/AAChartCore-Kotlin: add this line to your proguard file:
-#-keep class com.github.aachartmodel.aainfographics.** { *; }
+#noinspection ShrinkerUnresolvedReference
+-keep class com.github.aachartmodel.aainfographics.** { *; }
