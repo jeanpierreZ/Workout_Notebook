@@ -139,7 +139,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 year = calendar.get(Calendar.YEAR)
                 month = calendar.get(Calendar.MONTH)
                 day = calendar.get(Calendar.DATE)
-                hour = calendar.get(Calendar.HOUR)
+                hour = calendar.get(Calendar.HOUR_OF_DAY)
                 minute = calendar.get(Calendar.MINUTE)
                 // Set textViews with date and time
                 editCalendarFragmentDate.text =
