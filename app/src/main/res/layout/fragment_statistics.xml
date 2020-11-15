@@ -31,7 +31,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/title_text_margin"
             android:hint="@string/exercise_name"
-            app:helperText="@string/exercise_name"
             app:layout_constraintBottom_toTopOf="@+id/fragmentStatisticsChartView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/fragmentStatisticsTitle"
@@ -54,5 +53,12 @@
             app:layout_constraintTop_toBottomOf="@+id/fragmentStatisticsExerciseChosen" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/fragmentStatisticsProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

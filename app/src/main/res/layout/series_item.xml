@@ -42,10 +42,10 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:hint="@string/repetitions"
+                android:hint="@string/reps"
                 app:counterEnabled="true"
                 app:counterMaxLength="5"
-                app:helperText="@string/repetitions"
+                app:helperText="@string/reps"
                 app:layout_constraintEnd_toStartOf="@+id/seriesItemMultiply"
                 app:layout_constraintStart_toEndOf="@+id/seriesItemName">
 

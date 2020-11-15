@@ -2,8 +2,6 @@ package com.jpz.workoutnotebook.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,6 +24,9 @@ import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_statistics.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class StatisticsFragment : Fragment() {
@@ -43,14 +44,17 @@ class StatisticsFragment : Fragment() {
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
+    // Exercise chosen by the user
+    private var exerciseChosen = Exercise()
+
     // List of all exercises
     private val allExercises = arrayListOf<Exercise>()
 
     // List of all exercise names to display in the dropDownMenu
     private val exerciseNamesList = arrayListOf<String>()
 
-    // List of all exercises completed from the training sessions
-    private val exercisesCompletedList = arrayListOf<Exercise>()
+    // List of all training sessions that contain the exercise chosen
+    private val trainingSessionList = arrayListOf<TrainingSession>()
 
     // Number of series from the exercise chosen
     private var seriesListSize = 0
@@ -108,6 +112,10 @@ class StatisticsFragment : Fragment() {
         (fragmentStatisticsExerciseChosen?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
         // Get statistics from the exercise chosen in the dropDownMenu
         fragmentStatisticsAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
+            if (trainingSessionList.isNotEmpty()) {
+                trainingSessionList.clear()
+            }
+            fragmentStatisticsProgressBar.visibility = View.VISIBLE
             getStatisticsFromExerciseNameChosen(text.toString())
         }
     }
@@ -116,8 +124,6 @@ class StatisticsFragment : Fragment() {
     // Methods to get statistics and display the chart
 
     private fun getStatisticsFromExerciseNameChosen(exerciseName: String) {
-        var exerciseChosen = Exercise()
-
         // Find the Exercise with its name
         for (exercise in allExercises) {
             if (exercise.exerciseName == exerciseName) {
@@ -149,18 +155,26 @@ class StatisticsFragment : Fragment() {
                                     // Get TrainingSession object
                                     val trainingSession = doc.toObject(TrainingSession::class.java)
                                     Log.d(TAG, "trainingSession = $trainingSession")
-                                    // Fin the exercise with its id for each training session
+                                    // Search if the exercise is in the training session exercises list
                                     trainingSession?.workout?.exercisesList?.forEach { exercise ->
                                         if (exercise.exerciseId == exerciseChosen.exerciseId) {
-                                            // Add the exercise to a list of exercises completed
-                                            exercisesCompletedList.add(exercise)
-                                            // Display the chart with the list
-                                            if ((index + 1) == documents.size()) {
-                                                // Display the statistics
-                                                Handler(Looper.getMainLooper()).postDelayed({
-                                                    createDataForChart(exercisesCompletedList)
-                                                }, 500)
-                                            }
+                                            // Add the training session to the list
+                                            trainingSessionList.add(trainingSession)
+                                        }
+                                    }
+                                    // Display the chart with the list
+                                    if ((index + 1) == documents.size()) {
+                                        if (trainingSessionList.isEmpty()) {
+                                            fragmentStatisticsProgressBar.visibility =
+                                                View.INVISIBLE
+                                            myUtils.showSnackBar(
+                                                fragmentStatisticsCoordinatorLayout,
+                                                getString(
+                                                    R.string.no_data, exerciseChosen.exerciseName
+                                                )
+                                            )
+                                        } else {
+                                            sortDataToDisplay(trainingSessionList)
                                         }
                                     }
                                 }
@@ -174,8 +188,73 @@ class StatisticsFragment : Fragment() {
         }
     }
 
-    private fun createDataForChart(exercisesCompletedList: ArrayList<Exercise>) {
-        Log.d(TAG, "exercisesCompletedList = $exercisesCompletedList")
+    private fun sortDataToDisplay(trainingSessionList: ArrayList<TrainingSession>) {
+        Log.d(TAG, "trainingSessionList = $trainingSessionList")
+
+        // --- Sort trainingSessionDate ---
+
+        // SimpleDateFormat is used to format the trainingSessionDate
+        val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+
+        // Create a list of Date
+        val listOfDates = mutableListOf<Date>()
+
+        trainingSessionList.forEach { training ->
+            // Get the date format for each trainingSessionDate
+            training.trainingSessionDate?.let {
+                val parsedDate: Date? = sdf.parse(it)
+                parsedDate?.let {
+                    // Add it to a list of Date format
+                    listOfDates.add(parsedDate)
+                }
+            }
+        }
+        // Sort the list
+        listOfDates.sort()
+        Log.d(TAG, "listOfDates = $listOfDates")
+
+        // Create a list of training sessions sorted
+        val trainingSessionListSorted = ArrayList<TrainingSession>()
+
+        listOfDates.forEach { date ->
+            // Get the string format for each date
+            val dateString = sdf.format(date)
+            for (training in trainingSessionList) {
+                // if it's the same date, add it to the final training sessions list
+                if (dateString == training.trainingSessionDate) {
+                    trainingSessionListSorted.add(training)
+                    break
+                }
+            }
+        }
+        Log.d(TAG, "trainingSessionListSorted = $trainingSessionListSorted")
+
+        // x axis
+        val xDates = arrayListOf<String>()
+
+        // Create a list of exercises completed
+        val exercisesCompletedList = arrayListOf<Exercise>()
+
+        for (training in trainingSessionListSorted) {
+            // Get the date of each training session
+            training.trainingSessionDate?.let {
+                // Format the trainingSessionDate
+                val trainingSessionDateFormatted = it.removeRange(9, 15).removeRange(1, 3)
+                // Add it to the data for x axis
+                xDates.add(trainingSessionDateFormatted)
+            }
+
+            // Retrieve the exerciseChosen for each training session
+            training.workout?.exercisesList?.forEach { exercise ->
+                if (exercise.exerciseId == exerciseChosen.exerciseId) {
+                    // Add it to a list of exercise
+                    exercisesCompletedList.add(exercise)
+                    return@forEach
+                }
+            }
+        }
+
+        // --- Sort reps ---
 
         // Create an arrayListOf AASeriesElement
         val arrayListOfAASeriesElement = arrayListOf<AASeriesElement>()
@@ -204,16 +283,21 @@ class StatisticsFragment : Fragment() {
             arrayListOfAASeriesElement.add(aaSeriesElement)
         }
         // Display the chart with data
-        displayChart(arrayListOfAASeriesElement.toTypedArray())
+        fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+        displayChart(xDates.toTypedArray(), arrayListOfAASeriesElement.toTypedArray())
     }
 
-    private fun displayChart(arrayListOfAASeriesElement: Array<AASeriesElement>) {
-        val aaChartModel: AAChartModel = AAChartModel()
+    private fun displayChart(
+        xDates: Array<String>, arrayListOfAASeriesElement: Array<AASeriesElement>
+    ) {
+        val aaChartModel = AAChartModel()
+        exerciseChosen.exerciseName?.let { aaChartModel.title(it) }
+        aaChartModel
             .chartType(AAChartType.Line)
-            .yAxisTitle("Repetitions")
+            .yAxisTitle(getString(R.string.repetitions))
             .yAxisAllowDecimals(false)
             .backgroundColor(R.color.colorTextSecondary)
-//            .categories(arrayOf("18/10", "19/10", "20/10"))
+            .categories(xDates)
             .series(arrayListOfAASeriesElement)
         // The chart view object calls the instance object of AAChartModel and draws the final graphic
         fragmentStatisticsChartView.aa_drawChartWithChartModel(aaChartModel)

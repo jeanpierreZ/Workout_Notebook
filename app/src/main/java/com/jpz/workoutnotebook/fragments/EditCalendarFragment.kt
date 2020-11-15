@@ -45,7 +45,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private var hour = 0
     private var minute = 0
 
-    // SimpleDateFormat is used get the format of the trainingSessionDate
+    // SimpleDateFormat is used to get the format of the trainingSessionDate
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
     private var userId: String? = null

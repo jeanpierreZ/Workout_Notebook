@@ -48,7 +48,7 @@
     <string name="seconds">seconds</string>
     <string name="time">time</string>
     <string name="rest_next_exercise">Rest next exercise</string>
-    <string name="repetitions">reps</string>
+    <string name="reps">reps</string>
     <string name="multiply">*</string>
     <string name="number_units">no of</string>
     <string name="unit">unit</string>
@@ -104,4 +104,6 @@
 
     <!-- Statistics Fragment -->
     <string name="choose_exercise">Choose an exercise</string>
+    <string name="no_data">No data for %s"</string>
+    <string name="repetitions">Repetitions</string>
 </resources>
