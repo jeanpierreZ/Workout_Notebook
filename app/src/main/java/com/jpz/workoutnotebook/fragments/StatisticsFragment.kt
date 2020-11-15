@@ -2,6 +2,8 @@ package com.jpz.workoutnotebook.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
@@ -74,6 +77,14 @@ class StatisticsFragment : Fragment() {
 
         userId = userAuth.getCurrentUser()?.uid
         userId?.let { getAllExercises(it) }
+
+        fragmentStatisticsEntryDate.editText?.setOnClickListener {
+            Toast.makeText(activity, "ENTRY", Toast.LENGTH_SHORT).show()
+        }
+
+        fragmentStatisticsExitDate.editText?.setOnClickListener {
+            Toast.makeText(activity, "EXIT", Toast.LENGTH_SHORT).show()
+        }
     }
 
     //----------------------------------------------------------------------------------
@@ -173,7 +184,9 @@ class StatisticsFragment : Fragment() {
                                                 callback?.noData(exerciseName)
                                             }
                                         } else {
-                                            sortDataToDisplay(trainingSessionList)
+                                            Handler(Looper.getMainLooper()).postDelayed({
+                                                sortDataToDisplay(trainingSessionList)
+                                            }, 500)
                                         }
                                     }
                                 }
@@ -238,7 +251,7 @@ class StatisticsFragment : Fragment() {
             // Get the date of each training session
             training.trainingSessionDate?.let {
                 // Format the trainingSessionDate
-                val trainingSessionDateFormatted = it.removeRange(9, 15).removeRange(1, 3)
+                val trainingSessionDateFormatted = it.removeRange(10, 16).removeRange(1, 3)
                 // Add it to the data for x axis
                 xDates.add(trainingSessionDateFormatted)
             }

@@ -106,4 +106,6 @@
     <string name="choose_exercise">Choose an exercise</string>
     <string name="no_data">No data for %s"</string>
     <string name="repetitions">Repetitions</string>
+    <string name="entry_date">Date of entry</string>
+    <string name="end_date">Date of end</string>
 </resources>
