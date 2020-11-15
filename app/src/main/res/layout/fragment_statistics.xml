@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragmentStatisticsCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.StatisticsFragment">
@@ -11,22 +12,47 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/fragmentStatisticsChooseExercise"
-            style="@style/TitleTextViewTheme"
-            android:layout_width="match_parent"
+            android:id="@+id/fragmentStatisticsTitle"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/exercise_name"
+            android:layout_margin="@dimen/title_text_margin"
+            android:text="@string/choose_exercise"
             android:textAlignment="center"
             app:layout_constraintBottom_toTopOf="@+id/fragmentStatisticsChartView"
+            app:layout_constraintEnd_toStartOf="@+id/fragmentStatisticsExerciseChosen"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/fragmentStatisticsExerciseChosen"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/title_text_margin"
+            android:hint="@string/exercise_name"
+            app:helperText="@string/exercise_name"
+            app:layout_constraintBottom_toTopOf="@+id/fragmentStatisticsChartView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/fragmentStatisticsTitle"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/fragmentStatisticsAutoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="none"
+                tools:ignore="LabelFor" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.github.aachartmodel.aainfographics.aachartcreator.AAChartView
             android:id="@+id/fragmentStatisticsChartView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fragmentStatisticsChooseExercise" />
+            app:layout_constraintTop_toBottomOf="@+id/fragmentStatisticsExerciseChosen" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

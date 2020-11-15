@@ -19,6 +19,12 @@ class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSe
         trainingSessionRepository.createTrainingSession(userId, trainingSession)
             ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
+    // --- READ ---
+
+    fun getTrainingSession(userId: String, trainingSessionId: String) =
+        trainingSessionRepository.getTrainingSession(userId, trainingSessionId)
+            ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+
     // --- QUERY ---
 
     fun getListOfTrainingSessions(userId: String) =
