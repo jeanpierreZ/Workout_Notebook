@@ -15,6 +15,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
 import com.jpz.workoutnotebook.fragments.CalendarFragment
 import com.jpz.workoutnotebook.fragments.SportsFragment
+import com.jpz.workoutnotebook.fragments.StatisticsFragment
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,7 +24,8 @@ import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener,
-    CalendarFragment.TrainingSessionListener, View.OnClickListener {
+    CalendarFragment.TrainingSessionListener, StatisticsFragment.StatisticsListener,
+    View.OnClickListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -75,6 +77,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
         mainActivityFABEditProfile.setOnClickListener(this)
         mainActivityFABAddCalendar.setOnClickListener(this)
+        mainActivityFABAddStatistics.setOnClickListener(this)
     }
 
     //--------------------------------------------------------------------------------------
@@ -140,8 +143,11 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                 when (pageSelected) {
                     Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
                     Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
+                    Tabs.STATISTICS.position -> mainActivityFABAddStatistics.show()
                     else -> {
-                        mainActivityFABEditProfile.hide(); mainActivityFABAddCalendar.hide()
+                        mainActivityFABEditProfile.hide()
+                        mainActivityFABAddCalendar.hide()
+                        mainActivityFABAddStatistics.hide()
                     }
                 }
             }
@@ -152,18 +158,21 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
+                            Tabs.STATISTICS.position -> mainActivityFABAddStatistics.show()
                         }
 
                     ViewPager2.SCROLL_STATE_DRAGGING ->
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
+                            Tabs.STATISTICS.position -> mainActivityFABAddStatistics.hide()
                         }
 
                     ViewPager2.SCROLL_STATE_SETTLING -> {
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
+                            Tabs.STATISTICS.position -> mainActivityFABAddStatistics.hide()
                         }
                     }
                 }
@@ -228,9 +237,17 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         )
     }
 
+    // Implement listener from CalendarFragment to show a snackBar below the FAB
     override fun cannotUpdateCompletedTrainingSession() {
         myUtils.showSnackBar(
             mainActivityCoordinatorLayout, R.string.cannot_update_completed_training_session
+        )
+    }
+
+    // Implement listener from StatisticsFragment to show a snackBar below the FAB
+    override fun noData(exerciseName: String) {
+        myUtils.showSnackBar(
+            mainActivityCoordinatorLayout, getString(R.string.no_data, exerciseName)
         )
     }
 

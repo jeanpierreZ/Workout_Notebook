@@ -44,6 +44,8 @@ class StatisticsFragment : Fragment() {
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
+    private var callback: StatisticsListener? = null
+
     // Exercise chosen by the user
     private var exerciseChosen = Exercise()
 
@@ -167,12 +169,9 @@ class StatisticsFragment : Fragment() {
                                         if (trainingSessionList.isEmpty()) {
                                             fragmentStatisticsProgressBar.visibility =
                                                 View.INVISIBLE
-                                            myUtils.showSnackBar(
-                                                fragmentStatisticsCoordinatorLayout,
-                                                getString(
-                                                    R.string.no_data, exerciseChosen.exerciseName
-                                                )
-                                            )
+                                            exerciseChosen.exerciseName?.let { exerciseName ->
+                                                callback?.noData(exerciseName)
+                                            }
                                         } else {
                                             sortDataToDisplay(trainingSessionList)
                                         }
@@ -301,5 +300,29 @@ class StatisticsFragment : Fragment() {
             .series(arrayListOfAASeriesElement)
         // The chart view object calls the instance object of AAChartModel and draws the final graphic
         fragmentStatisticsChartView.aa_drawChartWithChartModel(aaChartModel)
+    }
+
+    //----------------------------------------------------------------------------------
+    // Interface for callback to parent activity when choose an exercise and there is no historical data
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Call the methods that creating callback after being attached to parent activity
+        callbackToParentActivity()
+    }
+
+    // Declare our interface and methods that will be implemented by any container activity
+    interface StatisticsListener {
+        fun noData(exerciseName: String)
+    }
+
+    // Create callback to parent activity
+    private fun callbackToParentActivity() {
+        try {
+            // Parent activity will automatically subscribe to callback
+            callback = activity as StatisticsListener?
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$e must implement StatisticsListener")
+        }
     }
 }
