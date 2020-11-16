@@ -38,6 +38,7 @@ class StatisticsFragment : Fragment() {
     companion object {
         private val TAG = StatisticsFragment::class.java.simpleName
         private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
+        private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
 
     private var userId: String? = null
@@ -68,6 +69,9 @@ class StatisticsFragment : Fragment() {
     private var calendarEntry = Calendar.getInstance()
     private var calendarEnd = Calendar.getInstance()
 
+    // SimpleDateFormat is used to format the trainingSessionDate
+    private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Use the Kotlin extension in the fragment-ktx artifact for setFragmentResultListener
@@ -78,7 +82,14 @@ class StatisticsFragment : Fragment() {
         ) { _, bundle ->
             fragmentStatisticsEntryDate?.editText?.text =
                 Editable.Factory.getInstance().newEditable(setCalendarEntryDate(bundle))
-            displayExerciseEditText()
+
+            if (fragmentStatisticsExerciseChosen.visibility == View.INVISIBLE) {
+                displayExerciseEditText()
+            }
+
+            if (fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
+                userId?.let { getAllExercises(it) }
+            }
         }
 
         // Listen the result from DatePickerFragment for end date
@@ -87,7 +98,14 @@ class StatisticsFragment : Fragment() {
         ) { _, bundle ->
             fragmentStatisticsEndDate?.editText?.text =
                 Editable.Factory.getInstance().newEditable(setCalendarEndDate(bundle))
-            displayExerciseEditText()
+
+            if (fragmentStatisticsExerciseChosen.visibility == View.INVISIBLE) {
+                displayExerciseEditText()
+            }
+
+            if (fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
+                        userId?.let { getAllExercises(it) }
+            }
         }
     }
 
@@ -103,7 +121,6 @@ class StatisticsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         userId = userAuth.getCurrentUser()?.uid
-        userId?.let { getAllExercises(it) }
 
         val allowPastDate = true
         val entryDate = true
@@ -175,7 +192,6 @@ class StatisticsFragment : Fragment() {
             if (trainingSessionList.isNotEmpty()) {
                 trainingSessionList.clear()
             }
-            fragmentStatisticsProgressBar.visibility = View.VISIBLE
             getStatisticsFromExerciseNameChosen(text.toString())
         }
     }
@@ -191,7 +207,7 @@ class StatisticsFragment : Fragment() {
         Log.d(TAG, "yearEntry = $year, monthEntry = $month, dayEntry = $day")
 
         // Set calendar with the data from DatePickerFragment to display the entry date
-        calendarEntry.set(year, month, day)
+        calendarEntry.set(year, month, day, 0, 0)
         val dateChosen: Date = calendarEntry.time
         return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
@@ -204,7 +220,7 @@ class StatisticsFragment : Fragment() {
         Log.d(TAG, "yearEnd = $year, monthEnd = $month, dayEnd = $day")
 
         // Set calendar with the data from DatePickerFragment to display the end date
-        calendarEnd.set(year, month, day)
+        calendarEnd.set(year, month, day, 0, 0)
         val dateChosen: Date = calendarEnd.time
         return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
@@ -213,6 +229,20 @@ class StatisticsFragment : Fragment() {
     // Methods to get statistics and display the chart
 
     private fun getStatisticsFromExerciseNameChosen(exerciseName: String) {
+        // Return if entry date is after end date
+        if (calendarEntry.time.after(calendarEnd.time)) {
+            callback?.entryDateAfterEndDate(R.string.entry_date_cannot_be_after_end_date)
+            return
+        }
+
+        fragmentStatisticsProgressBar.visibility = View.VISIBLE
+
+        // Get the string format for each date
+        val entryDate: Date = calendarEntry.time
+        val endDate: Date = calendarEnd.time
+        val entryDateString = sdf.format(entryDate)
+        val endDateString = sdf.format(endDate)
+
         // Find the Exercise with its name
         for (exercise in allExercises) {
             if (exercise.exerciseName == exerciseName) {
@@ -230,12 +260,18 @@ class StatisticsFragment : Fragment() {
             // Get training sessions that are completed
             trainingSessionViewModel.getListOfTrainingSessions(it)
                 ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
+                ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
+                ?.whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
                 ?.get()
                 ?.addOnSuccessListener { documents ->
                     Log.d(TAG, "documents.size = ${documents.size()}")
                     Log.d(TAG, "documents = ${documents?.documents}")
                     if (documents.isEmpty) {
                         Log.w(TAG, "documents.isEmpty")
+                        fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+                        exerciseChosen.exerciseName?.let { exerciseName ->
+                            callback?.noData(exerciseName)
+                        }
                     } else {
                         for ((index, value) in documents.withIndex()) {
                             // For each training session
@@ -280,9 +316,6 @@ class StatisticsFragment : Fragment() {
         Log.d(TAG, "trainingSessionList = $trainingSessionList")
 
         // --- Sort trainingSessionDate ---
-
-        // SimpleDateFormat is used to format the trainingSessionDate
-        val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
         // Create a list of Date
         val listOfDates = mutableListOf<Date>()
