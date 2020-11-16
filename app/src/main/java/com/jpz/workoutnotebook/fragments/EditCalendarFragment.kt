@@ -408,12 +408,16 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //--------------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {
+        val allowPastDate = false
+        // This is used only for StatisticsFragment
+        val entryDate = false
+
         when (v?.id) {
             R.id.editCalendarFragmentButtonWorkout -> getAllWorkouts()
 
             R.id.editCalendarFragmentButtonDate -> {
-                val datePicker = DatePickerFragment()
-                datePicker.show(childFragmentManager, DatePickerFragment()::class.java.simpleName)
+                val datePicker = DatePickerFragment(allowPastDate, entryDate)
+                datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
             }
 
             R.id.editCalendarFragmentButtonTime -> {

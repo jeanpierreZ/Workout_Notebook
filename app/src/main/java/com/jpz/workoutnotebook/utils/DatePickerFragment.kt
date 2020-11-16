@@ -9,9 +9,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import java.util.*
 
-class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
+class DatePickerFragment(private val allowPastDate: Boolean, private val entryDate: Boolean) :
+    DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     companion object {
+        const val REQUEST_KEY_ENTRY_DATE = "REQUEST_KEY_ENTRY_DATE"
         const val REQUEST_KEY_DATE = "REQUEST_KEY_DATE"
         const val BUNDLE_KEY_YEAR = "BUNDLE_KEY_YEAR"
         const val BUNDLE_KEY_MONTH = "BUNDLE_KEY_MONTH"
@@ -28,17 +30,26 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
         // Set DatePickerDialog with date from the calendar
         val dialog = activity?.let { DatePickerDialog(it, this, year, month, day) }
 
-        // Configure the calendar to not choose a past date
-        dialog?.datePicker?.minDate = System.currentTimeMillis() - 1000
-
+        if (!allowPastDate) {
+            // Configure the calendar to not choose a past date
+            dialog?.datePicker?.minDate = System.currentTimeMillis() - 1000
+        }
         return dialog!!
     }
 
     override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
-        // Send the result to EditCalendarFragment
-        setFragmentResult(
-            REQUEST_KEY_DATE,
-            bundleOf(BUNDLE_KEY_YEAR to year, BUNDLE_KEY_MONTH to month, BUNDLE_KEY_DAY to day)
-        )
+        if (entryDate) {
+            // Send the result to StatisticsFragment for the entryDate
+            setFragmentResult(
+                REQUEST_KEY_ENTRY_DATE,
+                bundleOf(BUNDLE_KEY_YEAR to year, BUNDLE_KEY_MONTH to month, BUNDLE_KEY_DAY to day)
+            )
+        } else {
+            // Send the result to EditCalendarFragment or to StatisticsFragment for the endDate
+            setFragmentResult(
+                REQUEST_KEY_DATE,
+                bundleOf(BUNDLE_KEY_YEAR to year, BUNDLE_KEY_MONTH to month, BUNDLE_KEY_DAY to day)
+            )
+        }
     }
 }

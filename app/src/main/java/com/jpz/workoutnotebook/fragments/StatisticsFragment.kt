@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
@@ -21,12 +20,14 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import kotlinx.android.synthetic.main.fragment_statistics.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -64,6 +65,30 @@ class StatisticsFragment : Fragment() {
     // Number of series from the exercise chosen
     private var seriesListSize = 0
 
+    private var calendarEntry = Calendar.getInstance()
+    private var calendarEnd = Calendar.getInstance()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Use the Kotlin extension in the fragment-ktx artifact for setFragmentResultListener
+
+        // Listen the result from DatePickerFragment for entry date
+        childFragmentManager.setFragmentResultListener(
+            DatePickerFragment.REQUEST_KEY_ENTRY_DATE, this
+        ) { _, bundle ->
+            fragmentStatisticsEntryDate?.editText?.text =
+                Editable.Factory.getInstance().newEditable(setCalendarEntryDate(bundle))
+        }
+
+        // Listen the result from DatePickerFragment for end date
+        childFragmentManager.setFragmentResultListener(
+            DatePickerFragment.REQUEST_KEY_DATE, this
+        ) { _, bundle ->
+            fragmentStatisticsEndDate?.editText?.text =
+                Editable.Factory.getInstance().newEditable(setCalendarEndDate(bundle))
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,12 +103,18 @@ class StatisticsFragment : Fragment() {
         userId = userAuth.getCurrentUser()?.uid
         userId?.let { getAllExercises(it) }
 
+        val allowPastDate = true
+        val entryDate = true
+        val endDate = false
+
         fragmentStatisticsEntryDate.editText?.setOnClickListener {
-            Toast.makeText(activity, "ENTRY", Toast.LENGTH_SHORT).show()
+            val datePicker = DatePickerFragment(allowPastDate, entryDate)
+            datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
 
-        fragmentStatisticsExitDate.editText?.setOnClickListener {
-            Toast.makeText(activity, "EXIT", Toast.LENGTH_SHORT).show()
+        fragmentStatisticsEndDate.editText?.setOnClickListener {
+            val datePicker = DatePickerFragment(allowPastDate, endDate)
+            datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
     }
 
@@ -131,6 +162,35 @@ class StatisticsFragment : Fragment() {
             fragmentStatisticsProgressBar.visibility = View.VISIBLE
             getStatisticsFromExerciseNameChosen(text.toString())
         }
+    }
+
+    //--------------------------------------------------------------------------------------
+    // Methods to display data from pickers
+
+    private fun setCalendarEntryDate(bundle: Bundle): String {
+        // Get data from bundle
+        val year = bundle.getInt(DatePickerFragment.BUNDLE_KEY_YEAR)
+        val month = bundle.getInt(DatePickerFragment.BUNDLE_KEY_MONTH)
+        val day = bundle.getInt(DatePickerFragment.BUNDLE_KEY_DAY)
+        Log.d(TAG, "yearEntry = $year, monthEntry = $month, dayEntry = $day")
+
+        // Set calendar with the data from DatePickerFragment to display the entry date
+        calendarEntry.set(year, month, day)
+        val dateChosen: Date = calendarEntry.time
+        return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
+    }
+
+    private fun setCalendarEndDate(bundle: Bundle): String {
+        // Get data from bundle
+        val year = bundle.getInt(DatePickerFragment.BUNDLE_KEY_YEAR)
+        val month = bundle.getInt(DatePickerFragment.BUNDLE_KEY_MONTH)
+        val day = bundle.getInt(DatePickerFragment.BUNDLE_KEY_DAY)
+        Log.d(TAG, "yearEnd = $year, monthEnd = $month, dayEnd = $day")
+
+        // Set calendar with the data from DatePickerFragment to display the end date
+        calendarEnd.set(year, month, day)
+        val dateChosen: Date = calendarEnd.time
+        return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
 
     //----------------------------------------------------------------------------------
