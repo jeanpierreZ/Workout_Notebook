@@ -122,17 +122,17 @@ class StatisticsFragment : Fragment() {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        val allowPastDate = true
+        val historical = true
         val entryDate = true
         val endDate = false
 
         fragmentStatisticsEntryDate.editText?.setOnClickListener {
-            val datePicker = DatePickerFragment(allowPastDate, entryDate)
+            val datePicker = DatePickerFragment(historical, entryDate)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
 
         fragmentStatisticsEndDate.editText?.setOnClickListener {
-            val datePicker = DatePickerFragment(allowPastDate, endDate)
+            val datePicker = DatePickerFragment(historical, endDate)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
     }

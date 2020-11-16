@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import java.util.*
 
-class DatePickerFragment(private val allowPastDate: Boolean, private val entryDate: Boolean) :
+class DatePickerFragment(private val historical: Boolean, private val entryDate: Boolean) :
     DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     companion object {
@@ -30,7 +30,10 @@ class DatePickerFragment(private val allowPastDate: Boolean, private val entryDa
         // Set DatePickerDialog with date from the calendar
         val dialog = activity?.let { DatePickerDialog(it, this, year, month, day) }
 
-        if (!allowPastDate) {
+        if (historical) {
+            // Configure the calendar to not choose a future date
+            dialog?.datePicker?.maxDate = System.currentTimeMillis() + 1000
+        } else {
             // Configure the calendar to not choose a past date
             dialog?.datePicker?.minDate = System.currentTimeMillis() - 1000
         }
