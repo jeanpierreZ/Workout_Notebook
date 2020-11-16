@@ -251,6 +251,10 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         )
     }
 
+    // Implement listener from StatisticsFragment to show a snackBar below the FAB
+    override fun entryDateAfterEndDate(message: Int) =
+        myUtils.showSnackBar(mainActivityCoordinatorLayout, message)
+
     //--------------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {

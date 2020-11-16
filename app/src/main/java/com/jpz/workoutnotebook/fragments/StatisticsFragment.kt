@@ -78,6 +78,7 @@ class StatisticsFragment : Fragment() {
         ) { _, bundle ->
             fragmentStatisticsEntryDate?.editText?.text =
                 Editable.Factory.getInstance().newEditable(setCalendarEntryDate(bundle))
+            displayExerciseEditText()
         }
 
         // Listen the result from DatePickerFragment for end date
@@ -86,6 +87,7 @@ class StatisticsFragment : Fragment() {
         ) { _, bundle ->
             fragmentStatisticsEndDate?.editText?.text =
                 Editable.Factory.getInstance().newEditable(setCalendarEndDate(bundle))
+            displayExerciseEditText()
         }
     }
 
@@ -120,6 +122,20 @@ class StatisticsFragment : Fragment() {
 
     //----------------------------------------------------------------------------------
     // Methods to get all exercises from Firestore and display it in the dropDownMenu
+
+    // Display fragmentStatisticsExerciseChosen if date are sets.
+    // Warn the user if entry date is after end date.
+    private fun displayExerciseEditText() {
+        if (fragmentStatisticsEntryDate.editText?.text != null && fragmentStatisticsEndDate?.editText?.text != null) {
+            if (fragmentStatisticsEntryDate.editText?.text?.isNotEmpty()!! && fragmentStatisticsEndDate?.editText?.text?.isNotEmpty()!!) {
+                if (calendarEntry.time.after(calendarEnd.time)) {
+                    callback?.entryDateAfterEndDate(R.string.entry_date_cannot_be_after_end_date)
+                } else {
+                    fragmentStatisticsExerciseChosen.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
 
     private fun getAllExercises(userId: String) {
         exerciseViewModel.getOrderedListOfExercises(userId)?.get()
@@ -387,6 +403,7 @@ class StatisticsFragment : Fragment() {
     // Declare our interface and methods that will be implemented by any container activity
     interface StatisticsListener {
         fun noData(exerciseName: String)
+        fun entryDateAfterEndDate(message: Int)
     }
 
     // Create callback to parent activity

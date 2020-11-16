@@ -103,9 +103,10 @@
     <string name="training_session_completed">Training session completed</string>
 
     <!-- Statistics Fragment -->
-    <string name="choose_exercise">Choose an exercise</string>
+    <string name="choose_exercise">Set dates and choose an exercise</string>
     <string name="no_data">No data for %s"</string>
     <string name="repetitions">Repetitions</string>
     <string name="entry_date">Date of entry</string>
     <string name="end_date">Date of end</string>
+    <string name="entry_date_cannot_be_after_end_date">Entry date cannot be after end date</string>
 </resources>
