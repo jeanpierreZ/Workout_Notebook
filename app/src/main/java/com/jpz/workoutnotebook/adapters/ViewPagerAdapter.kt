@@ -22,7 +22,7 @@ class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activ
             0 -> fragment = SportsFragment()
             1 -> fragment = CalendarFragment()
             2 -> fragment = StatisticsFragment()
-            3 -> fragment = FollowersFragment()
+            3 -> fragment = CommunityFragment()
             4 -> fragment = ProfileFragment()
         }
         return fragment
