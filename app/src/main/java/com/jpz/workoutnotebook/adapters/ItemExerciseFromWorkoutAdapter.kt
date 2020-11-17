@@ -25,7 +25,7 @@ class ItemExerciseFromWorkoutAdapter(
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: ItemExerciseViewHolder, position: Int) {
-        holder.updateExerciseFromWorkout(list[position])
+        holder.updateExerciseFromWorkout(context, list[position])
     }
 
     fun addAnExercise(exercise: Exercise, recyclerView: RecyclerView) {

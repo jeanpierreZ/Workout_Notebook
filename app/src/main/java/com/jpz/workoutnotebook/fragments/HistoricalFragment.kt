@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity
+import com.jpz.workoutnotebook.adapters.ItemExerciseFromWorkoutAdapter
 import com.jpz.workoutnotebook.models.TrainingSession
 import kotlinx.android.synthetic.main.fragment_historical.*
 
@@ -19,6 +21,7 @@ class HistoricalFragment : Fragment() {
     }
 
     private var trainingSession: TrainingSession? = null
+    private var itemExerciseFromWorkoutAdapter: ItemExerciseFromWorkoutAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,5 +39,24 @@ class HistoricalFragment : Fragment() {
 
         historicalFragmentWorkoutName?.text = trainingSession?.workout?.workoutName
         historicalFragmentDate?.text = trainingSession?.trainingSessionDate
+        configureRecyclerView()
+    }
+
+    //----------------------------------------------------------------------------------
+    // Configure RecyclerView, Adapter & LayoutManager
+
+    private fun configureRecyclerView() {
+        // Create the adapter by passing the list of exercises from this workout
+        itemExerciseFromWorkoutAdapter =
+            activity?.let { activity ->
+                trainingSession?.workout?.exercisesList?.let { exercisesList ->
+                    ItemExerciseFromWorkoutAdapter(exercisesList, activity)
+                }
+            }
+        // Attach the adapter to the recyclerView to populate the exercises
+        historicalFragmentRecyclerView?.adapter = itemExerciseFromWorkoutAdapter
+        // Set layout manager to position the exercises
+        historicalFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        historicalFragmentRecyclerView?.hasFixedSize()
     }
 }

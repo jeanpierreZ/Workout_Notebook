@@ -6,11 +6,27 @@
     android:layout_margin="2dp"
     app:cardCornerRadius="4dp">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/sportItemName"
-        style="@style/SubTitleTextViewTheme"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/exercise_widget_margin" />
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/sportItemName"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/exercise_widget_margin"
+            app:layout_constraintBottom_toTopOf="@+id/sportItemSeriesRecyclerView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sportItemSeriesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sportItemName" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

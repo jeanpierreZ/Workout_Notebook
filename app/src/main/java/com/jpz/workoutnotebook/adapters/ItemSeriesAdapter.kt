@@ -14,10 +14,10 @@ import com.jpz.workoutnotebook.viewholders.ItemSeriesViewHolder
 
 
 class ItemSeriesAdapter(
-    private var list: ArrayList<Series>, private val isDisabled: Boolean, private val isForTrainingSession: Boolean,
-    private val seriesDisabledName: String?,private val noOfSeries: Int?, private var context: Context
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var list: ArrayList<Series>, private val isDisabled: Boolean,
+    private val isForTrainingSession: Boolean, private val seriesDisabledName: String?,
+    private val noOfSeries: Int?, private var context: Context
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val TYPE_SERIES = 1
@@ -39,7 +39,9 @@ class ItemSeriesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (getItemViewType(position) == TYPE_SERIES) {
             if (isForTrainingSession) {
-                (holder as ItemSeriesViewHolder).updateSeriesForTrainingSession(list[position],noOfSeries, context)
+                (holder as ItemSeriesViewHolder).updateSeriesForTrainingSession(
+                    list[position], noOfSeries, context
+                )
             } else {
                 (holder as ItemSeriesViewHolder).updateSeries(list[position], context)
             }
