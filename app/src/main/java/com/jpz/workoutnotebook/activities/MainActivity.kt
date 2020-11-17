@@ -15,7 +15,6 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
 import com.jpz.workoutnotebook.fragments.CalendarFragment
 import com.jpz.workoutnotebook.fragments.SportsFragment
-import com.jpz.workoutnotebook.fragments.StatisticsFragment
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -24,8 +23,7 @@ import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener,
-    CalendarFragment.TrainingSessionListener, StatisticsFragment.StatisticsListener,
-    View.OnClickListener {
+    CalendarFragment.CalendarListener, View.OnClickListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -39,6 +37,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val EDIT = "EDIT"
         const val EDIT_PROFILE_FRAGMENT = "EDIT_PROFILE_FRAGMENT"
         const val EDIT_CALENDAR_FRAGMENT = "EDIT_CALENDAR_FRAGMENT"
+        const val HISTORICAL_FRAGMENT = "HISTORICAL_FRAGMENT"
         const val TRAINING_SESSION_FRAGMENT = "TRAINING_SESSION_FRAGMENT"
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
@@ -77,7 +76,6 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
         mainActivityFABEditProfile.setOnClickListener(this)
         mainActivityFABAddCalendar.setOnClickListener(this)
-        mainActivityFABAddStatistics.setOnClickListener(this)
     }
 
     //--------------------------------------------------------------------------------------
@@ -143,11 +141,9 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                 when (pageSelected) {
                     Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
                     Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
-                    Tabs.STATISTICS.position -> mainActivityFABAddStatistics.show()
                     else -> {
                         mainActivityFABEditProfile.hide()
                         mainActivityFABAddCalendar.hide()
-                        mainActivityFABAddStatistics.hide()
                     }
                 }
             }
@@ -158,21 +154,18 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
-                            Tabs.STATISTICS.position -> mainActivityFABAddStatistics.show()
                         }
 
                     ViewPager2.SCROLL_STATE_DRAGGING ->
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
-                            Tabs.STATISTICS.position -> mainActivityFABAddStatistics.hide()
                         }
 
                     ViewPager2.SCROLL_STATE_SETTLING -> {
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
-                            Tabs.STATISTICS.position -> mainActivityFABAddStatistics.hide()
                         }
                     }
                 }
@@ -191,6 +184,13 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     private fun startEditActivityForCalendar(trainingSession: TrainingSession?) {
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, EDIT_CALENDAR_FRAGMENT)
+        intent.putExtra(TRAINING_SESSION, trainingSession)
+        startActivity(intent)
+    }
+
+    private fun startEditActivityForHistorical(trainingSession: TrainingSession?) {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, HISTORICAL_FRAGMENT)
         intent.putExtra(TRAINING_SESSION, trainingSession)
         startActivity(intent)
     }
@@ -244,16 +244,10 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         )
     }
 
-    // Implement listener from StatisticsFragment to show a snackBar below the FAB
-    override fun noData(exerciseName: String) {
-        myUtils.showSnackBar(
-            mainActivityCoordinatorLayout, getString(R.string.no_data, exerciseName)
-        )
+    // Implement listener from CalendarFragment to consult a training session
+    override fun consultATrainingSession(trainingSession: TrainingSession) {
+        startEditActivityForHistorical(trainingSession)
     }
-
-    // Implement listener from StatisticsFragment to show a snackBar below the FAB
-    override fun entryDateAfterEndDate(message: Int) =
-        myUtils.showSnackBar(mainActivityCoordinatorLayout, message)
 
     //--------------------------------------------------------------------------------------
 

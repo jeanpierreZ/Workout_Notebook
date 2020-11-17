@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/exercise_widget_margin"
             android:hint="@string/entry_date"
+            app:layout_constraintBottom_toTopOf="@+id/fragmentStatisticsChartView"
             app:layout_constraintEnd_toStartOf="@+id/fragmentStatisticsEndDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fragmentStatisticsTitle">
@@ -72,9 +73,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/exercise_widget_margin"
             android:hint="@string/end_date"
+            app:layout_constraintBaseline_toBaselineOf="@+id/fragmentStatisticsEntryDate"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/fragmentStatisticsEntryDate"
-            app:layout_constraintTop_toBottomOf="@+id/fragmentStatisticsTitle">
+            app:layout_constraintStart_toEndOf="@+id/fragmentStatisticsEntryDate">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"

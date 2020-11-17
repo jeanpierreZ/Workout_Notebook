@@ -49,8 +49,6 @@ class StatisticsFragment : Fragment() {
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
-    private var callback: StatisticsListener? = null
-
     // Exercise chosen by the user
     private var exerciseChosen = Exercise()
 
@@ -104,7 +102,7 @@ class StatisticsFragment : Fragment() {
             }
 
             if (fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
-                        userId?.let { getAllExercises(it) }
+                userId?.let { getAllExercises(it) }
             }
         }
     }
@@ -146,7 +144,10 @@ class StatisticsFragment : Fragment() {
         if (fragmentStatisticsEntryDate.editText?.text != null && fragmentStatisticsEndDate?.editText?.text != null) {
             if (fragmentStatisticsEntryDate.editText?.text?.isNotEmpty()!! && fragmentStatisticsEndDate?.editText?.text?.isNotEmpty()!!) {
                 if (calendarEntry.time.after(calendarEnd.time)) {
-                    callback?.entryDateAfterEndDate(R.string.entry_date_cannot_be_after_end_date)
+                    myUtils.showSnackBar(
+                        fragmentStatisticsCoordinatorLayout,
+                        R.string.entry_date_cannot_be_after_end_date
+                    )
                 } else {
                     fragmentStatisticsExerciseChosen.visibility = View.VISIBLE
                 }
@@ -231,7 +232,9 @@ class StatisticsFragment : Fragment() {
     private fun getStatisticsFromExerciseNameChosen(exerciseName: String) {
         // Return if entry date is after end date
         if (calendarEntry.time.after(calendarEnd.time)) {
-            callback?.entryDateAfterEndDate(R.string.entry_date_cannot_be_after_end_date)
+            myUtils.showSnackBar(
+                fragmentStatisticsCoordinatorLayout, R.string.entry_date_cannot_be_after_end_date
+            )
             return
         }
 
@@ -270,7 +273,10 @@ class StatisticsFragment : Fragment() {
                         Log.w(TAG, "documents.isEmpty")
                         fragmentStatisticsProgressBar.visibility = View.INVISIBLE
                         exerciseChosen.exerciseName?.let { exerciseName ->
-                            callback?.noData(exerciseName)
+                            myUtils.showSnackBar(
+                                fragmentStatisticsCoordinatorLayout,
+                                getString(R.string.no_data, exerciseName)
+                            )
                         }
                     } else {
                         for ((index, value) in documents.withIndex()) {
@@ -293,7 +299,10 @@ class StatisticsFragment : Fragment() {
                                             fragmentStatisticsProgressBar.visibility =
                                                 View.INVISIBLE
                                             exerciseChosen.exerciseName?.let { exerciseName ->
-                                                callback?.noData(exerciseName)
+                                                myUtils.showSnackBar(
+                                                    fragmentStatisticsCoordinatorLayout,
+                                                    getString(R.string.no_data, exerciseName)
+                                                )
                                             }
                                         } else {
                                             Handler(Looper.getMainLooper()).postDelayed({
@@ -422,30 +431,5 @@ class StatisticsFragment : Fragment() {
             .series(arrayListOfAASeriesElement)
         // The chart view object calls the instance object of AAChartModel and draws the final graphic
         fragmentStatisticsChartView.aa_drawChartWithChartModel(aaChartModel)
-    }
-
-    //----------------------------------------------------------------------------------
-    // Interface for callback to parent activity when choose an exercise and there is no historical data
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        // Call the methods that creating callback after being attached to parent activity
-        callbackToParentActivity()
-    }
-
-    // Declare our interface and methods that will be implemented by any container activity
-    interface StatisticsListener {
-        fun noData(exerciseName: String)
-        fun entryDateAfterEndDate(message: Int)
-    }
-
-    // Create callback to parent activity
-    private fun callbackToParentActivity() {
-        try {
-            // Parent activity will automatically subscribe to callback
-            callback = activity as StatisticsListener?
-        } catch (e: ClassCastException) {
-            throw ClassCastException("$e must implement StatisticsListener")
-        }
     }
 }

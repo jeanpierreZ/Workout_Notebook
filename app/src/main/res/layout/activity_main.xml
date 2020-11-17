@@ -51,15 +51,4 @@
         app:srcCompat="@drawable/ic_baseline_add_24"
         android:contentDescription="@string/add" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/mainActivityFABAddStatistics"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorAccentLight"
-        app:layout_anchor="@id/mainActivityViewPager"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/ic_baseline_history_24"
-        android:contentDescription="@string/add" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

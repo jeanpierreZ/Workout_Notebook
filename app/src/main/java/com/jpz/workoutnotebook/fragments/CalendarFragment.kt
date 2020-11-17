@@ -41,7 +41,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     // SimpleDateFormat is used to store (and compare) the dates in the trainingSessionList
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
-    private var callback: TrainingSessionListener? = null
+    private var callback: CalendarListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -232,8 +232,13 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             val now: Date = nowCalendar.time
 
             when {
-                dateFromTrainingSession!!.before(now) -> callback?.cannotUpdatePreviousTrainingSession()
+                dateFromTrainingSession!!.before(now) && trainingSession.trainingSessionCompleted ->
+                    callback?.consultATrainingSession(trainingSession)
+
+                dateFromTrainingSession.before(now) -> callback?.cannotUpdatePreviousTrainingSession()
+
                 trainingSession.trainingSessionCompleted -> callback?.cannotUpdateCompletedTrainingSession()
+
                 else -> callback?.updateATrainingSession(trainingSession)
             }
         }
@@ -250,19 +255,20 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     }
 
     // Declare our interface and methods that will be implemented by any container activity
-    interface TrainingSessionListener {
+    interface CalendarListener {
         fun updateATrainingSession(trainingSession: TrainingSession)
         fun cannotUpdatePreviousTrainingSession()
         fun cannotUpdateCompletedTrainingSession()
+        fun consultATrainingSession(trainingSession: TrainingSession)
     }
 
     // Create callback to parent activity
     private fun callbackToParentActivity() {
         try {
             // Parent activity will automatically subscribe to callback
-            callback = activity as TrainingSessionListener?
+            callback = activity as CalendarListener?
         } catch (e: ClassCastException) {
-            throw ClassCastException("$e must implement TrainingSessionListener")
+            throw ClassCastException("$e must implement CalendarListener")
         }
     }
 }
