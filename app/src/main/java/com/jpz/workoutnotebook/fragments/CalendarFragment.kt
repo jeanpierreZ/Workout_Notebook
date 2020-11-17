@@ -158,7 +158,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     private fun addEventInCurrentMonth(dateList: ArrayList<String>) {
         val events = arrayListOf<EventDay>()
-        val currentMonth = calendarFragmentCalendarView.currentPageDate.get(Calendar.MONTH)
+        val currentMonth = calendarFragmentCalendarView?.currentPageDate?.get(Calendar.MONTH)
         Log.d(TAG, "currentMonth = $currentMonth")
 
         for (date in dateList) {
@@ -179,7 +179,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             }
         }
         // Log.d(TAG, " events.size = ${events.size}, events = $events")
-        calendarFragmentCalendarView.setEvents(events)
+        calendarFragmentCalendarView?.setEvents(events)
     }
 
     //--------------------------------------------------------------------------------------

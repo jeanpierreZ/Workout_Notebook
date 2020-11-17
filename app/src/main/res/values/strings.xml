@@ -109,4 +109,8 @@
     <string name="entry_date">Date of entry</string>
     <string name="end_date">Date of end</string>
     <string name="entry_date_cannot_be_after_end_date">Entry date cannot be after end date</string>
+
+    <!-- Community Fragment -->
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
 </resources>

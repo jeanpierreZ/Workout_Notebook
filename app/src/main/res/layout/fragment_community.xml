@@ -1,14 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.CommunityFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="followers" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/communityFragmentGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/communityFragmentFollowing"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/exercise_widget_margin"
+            android:text="@string/following"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/communityFragmentFollowingRecyclerView"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/communityFragmentFollowingRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/communityFragmentGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/communityFragmentFollowing" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/communityFragmentFollowers"
+            style="@style/SubTitleTextViewTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/exercise_widget_margin"
+            android:text="@string/followers"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/communityFragmentFollowersRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/communityFragmentGuideline" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/communityFragmentFollowersRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/communityFragmentFollowers" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
