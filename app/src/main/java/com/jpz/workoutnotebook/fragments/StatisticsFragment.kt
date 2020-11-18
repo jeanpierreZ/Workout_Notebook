@@ -68,6 +68,11 @@ class StatisticsFragment : Fragment() {
     // SimpleDateFormat is used to format the trainingSessionDate
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
+    // Boolean to display reps or unit
+    private var isForReps = true
+
+    private var yAxis = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Use the Kotlin extension in the fragment-ktx artifact for setFragmentResultListener
@@ -131,6 +136,21 @@ class StatisticsFragment : Fragment() {
             val datePicker = DatePickerFragment(historical, endDate)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
+
+        activity?.let { unitDropDownMenu(it) }
+    }
+
+    //----------------------------------------------------------------------------------
+
+    private fun unitDropDownMenu(context: Context) {
+        val list = arrayListOf(getString(R.string.reps), getString(R.string.unit))
+        val adapter =
+            ArrayAdapter(context, R.layout.unit_list_item, R.id.unitListItemTextView, list)
+        (fragmentStatisticsUnit?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        // Get reps or unit
+        fragmentStatisticsUnitAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
+            isForReps = text.toString() == getString(R.string.reps)
+        }
     }
 
     //----------------------------------------------------------------------------------
@@ -171,8 +191,8 @@ class StatisticsFragment : Fragment() {
                             exerciseNamesList.add(exerciseName)
                         }
                     }
-                    // Then show the DropDownMenu
-                    activity?.let { activity -> dropDownMenu(activity) }
+                    // Then show the exerciseDropDownMenu
+                    activity?.let { activity -> exerciseDropDownMenu(activity) }
                 }
             }
             ?.addOnFailureListener { exception ->
@@ -180,14 +200,14 @@ class StatisticsFragment : Fragment() {
             }
     }
 
-    private fun dropDownMenu(context: Context) {
+    private fun exerciseDropDownMenu(context: Context) {
         val adapter =
             ArrayAdapter(
                 context, R.layout.unit_list_item, R.id.unitListItemTextView, exerciseNamesList
             )
         (fragmentStatisticsExerciseChosen?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
         // Get statistics from the exercise chosen in the dropDownMenu
-        fragmentStatisticsAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
+        fragmentStatisticsExerciseAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
             if (trainingSessionList.isNotEmpty()) {
                 trainingSessionList.clear()
             }
@@ -317,6 +337,7 @@ class StatisticsFragment : Fragment() {
 
     private fun sortDataToDisplay(trainingSessionList: ArrayList<TrainingSession>) {
         Log.d(TAG, "trainingSessionList = $trainingSessionList")
+        Log.d(TAG, "trainingSessionList.size = ${trainingSessionList.size}")
 
         // --- Sort trainingSessionDate ---
 
@@ -378,7 +399,7 @@ class StatisticsFragment : Fragment() {
             }
         }
 
-        // --- Sort reps ---
+        // --- Add reps or unit ---
 
         // Create an arrayListOf AASeriesElement
         val arrayListOfAASeriesElement = arrayListOf<AASeriesElement>()
@@ -389,25 +410,44 @@ class StatisticsFragment : Fragment() {
             val aaSeriesElement = AASeriesElement()
             // Add the name of the current series
             aaSeriesElement.name("Set $i")
-            // Create a list of reps
-            val arrayListOfReps = arrayListOf<Int>()
 
-            // For each exercise in the list of exercises completed
-            for (exercise in exercisesCompletedList) {
-                // Add the reps
-                if (i <= exercise.seriesList.size) {
-                    arrayListOfReps.add(exercise.seriesList[i - 1].reps)
-                } else {
-                    arrayListOfReps.add(0)
+            // Create a list of reps or unit
+            val arrayListOfRepsOrUnit = arrayListOf<Any>()
+
+            if (isForReps) {
+                // For each exercise in the list of exercises completed
+                for (exercise in exercisesCompletedList) {
+                    // Add the reps
+                    if (i <= exercise.seriesList.size) {
+                        arrayListOfRepsOrUnit.add(exercise.seriesList[i - 1].reps)
+                    } else {
+                        arrayListOfRepsOrUnit.add(0)
+                    }
+                }
+            } else {
+                // For each exercise in the list of exercises completed
+                for (exercise in exercisesCompletedList) {
+                    // Add the number of unit
+                    if (i <= exercise.seriesList.size) {
+                        arrayListOfRepsOrUnit.add(exercise.seriesList[i - 1].numberOfUnit)
+                    } else {
+                        arrayListOfRepsOrUnit.add(0.0)
+                    }
                 }
             }
+
             // Add the arrayListOfReps in the current aaSeriesElement
-            aaSeriesElement.data(arrayListOfReps.toTypedArray())
+            aaSeriesElement.data(arrayListOfRepsOrUnit.toTypedArray())
             // Add this aaSeriesElement in the array list of AASeriesElement
             arrayListOfAASeriesElement.add(aaSeriesElement)
         }
         // Display the chart with data
         fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+        yAxis = if (isForReps) {
+            getString(R.string.repetitions)
+        } else {
+            exerciseChosen.seriesList[0].unit
+        }
         displayChart(xDates.toTypedArray(), arrayListOfAASeriesElement.toTypedArray())
     }
 
@@ -416,10 +456,16 @@ class StatisticsFragment : Fragment() {
     ) {
         val aaChartModel = AAChartModel()
         exerciseChosen.exerciseName?.let { aaChartModel.title(it) }
+
+        if (isForReps) {
+            aaChartModel.yAxisAllowDecimals(false)
+        } else {
+            aaChartModel.yAxisAllowDecimals(true)
+        }
+
         aaChartModel
             .chartType(AAChartType.Line)
-            .yAxisTitle(getString(R.string.repetitions))
-            .yAxisAllowDecimals(false)
+            .yAxisTitle(yAxis)
             .backgroundColor(R.color.colorTextSecondary)
             .categories(xDates)
             .series(arrayListOfAASeriesElement)
