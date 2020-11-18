@@ -2,8 +2,6 @@ package com.jpz.workoutnotebook.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
@@ -221,7 +219,7 @@ class StatisticsFragment : Fragment() {
         Log.d(TAG, "yearEnd = $year, monthEnd = $month, dayEnd = $day")
 
         // Set calendar with the data from DatePickerFragment to display the end date
-        calendarEnd.set(year, month, day, 0, 0)
+        calendarEnd.set(year, month, day, 23, 59)
         val dateChosen: Date = calendarEnd.time
         return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
@@ -255,66 +253,62 @@ class StatisticsFragment : Fragment() {
             }
         }
 
-        // Get the number of series for the exercise chosen
+        // Get the number of series by default for the exercise chosen
         seriesListSize = exerciseChosen.seriesList.size
         Log.d(TAG, "seriesListSize = $seriesListSize")
 
         userId?.let {
-            // Get training sessions that are completed
+            // Get all training sessions that are completed and according to dates
             trainingSessionViewModel.getListOfTrainingSessions(it)
                 ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
                 ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
                 ?.whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
                 ?.get()
-                ?.addOnSuccessListener { documents ->
-                    Log.d(TAG, "documents.size = ${documents.size()}")
-                    Log.d(TAG, "documents = ${documents?.documents}")
-                    if (documents.isEmpty) {
-                        Log.w(TAG, "documents.isEmpty")
-                        fragmentStatisticsProgressBar.visibility = View.INVISIBLE
-                        exerciseChosen.exerciseName?.let { exerciseName ->
-                            myUtils.showSnackBar(
-                                fragmentStatisticsCoordinatorLayout,
-                                getString(R.string.no_data, exerciseName)
-                            )
-                        }
-                    } else {
-                        for ((index, value) in documents.withIndex()) {
-                            // For each training session
-                            trainingSessionViewModel.getTrainingSession(it, value.id)
-                                ?.addOnSuccessListener { doc ->
-                                    // Get TrainingSession object
-                                    val trainingSession = doc.toObject(TrainingSession::class.java)
-                                    Log.d(TAG, "trainingSession = $trainingSession")
-                                    // Search if the exercise is in the training session exercises list
+                ?.addOnCompleteListener { task ->
+                    if (task.isSuccessful && task.isComplete) {
+                        val document = task.result
+                        Log.d(TAG, "document.size = ${document?.size()}")
+                        if (document != null) {
+                            if (document.documents.isEmpty()) {
+                                Log.w(TAG, "documents.isEmpty")
+                                fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+                                exerciseChosen.exerciseName?.let { exerciseName ->
+                                    myUtils.showSnackBar(
+                                        fragmentStatisticsCoordinatorLayout,
+                                        getString(R.string.no_data, exerciseName)
+                                    )
+                                }
+                            } else {
+                                document.documents.forEach { eachDocument ->
+                                    // For each training session, get the TrainingSession object
+                                    val trainingSession =
+                                        eachDocument.toObject(TrainingSession::class.java)
+                                    // Search if the exercise is in the list
                                     trainingSession?.workout?.exercisesList?.forEach { exercise ->
                                         if (exercise.exerciseId == exerciseChosen.exerciseId) {
                                             // Add the training session to the list
                                             trainingSessionList.add(trainingSession)
                                         }
                                     }
-                                    // Display the chart with the list
-                                    if ((index + 1) == documents.size()) {
-                                        if (trainingSessionList.isEmpty()) {
-                                            fragmentStatisticsProgressBar.visibility =
-                                                View.INVISIBLE
-                                            exerciseChosen.exerciseName?.let { exerciseName ->
-                                                myUtils.showSnackBar(
-                                                    fragmentStatisticsCoordinatorLayout,
-                                                    getString(R.string.no_data, exerciseName)
-                                                )
-                                            }
-                                        } else {
-                                            Handler(Looper.getMainLooper()).postDelayed({
-                                                sortDataToDisplay(trainingSessionList)
-                                            }, 500)
-                                        }
+                                }
+                                // Then check if the list is not empty and...
+                                if (trainingSessionList.isEmpty()) {
+                                    fragmentStatisticsProgressBar.visibility =
+                                        View.INVISIBLE
+                                    exerciseChosen.exerciseName?.let { exerciseName ->
+                                        myUtils.showSnackBar(
+                                            fragmentStatisticsCoordinatorLayout,
+                                            getString(R.string.no_data, exerciseName)
+                                        )
                                     }
+                                } else {
+                                    // ...display the chart with the list
+                                    sortDataToDisplay(trainingSessionList)
                                 }
-                                ?.addOnFailureListener { e ->
-                                    Log.d(TAG, "getTrainingSession failed with ", e)
-                                }
+                            }
                         }
+                    } else {
+                        Log.d(TAG, "Task get failed: ", task.exception)
                     }
                 }
                 ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
