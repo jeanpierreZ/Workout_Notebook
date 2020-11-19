@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.jpz.workoutnotebook.utils.DataBindingConverters" />
+
+        <variable
+            name="user"
+            type="com.jpz.workoutnotebook.models.User" />
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="4dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/communityItemPhoto"
+                profileImage="@{user.photoProfile}"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="@dimen/button_icon_padding_reduce"
+                android:contentDescription="@string/profile_photo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/communityItemNickname"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/communityItemNickname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_icon_padding_reduce"
+                android:singleLine="true"
+                android:text="@{user.nickName}"
+                app:layout_constraintBottom_toTopOf="@id/communityItemFirstName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/communityItemPhoto"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/communityItemFirstName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_icon_padding_reduce"
+                android:singleLine="true"
+                android:text="@{user.firstName}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/communityItemName"
+                app:layout_constraintStart_toEndOf="@+id/communityItemPhoto"
+                app:layout_constraintTop_toBottomOf="@+id/communityItemNickname" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/communityItemName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/button_icon_padding_reduce"
+                android:singleLine="true"
+                android:text="@{user.name}"
+                app:layout_constraintBaseline_toBaselineOf="@+id/communityItemFirstName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/communityItemFirstName" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

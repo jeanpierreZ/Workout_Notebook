@@ -18,22 +18,22 @@
             app:layout_constraintGuide_percent="0.5" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/communityFragmentFollowing"
+            android:id="@+id/communityFragmentFollow"
             style="@style/SubTitleTextViewTheme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/exercise_widget_margin"
-            android:text="@string/following"
+            android:text="@string/follow"
             android:textAlignment="center"
-            app:layout_constraintBottom_toTopOf="@+id/communityFragmentFollowingRecyclerView"
+            app:layout_constraintBottom_toTopOf="@+id/communityFragmentFollowRecyclerView"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/communityFragmentFollowingRecyclerView"
+            android:id="@+id/communityFragmentFollowRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/communityFragmentGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/communityFragmentFollowing" />
+            app:layout_constraintTop_toBottomOf="@+id/communityFragmentFollow" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/communityFragmentFollowers"

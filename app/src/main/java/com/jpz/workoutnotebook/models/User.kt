@@ -8,6 +8,6 @@ data class User(
     var age: Int? = null,
     var photoProfile: String? = null,
     var sports: String? = null,
-    var iFollow: ArrayList<String>? = ArrayList(),
+    var follow: ArrayList<String>? = ArrayList(),
     var followers: ArrayList<String>? = ArrayList()
 )
