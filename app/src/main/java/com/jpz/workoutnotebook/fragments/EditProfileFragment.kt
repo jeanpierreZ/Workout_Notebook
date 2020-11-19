@@ -149,8 +149,8 @@ class EditProfileFragment : BaseProfileFragment() {
     private fun updateUser() {
         val user = userId?.let { it ->
             User(
-                it, user?.nickName, user?.name, user?.firstName, user?.age,
-                user?.photoProfile, user?.sports, user?.follow, user?.followers
+                it, user?.nickName, user?.name, user?.firstName,
+                user?.age, user?.photoProfile, user?.sports
             )
         }
         if (user != null) {

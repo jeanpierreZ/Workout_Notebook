@@ -1,6 +1,6 @@
 package com.jpz.workoutnotebook.models
 
-data class User(
+data class Follow(
     var userId: String = "",
     var nickName: String? = null,
     var name: String? = null,

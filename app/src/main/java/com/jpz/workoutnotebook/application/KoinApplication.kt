@@ -17,15 +17,17 @@ class KoinApplication : Application() {
             modules(
                 listOf(
                     moduleUserAuth,
-                    moduleUserHelper,
+                    moduleUserRepository,
                     moduleUserStoragePhoto,
                     moduleUserViewModel,
-                    moduleTrainingSessionHelper,
+                    moduleTrainingSessionRepository,
                     moduleTrainingSessionViewModel,
-                    moduleWorkoutHelper,
+                    moduleWorkoutRepository,
                     moduleWorkoutViewModel,
-                    moduleExerciseHelper,
+                    moduleExerciseRepository,
                     moduleExerciseViewModel,
+                    moduleFollowRepository,
+                    moduleFollowViewModel,
                     moduleMyUtils
                 )
             )

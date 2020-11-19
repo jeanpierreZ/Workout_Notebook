@@ -22,15 +22,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/communityItemGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.2" />
+
             <ImageView
                 android:id="@+id/communityItemPhoto"
                 profileImage="@{user.photoProfile}"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_margin="@dimen/button_icon_padding_reduce"
                 android:contentDescription="@string/profile_photo"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/communityItemNickname"
+                app:layout_constraintEnd_toStartOf="@+id/communityItemGuideline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,7 +50,7 @@
                 android:text="@{user.nickName}"
                 app:layout_constraintBottom_toTopOf="@id/communityItemFirstName"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/communityItemPhoto"
+                app:layout_constraintStart_toEndOf="@+id/communityItemGuideline"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -55,7 +62,7 @@
                 android:text="@{user.firstName}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/communityItemName"
-                app:layout_constraintStart_toEndOf="@+id/communityItemPhoto"
+                app:layout_constraintStart_toEndOf="@+id/communityItemGuideline"
                 app:layout_constraintTop_toBottomOf="@+id/communityItemNickname" />
 
             <com.google.android.material.textview.MaterialTextView
