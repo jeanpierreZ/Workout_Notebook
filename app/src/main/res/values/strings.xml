@@ -115,4 +115,7 @@
     <!-- Community Fragment -->
     <string name="follow">Follow</string>
     <string name="followers">Followers</string>
+
+    <!-- Search Fragment -->
+    <string name="search_by_names">Search by names</string>
 </resources>

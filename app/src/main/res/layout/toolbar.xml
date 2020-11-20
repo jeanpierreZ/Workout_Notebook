@@ -7,4 +7,14 @@
     android:layout_height="?attr/actionBarSize"
     android:elevation="8dp"
     app:titleTextColor="@color/colorTextPrimary"
-    tools:targetApi="LOLLIPOP" />
+    tools:targetApi="LOLLIPOP">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/toolbarSearchView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:iconifiedByDefault="false"
+        app:queryHint="@string/search_by_names" />
+
+</androidx.appcompat.widget.Toolbar>
