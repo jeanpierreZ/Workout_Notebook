@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val EDIT_PROFILE_FRAGMENT = "EDIT_PROFILE_FRAGMENT"
         const val EDIT_CALENDAR_FRAGMENT = "EDIT_CALENDAR_FRAGMENT"
         const val HISTORICAL_FRAGMENT = "HISTORICAL_FRAGMENT"
+        const val SEARCH_FRAGMENT = "SEARCH_FRAGMENT"
         const val TRAINING_SESSION_FRAGMENT = "TRAINING_SESSION_FRAGMENT"
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
         mainActivityFABEditProfile.setOnClickListener(this)
         mainActivityFABAddCalendar.setOnClickListener(this)
+        mainActivityFABSearchCommunity.setOnClickListener(this)
     }
 
     //--------------------------------------------------------------------------------------
@@ -141,9 +143,11 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                 when (pageSelected) {
                     Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
                     Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
+                    Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.show()
                     else -> {
                         mainActivityFABEditProfile.hide()
                         mainActivityFABAddCalendar.hide()
+                        mainActivityFABSearchCommunity.hide()
                     }
                 }
             }
@@ -154,18 +158,21 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
+                            Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.show()
                         }
 
                     ViewPager2.SCROLL_STATE_DRAGGING ->
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
+                            Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.hide()
                         }
 
                     ViewPager2.SCROLL_STATE_SETTLING -> {
                         when (pageSelected) {
                             Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
                             Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
+                            Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.hide()
                         }
                     }
                 }
@@ -206,6 +213,12 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, EDIT_PROFILE_FRAGMENT)
         startActivityForResult.launch(intent)
+    }
+
+    private fun startEditActivityForSearch() {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, SEARCH_FRAGMENT)
+        startActivity(intent)
     }
 
     //--------------------------------------------------------------------------------------
@@ -255,6 +268,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         when (v?.id) {
             R.id.mainActivityFABEditProfile -> startForResultEditActivityForProfile()
             R.id.mainActivityFABAddCalendar -> startEditActivityForCalendar(null)
+            R.id.mainActivityFABSearchCommunity -> startEditActivityForSearch()
         }
     }
 }

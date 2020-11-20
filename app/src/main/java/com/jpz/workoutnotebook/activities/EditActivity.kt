@@ -11,6 +11,7 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_CALENDAR_F
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_PROFILE_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.HISTORICAL_FRAGMENT
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.SEARCH_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
@@ -82,6 +83,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         val editProfileFragment = EditProfileFragment()
         val editCalendarFragment = EditCalendarFragment()
         val historicalFragment = HistoricalFragment()
+        val searchFragment = SearchFragment()
         val trainingSessionFragment = TrainingSessionFragment()
         val listSportsFragment = ListSportsFragment()
         val bundle = Bundle()
@@ -98,6 +100,8 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
                 fragment = historicalFragment
                 bundle.putParcelable(TRAINING_SESSION, trainingSession)
             }
+
+            SEARCH_FRAGMENT -> fragment = searchFragment
 
             TRAINING_SESSION_FRAGMENT -> {
                 fragment = trainingSessionFragment
