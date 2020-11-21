@@ -2,6 +2,7 @@ package com.jpz.workoutnotebook.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,9 +13,31 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity
+import com.jpz.workoutnotebook.models.User
+import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.viewmodels.FollowViewModel
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchFragment : Fragment() {
+
+    companion object {
+        private val TAG = SearchFragment::class.java.simpleName
+        private const val USER_NICKNAME_FIELD = "nickName"
+        private const val USER_FIRST_NAME_FIELD = "firstName"
+        private const val USER_NAME_FIELD = "name"
+    }
+
+    private var userId: String? = null
+
+    // Firebase Auth, Firestore
+    private val userAuth: UserAuth by inject()
+    private val followViewModel: FollowViewModel by viewModel()
+
+    private var searchView: SearchView? = null
+
+    private val resultList = arrayListOf<User>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,18 +50,126 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        searchView = (context as EditActivity).findViewById(R.id.toolbarSearchView)
+
+        userId = userAuth.getCurrentUser()?.uid
+
         showSearchView()
+        getResultFromQuery()
     }
 
     //--------------------------------------------------------------------------------------
     // UI
 
     private fun showSearchView() {
-        val searchView = (context as EditActivity).findViewById<SearchView>(R.id.toolbarSearchView)
         // Change the color of the search icon and make searchView visible
-        val searchIcon: ImageView = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon)
-        searchIcon.colorFilter = BlendModeColorFilterCompat
+        val searchIcon: ImageView? =
+            searchView?.findViewById(androidx.appcompat.R.id.search_mag_icon)
+        searchIcon?.colorFilter = BlendModeColorFilterCompat
             .createBlendModeColorFilterCompat(Color.BLACK, BlendModeCompat.SRC_ATOP)
-        searchView.visibility = View.VISIBLE
+        searchView?.visibility = View.VISIBLE
+    }
+
+    //--------------------------------------------------------------------------------------
+    // UI
+
+    private fun getResultFromQuery() {
+        // When the user valid a query in the searchView
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                getResultFromFirestore(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+        })
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    private fun getResultFromFirestore(query: String) {
+        if (resultList.isNotEmpty()) {
+            resultList.clear()
+        }
+
+        // Get result for nickName field
+        userId?.let {
+            followViewModel.getListOfUsers(it)
+                ?.whereEqualTo(USER_NICKNAME_FIELD, query)
+                ?.get()
+                ?.addOnSuccessListener { documents ->
+                    Log.d(TAG, "For nickName : documents.size() => ${documents.size()}")
+                    if (!documents.isEmpty) {
+                        for (document in documents) {
+                            Log.d(TAG, "For nickName : ${document.id} => ${document.data}")
+                            val followToAdd = document.toObject(User::class.java)
+                            // Add the result to the nickNameList
+                            resultList.add(followToAdd)
+                        }
+                    }
+                    getResultForFirstName(query)
+
+                }
+                ?.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
+    }
+
+    private fun getResultForFirstName(query: String) {
+        // Get result for firstName field
+        userId?.let {
+            followViewModel.getListOfUsers(it)
+                ?.whereEqualTo(USER_FIRST_NAME_FIELD, query)
+                ?.get()
+                ?.addOnSuccessListener { documents ->
+                    Log.d(TAG, "For firstName : documents.size() => ${documents.size()}")
+                    if (!documents.isEmpty) {
+                        for (document in documents) {
+                            Log.d(TAG, "For firstName : ${document.id} => ${document.data}")
+                            val followToAdd = document.toObject(User::class.java)
+                            // Add the result to the firstNameList
+                            resultList.add(followToAdd)
+                        }
+                    }
+                    getResultForName(query)
+                }
+                ?.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
+    }
+
+    private fun getResultForName(query: String) {
+        // Get result for name field
+        userId?.let {
+            followViewModel.getListOfUsers(it)
+                ?.whereEqualTo(USER_NAME_FIELD, query)
+                ?.get()
+                ?.addOnSuccessListener { documents ->
+                    Log.d(TAG, "For name : documents.size() => ${documents.size()}")
+                    if (!documents.isEmpty) {
+                        for (document in documents) {
+                            Log.d(TAG, "For name : ${document.id} => ${document.data}")
+                            val followToAdd = document.toObject(User::class.java)
+                            // Add the result to the nameList
+                            resultList.add(followToAdd)
+                        }
+                    }
+                    showResult()
+                }
+                ?.addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
+        }
+    }
+
+    private fun showResult() {
+        // Convert resultList to set (avoid duplicates) then to list
+        val listSorted = resultList.toSet().toList()
+        Log.w(TAG, "distinct = $listSorted")
+        Log.w(TAG, "distinct size = ${listSorted.size}")
     }
 }

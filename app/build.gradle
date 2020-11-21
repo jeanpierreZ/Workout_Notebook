@@ -70,6 +70,9 @@ dependencies {
     // FirebaseUI for Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:6.0.2'
 
+    // Cloud Firestore Android SDK with Kotlin Extensions (used with not equal operator)
+    implementation 'com.google.firebase:firebase-firestore-ktx:22.0.0'
+
     // Firebase Storage
     implementation 'com.firebaseui:firebase-ui-storage:6.2.0'
 
