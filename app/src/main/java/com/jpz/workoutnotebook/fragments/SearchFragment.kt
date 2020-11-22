@@ -11,11 +11,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity
+import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
+import kotlinx.android.synthetic.main.fragment_search.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,13 +35,16 @@ class SearchFragment : Fragment() {
 
     private var userId: String? = null
 
-    // Firebase Auth, Firestore
+    // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val followViewModel: FollowViewModel by viewModel()
+    private val myUtils: MyUtils by inject()
 
     private var searchView: SearchView? = null
 
     private val resultList = arrayListOf<User>()
+
+    private var itemSearchFragment: ItemSearchAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +67,16 @@ class SearchFragment : Fragment() {
 
     //--------------------------------------------------------------------------------------
     // UI
+
+    // Configure RecyclerView, Adapter & LayoutManager
+    private fun configureRecyclerView(listSorted: ArrayList<User>) {
+        // Create the adapter by passing the list of users find from the query
+        itemSearchFragment = ItemSearchAdapter(listSorted)
+        // Attach the adapter to the recyclerView to populate the users
+        searchFragmentRecyclerView?.adapter = itemSearchFragment
+        // Set layout manager to position the users
+        searchFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+    }
 
     private fun showSearchView() {
         // Change the color of the search icon and make searchView visible
@@ -167,9 +184,15 @@ class SearchFragment : Fragment() {
     }
 
     private fun showResult() {
-        // Convert resultList to set (avoid duplicates) then to list
-        val listSorted = resultList.toSet().toList()
-        Log.w(TAG, "distinct = $listSorted")
-        Log.w(TAG, "distinct size = ${listSorted.size}")
+        if (resultList.isNotEmpty()) {
+            // Convert resultList to set (avoid duplicates) then to list
+            val listSorted = resultList.toSet().toList()
+            Log.w(TAG, "distinct = $listSorted")
+            Log.w(TAG, "distinct size = ${listSorted.size}")
+            // Pass the list to the recyclerView
+            configureRecyclerView(ArrayList(listSorted))
+        } else {
+            myUtils.showSnackBar(searchFragmentCoordinatorLayout, R.string.search_no_result)
+        }
     }
 }

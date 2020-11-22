@@ -118,4 +118,5 @@
 
     <!-- Search Fragment -->
     <string name="search_by_names">Search by names</string>
+    <string name="search_no_result">There are no results for your query</string>
 </resources>
