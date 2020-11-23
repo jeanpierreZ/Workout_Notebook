@@ -1,10 +1,22 @@
 package com.jpz.workoutnotebook.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.Query
+import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.FollowRepository
 
 class FollowViewModel(private val followRepository: FollowRepository) : ViewModel() {
+
+    companion object {
+        private val TAG = FollowViewModel::class.java.simpleName
+    }
+
+    // --- CREATE ---
+
+    fun addFollow(userId: String, follow: User) =
+        followRepository.addFollow(userId, follow)
+            ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- QUERY ---
 

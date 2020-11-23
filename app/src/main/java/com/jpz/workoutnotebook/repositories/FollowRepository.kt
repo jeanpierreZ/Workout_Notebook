@@ -1,6 +1,9 @@
 package com.jpz.workoutnotebook.repositories
 
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.Query
+import com.jpz.workoutnotebook.models.User
 
 class FollowRepository {
 
@@ -8,6 +11,14 @@ class FollowRepository {
         private const val COLLECTION_NAME = "follow"
         private const val USER_ID_FIELD = "userId"
     }
+
+    // --- CREATE ---
+
+    fun addFollow(userId: String, follow: User): Task<DocumentReference>? =
+        UserRepository.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.add(follow)
 
     // --- QUERY ---
 

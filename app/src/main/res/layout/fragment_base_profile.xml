@@ -166,5 +166,13 @@
             android:visibility="gone"
             layout="@layout/fab_add"/>
 
+        <ProgressBar
+            android:id="@+id/baseProfileFragmentProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </layout>
