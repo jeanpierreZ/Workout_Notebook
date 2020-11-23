@@ -1,10 +1,10 @@
-package com.jpz.workoutnotebook.fragments
+package com.jpz.workoutnotebook.fragments.mainactivity
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -29,9 +29,10 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     private var itemCommunityAdapter: ItemCommunityAdapter? = null
 
+    private var callback: CommunityListener? = null
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_community, container, false)
@@ -74,6 +75,31 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     // Interface for callback ItemCommunityAdapter
     override fun onClickProfile(user: User?, position: Int) {
-        Toast.makeText(activity, "CLICKED", Toast.LENGTH_SHORT).show()
+        callback?.displayFollower(user)
+    }
+
+    //----------------------------------------------------------------------------------
+    // Interface for callback to parent activity and associated methods
+    // when click on follow/follower item
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Call the method that creating callback after being attached to parent activity
+        callbackToParentActivity()
+    }
+
+    // Declare our interface that will be implemented by any container activity
+    interface CommunityListener {
+        fun displayFollower(follower: User?)
+    }
+
+    // Create callback to parent activity
+    private fun callbackToParentActivity() {
+        try {
+            // Parent activity will automatically subscribe to callback
+            callback = activity as CommunityListener?
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$e must implement CommunityListener")
+        }
     }
 }

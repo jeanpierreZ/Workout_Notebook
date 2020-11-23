@@ -3,7 +3,7 @@ package com.jpz.workoutnotebook.adapters
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.jpz.workoutnotebook.fragments.*
+import com.jpz.workoutnotebook.fragments.mainactivity.*
 
 class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
 

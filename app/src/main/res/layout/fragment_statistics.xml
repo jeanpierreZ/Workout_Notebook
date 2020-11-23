@@ -5,7 +5,7 @@
     android:id="@+id/fragmentStatisticsCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.StatisticsFragment">
+    tools:context=".fragments.mainactivity.StatisticsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

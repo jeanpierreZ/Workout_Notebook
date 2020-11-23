@@ -13,9 +13,11 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
-import com.jpz.workoutnotebook.fragments.CalendarFragment
-import com.jpz.workoutnotebook.fragments.SportsFragment
+import com.jpz.workoutnotebook.fragments.mainactivity.CalendarFragment
+import com.jpz.workoutnotebook.fragments.mainactivity.CommunityFragment
+import com.jpz.workoutnotebook.fragments.mainactivity.SportsFragment
 import com.jpz.workoutnotebook.models.TrainingSession
+import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -23,7 +25,7 @@ import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonListener,
-    CalendarFragment.CalendarListener, View.OnClickListener {
+    CalendarFragment.CalendarListener, CommunityFragment.CommunityListener, View.OnClickListener {
 
     enum class Tabs(val position: Int) {
         SPORTS(0),
@@ -40,9 +42,11 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val HISTORICAL_FRAGMENT = "HISTORICAL_FRAGMENT"
         const val SEARCH_FRAGMENT = "SEARCH_FRAGMENT"
         const val TRAINING_SESSION_FRAGMENT = "TRAINING_SESSION_FRAGMENT"
+        const val FOLLOWER_FRAGMENT = "FOLLOWER_FRAGMENT"
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
+        const val FOLLOWER = "FOLLOWER"
     }
 
     private var pageSelected = 0
@@ -221,6 +225,13 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startActivity(intent)
     }
 
+    private fun startEditActivityToDisplayFollower(follower: User?) {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, FOLLOWER_FRAGMENT)
+        intent.putExtra(FOLLOWER, follower)
+        startActivity(intent)
+    }
+
     //--------------------------------------------------------------------------------------
 
     // Implement listener from SportsFragment to consult the list of exercises or workouts
@@ -260,6 +271,11 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     // Implement listener from CalendarFragment to consult a training session
     override fun consultATrainingSession(trainingSession: TrainingSession) {
         startEditActivityForHistorical(trainingSession)
+    }
+
+    // Implement listener from CommunityFragment to display the profile of a follow/follower
+    override fun displayFollower(follower: User?) {
+        startEditActivityToDisplayFollower(follower)
     }
 
     //--------------------------------------------------------------------------------------

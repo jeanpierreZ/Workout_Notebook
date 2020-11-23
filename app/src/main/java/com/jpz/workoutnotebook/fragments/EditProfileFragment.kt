@@ -96,7 +96,7 @@ class EditProfileFragment : BaseProfileFragment() {
     }
 
     //--------------------------------------------------------------------------------------
-    // Get the user data to User Object from Firebase
+    // Get the user data to User Object from Firestore
 
     private fun getUserDataToObject(userId: String?) {
         userId?.let {
@@ -147,15 +147,9 @@ class EditProfileFragment : BaseProfileFragment() {
     }
 
     private fun updateUser() {
-        val user = userId?.let { it ->
-            User(
-                it, user?.nickName, user?.name, user?.firstName,
-                user?.age, user?.photoProfile, user?.sports
-            )
-        }
-        if (user != null) {
-            Log.d(TAG, "user = $user")
-            userViewModel.updateUser(user)?.addOnSuccessListener {
+        user?.let { it ->
+            Log.d(TAG, "user = $it")
+            userViewModel.updateUser(it)?.addOnSuccessListener {
                 activity?.setResult(Activity.RESULT_OK)
                 activity?.finish()
             }?.addOnFailureListener {

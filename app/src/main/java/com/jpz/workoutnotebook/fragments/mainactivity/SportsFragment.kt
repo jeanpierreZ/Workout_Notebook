@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.fragments
+package com.jpz.workoutnotebook.fragments.mainactivity
 
 import android.content.Context
 import android.os.Bundle

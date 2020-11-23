@@ -10,6 +10,8 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_CALENDAR_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT_PROFILE_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EXERCISES
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.FOLLOWER
+import com.jpz.workoutnotebook.activities.MainActivity.Companion.FOLLOWER_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.HISTORICAL_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.SEARCH_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
@@ -18,6 +20,7 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
 import com.jpz.workoutnotebook.fragments.*
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
+import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
@@ -49,7 +52,11 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         val trainingSession = intent.getParcelableExtra<TrainingSession>(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
 
-        edit?.let { displayFragment(it, trainingSession) }
+        // The follower from communityFragment
+        val follower = intent.getParcelableExtra<User>(FOLLOWER)
+        Log.d(TAG, "follower = $follower")
+
+        edit?.let { displayFragment(it, trainingSession, follower) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -78,11 +85,12 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun displayFragment(edit: String, trainingSession: TrainingSession?) {
+    private fun displayFragment(edit: String, trainingSession: TrainingSession?, follower: User?) {
         var fragment = Fragment()
         val editProfileFragment = EditProfileFragment()
         val editCalendarFragment = EditCalendarFragment()
         val historicalFragment = HistoricalFragment()
+        val followerFragment = FollowerFragment()
         val searchFragment = SearchFragment()
         val trainingSessionFragment = TrainingSessionFragment()
         val listSportsFragment = ListSportsFragment()
@@ -99,6 +107,11 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
             HISTORICAL_FRAGMENT -> {
                 fragment = historicalFragment
                 bundle.putParcelable(TRAINING_SESSION, trainingSession)
+            }
+
+            FOLLOWER_FRAGMENT -> {
+                fragment = followerFragment
+                bundle.putParcelable(FOLLOWER, follower)
             }
 
             SEARCH_FRAGMENT -> fragment = searchFragment

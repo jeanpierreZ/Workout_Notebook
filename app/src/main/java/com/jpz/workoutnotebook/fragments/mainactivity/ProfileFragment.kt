@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.fragments
+package com.jpz.workoutnotebook.fragments.mainactivity
 
 import android.os.Bundle
 import android.util.Log
@@ -6,6 +6,7 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.firestore.DocumentChange
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 import kotlinx.android.synthetic.main.fragment_base_profile.*
 
@@ -20,9 +21,7 @@ class ProfileFragment : BaseProfileFragment() {
     // For disconnect menu
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
         return super.onCreateView(inflater, container, savedInstanceState)
@@ -62,7 +61,7 @@ class ProfileFragment : BaseProfileFragment() {
         baseProfileFragmentFABSave.isEnabled = false
         baseProfileFragmentFABSave.visibility = View.GONE
 
-        val userId = userAuth.getCurrentUser()?.uid
+        userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")
 
         userId?.let { getCurrentUserDataInRealTime(it) }
