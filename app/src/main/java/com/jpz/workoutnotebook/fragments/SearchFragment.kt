@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
@@ -24,7 +25,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     companion object {
         private val TAG = SearchFragment::class.java.simpleName
@@ -71,7 +72,7 @@ class SearchFragment : Fragment() {
     // Configure RecyclerView, Adapter & LayoutManager
     private fun configureRecyclerView(listSorted: ArrayList<User>) {
         // Create the adapter by passing the list of users find from the query
-        itemSearchFragment = ItemSearchAdapter(listSorted)
+        itemSearchFragment = ItemSearchAdapter(listSorted, this)
         // Attach the adapter to the recyclerView to populate the users
         searchFragmentRecyclerView?.adapter = itemSearchFragment
         // Set layout manager to position the users
@@ -194,5 +195,12 @@ class SearchFragment : Fragment() {
         } else {
             myUtils.showSnackBar(searchFragmentCoordinatorLayout, R.string.search_no_result)
         }
+    }
+
+    //--------------------------------------------------------------------------------------
+    // Interface for callback ItemSearchAdapter
+
+    override fun onClickProfileAfterSearch(user: User?, position: Int) {
+        Toast.makeText(activity, "CLICKED", Toast.LENGTH_SHORT).show()
     }
 }

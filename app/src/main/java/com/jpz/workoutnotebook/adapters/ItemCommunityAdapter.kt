@@ -8,8 +8,14 @@ import com.jpz.workoutnotebook.databinding.CommunityItemBinding
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.viewholders.ItemCommunityViewHolder
 
-class ItemCommunityAdapter(options: FirestoreRecyclerOptions<User?>) :
-    FirestoreRecyclerAdapter<User, ItemCommunityViewHolder>(options) {
+class ItemCommunityAdapter(
+    options: FirestoreRecyclerOptions<User?>, private var callback: Listener
+) : FirestoreRecyclerAdapter<User, ItemCommunityViewHolder>(options) {
+
+    // Callback
+    interface Listener {
+        fun onClickProfile(user: User?, position: Int)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemCommunityViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -18,6 +24,6 @@ class ItemCommunityAdapter(options: FirestoreRecyclerOptions<User?>) :
     }
 
     override fun onBindViewHolder(holder: ItemCommunityViewHolder, position: Int, model: User) {
-        holder.updateUser(model)
+        holder.updateUser(model, callback)
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -18,7 +19,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class CommunityFragment : Fragment() {
+class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
@@ -53,7 +54,7 @@ class CommunityFragment : Fragment() {
 
         if (list != null) {
             itemCommunityAdapter =
-                generateOptionsForCommunityAdapter(list)?.let { ItemCommunityAdapter(it) }
+                generateOptionsForCommunityAdapter(list)?.let { ItemCommunityAdapter(it, this) }
         }
         // Attach the adapter to the recyclerView to populate the exercises
         communityFragmentFollowRecyclerView?.adapter = itemCommunityAdapter
@@ -67,5 +68,12 @@ class CommunityFragment : Fragment() {
             .setQuery(query, User::class.java)
             .setLifecycleOwner(this)
             .build()
+    }
+
+    //----------------------------------------------------------------------------------
+
+    // Interface for callback ItemCommunityAdapter
+    override fun onClickProfile(user: User?, position: Int) {
+        Toast.makeText(activity, "CLICKED", Toast.LENGTH_SHORT).show()
     }
 }

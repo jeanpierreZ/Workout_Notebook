@@ -6,8 +6,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.adapters.ItemCommunityAdapter
+import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
 import com.jpz.workoutnotebook.databinding.CommunityItemBinding
 import com.jpz.workoutnotebook.models.User
+import java.lang.ref.WeakReference
 
 class ItemCommunityViewHolder(private val binding: CommunityItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -28,13 +31,37 @@ class ItemCommunityViewHolder(private val binding: CommunityItemBinding) :
     }
 
     // Used in ItemCommunityAdapter to display followers and people the user follows in CommunityFragment
-    fun updateUser(user: User?) {
+    fun updateUser(user: User?, callback: ItemCommunityAdapter.Listener) {
         binding.user = user
+
+        // Create a new weak Reference to our Listener
+        val callbackWeakRef: WeakReference<ItemCommunityAdapter.Listener> = WeakReference(callback)
+        // Redefine callback to use it with lambda
+        val finalCallback: ItemCommunityAdapter.Listener? = callbackWeakRef.get()
+        // Implement Listener
+        itemView.setOnClickListener {
+            // When a click happens, we fire our listener to get the user position in the list
+            if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
+                finalCallback.onClickProfile(user, adapterPosition)
+            }
+        }
     }
 
     // Used in ItemSearchAdapter to display the users find from the query
-    fun updateUserWithButton(user: User?) {
+    fun updateUserWithButton(user: User?, callback: ItemSearchAdapter.Listener) {
         binding.user = user
         followButton?.visibility = View.VISIBLE
+
+        // Create a new weak Reference to our Listener
+        val callbackWeakRef: WeakReference<ItemSearchAdapter.Listener> = WeakReference(callback)
+        // Redefine callback to use it with lambda
+        val finalCallback: ItemSearchAdapter.Listener? = callbackWeakRef.get()
+        // Implement Listener
+        itemView.setOnClickListener {
+            // When a click happens, we fire our listener to get the user position in the list
+            if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
+                finalCallback.onClickProfileAfterSearch(user, adapterPosition)
+            }
+        }
     }
 }
