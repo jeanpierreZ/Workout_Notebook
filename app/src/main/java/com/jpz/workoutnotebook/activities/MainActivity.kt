@@ -42,11 +42,10 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val HISTORICAL_FRAGMENT = "HISTORICAL_FRAGMENT"
         const val SEARCH_FRAGMENT = "SEARCH_FRAGMENT"
         const val TRAINING_SESSION_FRAGMENT = "TRAINING_SESSION_FRAGMENT"
-        const val FOLLOWER_FRAGMENT = "FOLLOWER_FRAGMENT"
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
-        const val FOLLOWER = "FOLLOWER"
+        const val FOLLOW = "FOLLOW"
     }
 
     private var pageSelected = 0
@@ -185,6 +184,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     }
 
     //--------------------------------------------------------------------------------------
+    // Start EditActivity
 
     private fun startEditActivityForExerciseOrWorkout(fragmentName: String) {
         val intent = Intent(this, EditActivity::class.java)
@@ -219,16 +219,18 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startActivityForResult.launch(intent)
     }
 
-    private fun startEditActivityForSearch() {
-        val intent = Intent(this, EditActivity::class.java)
+    //--------------------------------------------------------------------------------------
+    // Start FollowerActivity
+
+    private fun startFollowerActivityForSearch() {
+        val intent = Intent(this, FollowerActivity::class.java)
         intent.putExtra(EDIT, SEARCH_FRAGMENT)
         startActivity(intent)
     }
 
-    private fun startEditActivityToDisplayFollower(follower: User?) {
-        val intent = Intent(this, EditActivity::class.java)
-        intent.putExtra(EDIT, FOLLOWER_FRAGMENT)
-        intent.putExtra(FOLLOWER, follower)
+    private fun startFollowerActivityToDisplayFollow(follow: User?) {
+        val intent = Intent(this, FollowerActivity::class.java)
+        intent.putExtra(FOLLOW, follow)
         startActivity(intent)
     }
 
@@ -274,8 +276,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     }
 
     // Implement listener from CommunityFragment to display the profile of a follow/follower
-    override fun displayFollower(follower: User?) {
-        startEditActivityToDisplayFollower(follower)
+    override fun displayFollow(follow: User?) {
+        startFollowerActivityToDisplayFollow(follow)
     }
 
     //--------------------------------------------------------------------------------------
@@ -284,7 +286,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         when (v?.id) {
             R.id.mainActivityFABEditProfile -> startForResultEditActivityForProfile()
             R.id.mainActivityFABAddCalendar -> startEditActivityForCalendar(null)
-            R.id.mainActivityFABSearchCommunity -> startEditActivityForSearch()
+            R.id.mainActivityFABSearchCommunity -> startFollowerActivityForSearch()
         }
     }
 }

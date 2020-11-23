@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.fragments
+package com.jpz.workoutnotebook.fragments.editactivity
 
 import android.Manifest
 import android.app.Activity
@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.StorageException
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.fragment_base_profile.*

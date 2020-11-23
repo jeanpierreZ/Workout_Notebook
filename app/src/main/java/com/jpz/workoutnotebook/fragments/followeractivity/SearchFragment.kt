@@ -1,5 +1,6 @@
-package com.jpz.workoutnotebook.fragments
+package com.jpz.workoutnotebook.fragments.followeractivity
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -7,14 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.EditActivity
+import com.jpz.workoutnotebook.activities.FollowerActivity
 import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
@@ -47,6 +47,8 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     private var itemSearchFragment: ItemSearchAdapter? = null
 
+    private var callback: FollowListener? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,7 +60,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchView = (context as EditActivity).findViewById(R.id.toolbarSearchView)
+        searchView = (context as FollowerActivity).findViewById(R.id.toolbarSearchView)
 
         userId = userAuth.getCurrentUser()?.uid
 
@@ -201,6 +203,31 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     // Interface for callback ItemSearchAdapter
 
     override fun onClickProfileAfterSearch(user: User?, position: Int) {
-        Toast.makeText(activity, "CLICKED", Toast.LENGTH_SHORT).show()
+        callback?.displayFollow(user)
+    }
+
+    //----------------------------------------------------------------------------------
+    // Interface for callback to parent activity and associated methods
+    // when click on an item in the list
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Call the method that creating callback after being attached to parent activity
+        callbackToParentActivity()
+    }
+
+    // Declare our interface that will be implemented by any container activity
+    interface FollowListener {
+        fun displayFollow(follow: User?)
+    }
+
+    // Create callback to parent activity
+    private fun callbackToParentActivity() {
+        try {
+            // Parent activity will automatically subscribe to callback
+            callback = activity as FollowListener?
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$e must implement FollowListener")
+        }
     }
 }

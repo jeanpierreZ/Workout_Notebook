@@ -5,7 +5,7 @@
     android:id="@+id/listSportsFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ListSportsFragment">
+    tools:context=".fragments.editactivity.ListSportsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

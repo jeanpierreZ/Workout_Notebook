@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.fragments
+package com.jpz.workoutnotebook.fragments.editactivity
 
 import android.content.res.ColorStateList
 import android.os.Bundle

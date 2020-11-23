@@ -1,7 +1,5 @@
 package com.jpz.workoutnotebook.viewholders
 
-import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -20,14 +18,12 @@ class ItemCommunityViewHolder(private val binding: CommunityItemBinding) :
     private var nickname: TextView? = null
     private var firstName: TextView? = null
     private var name: TextView? = null
-    private var followButton: Button? = null
 
     init {
         photo = itemView.findViewById(R.id.communityItemPhoto)
         nickname = itemView.findViewById(R.id.communityItemNickname)
         firstName = itemView.findViewById(R.id.communityItemFirstName)
         name = itemView.findViewById(R.id.communityItemName)
-        followButton = itemView.findViewById(R.id.communityItemButton)
     }
 
     // Used in ItemCommunityAdapter to display followers and people the user follows in CommunityFragment
@@ -48,9 +44,8 @@ class ItemCommunityViewHolder(private val binding: CommunityItemBinding) :
     }
 
     // Used in ItemSearchAdapter to display the users find from the query
-    fun updateUserWithButton(user: User?, callback: ItemSearchAdapter.Listener) {
+    fun updateUserFromSearch(user: User?, callback: ItemSearchAdapter.Listener) {
         binding.user = user
-        followButton?.visibility = View.VISIBLE
 
         // Create a new weak Reference to our Listener
         val callbackWeakRef: WeakReference<ItemSearchAdapter.Listener> = WeakReference(callback)

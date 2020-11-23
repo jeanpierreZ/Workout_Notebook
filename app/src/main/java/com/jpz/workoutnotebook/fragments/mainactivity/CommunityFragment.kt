@@ -75,7 +75,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     // Interface for callback ItemCommunityAdapter
     override fun onClickProfile(user: User?, position: Int) {
-        callback?.displayFollower(user)
+        callback?.displayFollow(user)
     }
 
     //----------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     // Declare our interface that will be implemented by any container activity
     interface CommunityListener {
-        fun displayFollower(follower: User?)
+        fun displayFollow(follow: User?)
     }
 
     // Create callback to parent activity

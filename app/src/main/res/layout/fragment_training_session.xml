@@ -5,7 +5,7 @@
     android:id="@+id/trainingSessionFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.TrainingSessionFragment">
+    tools:context=".fragments.editactivity.TrainingSessionFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

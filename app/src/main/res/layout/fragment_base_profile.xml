@@ -161,5 +161,10 @@
             android:id="@+id/baseProfileFragmentFABSave"
             layout="@layout/fab_save" />
 
+        <include
+            android:id="@+id/baseProfileFragmentFABAdd"
+            android:visibility="gone"
+            layout="@layout/fab_add"/>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

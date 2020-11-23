@@ -25,6 +25,6 @@ class ItemSearchAdapter(private var list: ArrayList<User>, private var callback:
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(holder: ItemCommunityViewHolder, position: Int) {
-        holder.updateUserWithButton(list[position], callback)
+        holder.updateUserFromSearch(list[position], callback)
     }
 }
