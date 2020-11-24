@@ -82,11 +82,17 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     }
 
     private fun showSearchView() {
-        // Change the color of the search icon and make searchView visible
+        // Change the colors of the search icon and the close icon ; make searchView visible
         val searchIcon: ImageView? =
             searchView?.findViewById(androidx.appcompat.R.id.search_mag_icon)
         searchIcon?.colorFilter = BlendModeColorFilterCompat
             .createBlendModeColorFilterCompat(Color.BLACK, BlendModeCompat.SRC_ATOP)
+
+        val closeIcon: ImageView? =
+            searchView?.findViewById(androidx.appcompat.R.id.search_close_btn)
+        closeIcon?.colorFilter = BlendModeColorFilterCompat
+            .createBlendModeColorFilterCompat(Color.BLACK, BlendModeCompat.SRC_ATOP)
+
         searchView?.visibility = View.VISIBLE
     }
 

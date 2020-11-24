@@ -51,10 +51,10 @@ class FollowerFragment : BaseProfileFragment() {
 
         if (isFromSearch != null && isFromSearch) {
             // Enable FloatingActionButton Add
-            baseProfileFragmentFABAdd.isEnabled = true
-            baseProfileFragmentFABAdd.visibility = View.VISIBLE
+            baseProfileFragmentFABFollow.isEnabled = true
+            baseProfileFragmentFABFollow.visibility = View.VISIBLE
 
-            baseProfileFragmentFABAdd.setOnClickListener {
+            baseProfileFragmentFABFollow.setOnClickListener {
                 userId = userAuth.getCurrentUser()?.uid
                 Log.d(TAG, "uid = $userId")
                 userId?.let { follow?.let { follow -> addAPersonToFollow(it, follow) } }
@@ -65,21 +65,36 @@ class FollowerFragment : BaseProfileFragment() {
     //----------------------------------------------------------------------------------
     // Methods to create a person to follow
 
-    // Todo : compare if the person to follow is already in the list before adding
     private fun addAPersonToFollow(userId: String, follow: User) {
-        followViewModel.addFollow(userId, follow)
-            ?.addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot written with id: ${documentReference.id}")
-                // Inform the user
-                myUtils.showSnackBar(
-                    baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
-                )
-                closeFragment()
+        followViewModel.getListOfFollow(userId)
+            ?.get()
+            ?.addOnSuccessListener { documents ->
+                // Check if the person to follow is already added
+                for (document in documents) {
+                    val personAlreadyFollowed = document.toObject(User::class.java)
+                    if (personAlreadyFollowed.userId == follow.userId) {
+                        // Inform the user that the person is already followed
+                        myUtils.showSnackBar(
+                            baseProfileFragmentCoordinatorLayout, R.string.person_already_followed
+                        )
+                        return@addOnSuccessListener
+                    }
+                }
+                // Else add the person
+                followViewModel.addFollow(userId, follow)
+                    ?.addOnSuccessListener { documentReference ->
+                        Log.d(TAG, "DocumentSnapshot written with id: ${documentReference.id}")
+                        // Inform the user
+                        myUtils.showSnackBar(
+                            baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
+                        )
+                        closeFragment()
+                    }
             }
     }
 
     private fun closeFragment() {
         activity?.let { myUtils.closeFragment(baseProfileFragmentProgressBar, it) }
-        baseProfileFragmentFABAdd.isEnabled = false
+        baseProfileFragmentFABFollow.isEnabled = false
     }
 }

@@ -161,10 +161,17 @@
             android:id="@+id/baseProfileFragmentFABSave"
             layout="@layout/fab_save" />
 
-        <include
-            android:id="@+id/baseProfileFragmentFABAdd"
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/baseProfileFragmentFABFollow"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:contentDescription="@string/add"
+            android:text="@string/follow"
             android:visibility="gone"
-            layout="@layout/fab_add"/>
+            app:backgroundTint="@color/colorAccentLight" />
 
         <ProgressBar
             android:id="@+id/baseProfileFragmentProgressBar"
