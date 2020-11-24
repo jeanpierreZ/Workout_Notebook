@@ -43,6 +43,10 @@ class FollowerFragment : BaseProfileFragment() {
         baseProfileFragmentFABSave.isEnabled = false
         baseProfileFragmentFABSave.visibility = View.GONE
 
+        // Get current user
+        userId = userAuth.getCurrentUser()?.uid
+        Log.d(TAG, "uid = $userId")
+
         val follow = arguments?.getParcelable<User>(FOLLOW)
         Log.d(TAG, "follow = $follow")
         binding.user = follow
@@ -50,20 +54,27 @@ class FollowerFragment : BaseProfileFragment() {
         val isFromSearch = arguments?.getBoolean(IS_FROM_SEARCH)
 
         if (isFromSearch != null && isFromSearch) {
-            // Enable FloatingActionButton Add
+            // Enable FloatingActionButton to follow
             baseProfileFragmentFABFollow.isEnabled = true
             baseProfileFragmentFABFollow.visibility = View.VISIBLE
 
             baseProfileFragmentFABFollow.setOnClickListener {
-                userId = userAuth.getCurrentUser()?.uid
-                Log.d(TAG, "uid = $userId")
                 userId?.let { follow?.let { follow -> addAPersonToFollow(it, follow) } }
+            }
+        } else {
+            // Enable FloatingActionButton and change the text to no longer follow
+            baseProfileFragmentFABFollow.text = getString(R.string.no_longer_follow)
+            baseProfileFragmentFABFollow.isEnabled = true
+            baseProfileFragmentFABFollow.visibility = View.VISIBLE
+
+            baseProfileFragmentFABFollow.setOnClickListener {
+                userId?.let { follow?.let { follow -> noLongerFollow(it, follow) } }
             }
         }
     }
 
     //----------------------------------------------------------------------------------
-    // Methods to create a person to follow
+    // Methods to create or delete a person to follow
 
     private fun addAPersonToFollow(userId: String, follow: User) {
         followViewModel.getListOfFollow(userId)
@@ -71,8 +82,7 @@ class FollowerFragment : BaseProfileFragment() {
             ?.addOnSuccessListener { documents ->
                 // Check if the person to follow is already added
                 for (document in documents) {
-                    val personAlreadyFollowed = document.toObject(User::class.java)
-                    if (personAlreadyFollowed.userId == follow.userId) {
+                    if (document.id == follow.userId) {
                         // Inform the user that the person is already followed
                         myUtils.showSnackBar(
                             baseProfileFragmentCoordinatorLayout, R.string.person_already_followed
@@ -81,15 +91,27 @@ class FollowerFragment : BaseProfileFragment() {
                     }
                 }
                 // Else add the person
-                followViewModel.addFollow(userId, follow)
-                    ?.addOnSuccessListener { documentReference ->
-                        Log.d(TAG, "DocumentSnapshot written with id: ${documentReference.id}")
+                followViewModel.follow(userId, follow)
+                    ?.addOnSuccessListener {
+                        Log.d(TAG, "DocumentSnapshot written with id: ${follow.userId}")
                         // Inform the user
                         myUtils.showSnackBar(
                             baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
                         )
                         closeFragment()
                     }
+            }
+    }
+
+    private fun noLongerFollow(userId: String, follow: User) {
+        followViewModel.noLongerFollow(userId, follow)
+            ?.addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                // Inform the user
+                myUtils.showSnackBar(
+                    baseProfileFragmentCoordinatorLayout, R.string.person_no_longer_followed
+                )
+                closeFragment()
             }
     }
 

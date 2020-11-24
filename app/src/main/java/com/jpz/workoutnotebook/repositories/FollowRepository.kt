@@ -1,7 +1,5 @@
 package com.jpz.workoutnotebook.repositories
 
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.models.User
 
@@ -14,11 +12,12 @@ class FollowRepository {
 
     // --- CREATE ---
 
-    fun addFollow(userId: String, follow: User): Task<DocumentReference>? =
+    fun follow(userId: String, follow: User) =
         UserRepository.getUsersCollection()
             ?.document(userId)
             ?.collection(COLLECTION_NAME)
-            ?.add(follow)
+            ?.document(follow.userId)
+            ?.set(follow)
 
     // --- QUERY ---
 
@@ -29,4 +28,13 @@ class FollowRepository {
     // Recover list of all users (without the current user) in real-time
     fun getListOfUsers(userId: String): Query? =
         UserRepository.getUsersCollection()?.whereNotEqualTo(USER_ID_FIELD, userId)
+
+    // --- DELETE ---
+
+    fun noLongerFollow(userId: String, follow: User) =
+        UserRepository.getUsersCollection()
+            ?.document(userId)
+            ?.collection(COLLECTION_NAME)
+            ?.document(follow.userId)
+            ?.delete()
 }

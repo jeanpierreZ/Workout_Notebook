@@ -121,4 +121,6 @@
     <string name="search_no_result">There are no results for your query</string>
     <string name="person_to_follow_added">Person to follow added</string>
     <string name="person_already_followed">This person is already followed</string>
+    <string name="no_longer_follow">No longer follow</string>
+    <string name="person_no_longer_followed">This person is no longer being followed</string>
 </resources>
