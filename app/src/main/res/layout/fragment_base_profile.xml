@@ -168,10 +168,42 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:contentDescription="@string/add"
+            android:contentDescription="@string/follow"
             android:text="@string/follow"
             android:visibility="gone"
             app:backgroundTint="@color/colorAccentLight" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/baseProfileFragmentFABHistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:contentDescription="@string/history"
+                android:text="@string/follow"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorAccentLight"
+                app:srcCompat="@drawable/ic_baseline_history_24" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/baseProfileFragmentFABNoFollow"
+                style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:contentDescription="@string/follow"
+                android:text="@string/no_longer_follow"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorAccentLight" />
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/baseProfileFragmentProgressBar"

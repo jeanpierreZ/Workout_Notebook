@@ -119,8 +119,11 @@
     <!-- Search Fragment -->
     <string name="search_by_names">Search by names</string>
     <string name="search_no_result">There are no results for your query</string>
+
+    <!-- Follower Fragment -->
     <string name="person_to_follow_added">Person to follow added</string>
     <string name="person_already_followed">This person is already followed</string>
     <string name="no_longer_follow">No longer follow</string>
     <string name="person_no_longer_followed">This person is no longer being followed</string>
+    <string name="history">History</string>
 </resources>

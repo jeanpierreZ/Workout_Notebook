@@ -3,6 +3,7 @@ package com.jpz.workoutnotebook.fragments.followeractivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.FollowerActivity.Companion.IS_FROM_SEARCH
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.FOLLOW
@@ -54,21 +55,21 @@ class FollowerFragment : BaseProfileFragment() {
         val isFromSearch = arguments?.getBoolean(IS_FROM_SEARCH)
 
         if (isFromSearch != null && isFromSearch) {
-            // Enable FloatingActionButton to follow
-            baseProfileFragmentFABFollow.isEnabled = true
+            // Make FloatingActionButton Follow visible
             baseProfileFragmentFABFollow.visibility = View.VISIBLE
-
             baseProfileFragmentFABFollow.setOnClickListener {
                 userId?.let { follow?.let { follow -> addAPersonToFollow(it, follow) } }
             }
         } else {
-            // Enable FloatingActionButton and change the text to no longer follow
-            baseProfileFragmentFABFollow.text = getString(R.string.no_longer_follow)
-            baseProfileFragmentFABFollow.isEnabled = true
-            baseProfileFragmentFABFollow.visibility = View.VISIBLE
-
-            baseProfileFragmentFABFollow.setOnClickListener {
+            // Make FloatingActionButton NoFollow visible
+            baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
+            baseProfileFragmentFABNoFollow.setOnClickListener {
                 userId?.let { follow?.let { follow -> noLongerFollow(it, follow) } }
+            }
+            // Make FloatingActionButton History visible
+            baseProfileFragmentFABHistory.visibility = View.VISIBLE
+            baseProfileFragmentFABHistory.setOnClickListener {
+                Toast.makeText(activity, "HISTORY", Toast.LENGTH_SHORT).show()
             }
         }
     }
