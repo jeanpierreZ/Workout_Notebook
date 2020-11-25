@@ -138,7 +138,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         userId?.let {
             // Get the list of training sessions from Firestore in real time
             trainingSessionViewModel.getListOfTrainingSessions(it)
-                ?.addSnapshotListener { value, e ->
+                .addSnapshotListener { value, e ->
                     if (e != null) {
                         Log.w(TAG, "Listen failed.", e)
                         return@addSnapshotListener
@@ -197,16 +197,16 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             // Get the list of training sessions from Firestore
             trainingSessionViewModel.getListOfTrainingSessions(it)
                 // Filter the list with parsed dates
-                ?.whereGreaterThanOrEqualTo(
+                .whereGreaterThanOrEqualTo(
                     TRAINING_SESSION_DATE_FIELD,
                     getDateOfTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
                 )
-                ?.whereLessThan(
+                .whereLessThan(
                     TRAINING_SESSION_DATE_FIELD,
                     getDayAfterTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
                 )
-                ?.get()
-                ?.addOnSuccessListener { documents ->
+                .get()
+                .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val trainingSession = document.toObject(TrainingSession::class.java)
                         Log.d(TAG, "trainingSession = $trainingSession")
@@ -216,7 +216,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
                     // Pass the list to the recyclerView
                     configureRecyclerView(trainingSessionList)
                 }
-                ?.addOnFailureListener { exception ->
+                .addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }

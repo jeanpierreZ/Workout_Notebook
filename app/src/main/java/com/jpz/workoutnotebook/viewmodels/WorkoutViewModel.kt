@@ -16,13 +16,13 @@ class WorkoutViewModel(private val workoutRepository: WorkoutRepository) : ViewM
 
     fun createWorkout(userId: String, workout: Workout) =
         workoutRepository.createWorkout(userId, workout)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- READ ---
 
     fun getWorkout(userId: String, workoutId: String) =
         workoutRepository.getWorkout(userId, workoutId)
-            ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+            .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
 
     // --- QUERY ---
 
@@ -35,7 +35,7 @@ class WorkoutViewModel(private val workoutRepository: WorkoutRepository) : ViewM
 
     fun updateWorkoutIdAfterCreate(userId: String, documentReference: DocumentReference) =
         workoutRepository.updateWorkoutIdAfterCreate(userId, documentReference)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
 
     fun updateWorkout(userId: String, previousWorkout: Workout, workout: Workout) =
         workoutRepository.updateWorkout(userId, previousWorkout, workout)

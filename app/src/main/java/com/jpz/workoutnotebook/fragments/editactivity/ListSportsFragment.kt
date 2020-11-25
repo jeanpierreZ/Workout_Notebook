@@ -89,22 +89,14 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         if (isAnExercise) {
             // Create the adapter by passing the list of exercises of the user
             list = exerciseViewModel.getOrderedListOfExercises(userId)
-
-            if (list != null) {
-                itemExerciseAdapter =
-                    generateOptionsForExerciseAdapter(list)?.let { ItemExerciseAdapter(it, this) }
-            }
+            itemExerciseAdapter = ItemExerciseAdapter(generateOptionsForExerciseAdapter(list), this)
             // Attach the adapter to the recyclerView to populate the exercises
             listSportsFragmentRecyclerView?.adapter = itemExerciseAdapter
 
         } else {
             // Create the adapter by passing the list of workouts of the user
             list = workoutViewModel.getOrderedListOfWorkouts(userId)
-
-            if (list != null) {
-                itemWorkoutAdapter =
-                    generateOptionsForWorkoutAdapter(list)?.let { ItemWorkoutAdapter(it, this) }
-            }
+            itemWorkoutAdapter = ItemWorkoutAdapter(generateOptionsForWorkoutAdapter(list), this)
             // Attach the adapter to the recyclerView to populate the workouts
             listSportsFragmentRecyclerView?.adapter = itemWorkoutAdapter
         }
@@ -114,7 +106,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     }
 
     // Create options for RecyclerView from a Query
-    private fun generateOptionsForExerciseAdapter(query: Query): FirestoreRecyclerOptions<Exercise?>? {
+    private fun generateOptionsForExerciseAdapter(query: Query): FirestoreRecyclerOptions<Exercise?> {
         return FirestoreRecyclerOptions.Builder<Exercise>()
             .setQuery(query, Exercise::class.java)
             .setLifecycleOwner(this)
@@ -122,7 +114,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     }
 
     // Create options for RecyclerView from a Query
-    private fun generateOptionsForWorkoutAdapter(query: Query): FirestoreRecyclerOptions<Workout?>? {
+    private fun generateOptionsForWorkoutAdapter(query: Query): FirestoreRecyclerOptions<Workout?> {
         return FirestoreRecyclerOptions.Builder<Workout>()
             .setQuery(query, Workout::class.java)
             .setLifecycleOwner(this)

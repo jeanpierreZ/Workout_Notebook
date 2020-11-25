@@ -16,13 +16,13 @@ class ExerciseViewModel(private val exerciseRepository: ExerciseRepository) : Vi
 
     fun createExercise(userId: String, exercise: Exercise) =
         exerciseRepository.createExercise(userId, exercise)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- READ ---
 
     fun getExercise(userId: String, exerciseId: String) =
         exerciseRepository.getExercise(userId, exerciseId)
-            ?.addOnFailureListener { e -> Log.e(TAG, "get failed with ", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "get failed with ", e) }
 
     // --- QUERY ---
 
@@ -39,5 +39,5 @@ class ExerciseViewModel(private val exerciseRepository: ExerciseRepository) : Vi
 
     fun updateExerciseIdAfterCreate(userId: String, documentReference: DocumentReference) =
         exerciseRepository.updateExerciseIdAfterCreate(userId, documentReference)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
 }

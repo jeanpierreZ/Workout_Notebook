@@ -79,38 +79,33 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     private fun displayFragment(edit: String, trainingSession: TrainingSession?) {
         var fragment = Fragment()
-        val editProfileFragment = EditProfileFragment()
-        val editCalendarFragment = EditCalendarFragment()
-        val historicalFragment = HistoricalFragment()
-        val trainingSessionFragment = TrainingSessionFragment()
-        val listSportsFragment = ListSportsFragment()
         val bundle = Bundle()
 
         when (edit) {
-            EDIT_PROFILE_FRAGMENT -> fragment = editProfileFragment
+            EDIT_PROFILE_FRAGMENT -> fragment = EditProfileFragment()
 
             EDIT_CALENDAR_FRAGMENT -> {
-                fragment = editCalendarFragment
+                fragment = EditCalendarFragment()
                 bundle.putParcelable(TRAINING_SESSION, trainingSession)
             }
 
             HISTORICAL_FRAGMENT -> {
-                fragment = historicalFragment
+                fragment = HistoricalFragment()
                 bundle.putParcelable(TRAINING_SESSION, trainingSession)
             }
 
             TRAINING_SESSION_FRAGMENT -> {
-                fragment = trainingSessionFragment
+                fragment = TrainingSessionFragment()
                 bundle.putParcelable(TRAINING_SESSION, trainingSession)
             }
 
             EXERCISES -> {
-                fragment = listSportsFragment
+                fragment = ListSportsFragment()
                 bundle.putBoolean(IS_AN_EXERCISE, true)
             }
 
             WORKOUTS -> {
-                fragment = listSportsFragment
+                fragment = ListSportsFragment()
                 bundle.putBoolean(IS_AN_EXERCISE, false)
             }
 

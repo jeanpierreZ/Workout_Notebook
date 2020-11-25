@@ -17,13 +17,7 @@ class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSe
 
     fun createTrainingSession(userId: String, trainingSession: TrainingSession) =
         trainingSessionRepository.createTrainingSession(userId, trainingSession)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
-
-    // --- READ ---
-
-    fun getTrainingSession(userId: String, trainingSessionId: String) =
-        trainingSessionRepository.getTrainingSession(userId, trainingSessionId)
-            ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- QUERY ---
 
@@ -34,7 +28,7 @@ class TrainingSessionViewModel(private val trainingSessionRepository: TrainingSe
 
     fun updateTrainingSessionIdAfterCreate(userId: String, documentReference: DocumentReference) =
         trainingSessionRepository.updateTrainingSessionIdAfterCreate(userId, documentReference)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
 
     fun updateTrainingSession(userId: String, trainingSession: TrainingSession) =
         trainingSessionRepository.updateTrainingSession(userId, trainingSession)

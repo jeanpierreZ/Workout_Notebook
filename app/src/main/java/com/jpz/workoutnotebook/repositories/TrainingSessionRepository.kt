@@ -18,43 +18,43 @@ class TrainingSessionRepository {
 
     fun createTrainingSession(
         userId: String, trainingSession: TrainingSession
-    ): Task<DocumentReference>? =
+    ): Task<DocumentReference> =
         UserRepository.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
-            ?.add(trainingSession)
+            .document(userId)
+            .collection(COLLECTION_NAME)
+            .add(trainingSession)
 
     // --- READ ---
 
-    fun getTrainingSession(userId: String, trainingSessionId: String): Task<DocumentSnapshot>? =
+    fun getTrainingSession(userId: String, trainingSessionId: String): Task<DocumentSnapshot> =
         UserRepository.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
-            ?.document(trainingSessionId)
-            ?.get()
+            .document(userId)
+            .collection(COLLECTION_NAME)
+            .document(trainingSessionId)
+            .get()
 
     // --- QUERY ---
 
-    fun getListOfTrainingSessions(userId: String): Query? =
-        UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+    fun getListOfTrainingSessions(userId: String): Query =
+        UserRepository.getUsersCollection().document(userId).collection(COLLECTION_NAME)
 
     // --- UPDATE ---
 
     fun updateTrainingSessionIdAfterCreate(userId: String, documentReference: DocumentReference) =
         UserRepository.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
-            ?.document(documentReference.id)
+            .document(userId)
+            .collection(COLLECTION_NAME)
+            .document(documentReference.id)
             // Use SetOptions.merge() to only update the trainingSessionId
-            ?.set(hashMapOf(TRAINING_SESSION_ID_FIELD to documentReference.id), SetOptions.merge())
+            .set(hashMapOf(TRAINING_SESSION_ID_FIELD to documentReference.id), SetOptions.merge())
 
     fun updateTrainingSession(userId: String, trainingSession: TrainingSession) =
         trainingSession.trainingSessionId?.let {
             UserRepository.getUsersCollection()
-                ?.document(userId)
-                ?.collection(COLLECTION_NAME)
-                ?.document(it)
-                ?.set(trainingSession)
+                .document(userId)
+                .collection(COLLECTION_NAME)
+                .document(it)
+                .set(trainingSession)
         }
 
     // --- DELETE ---
@@ -62,9 +62,9 @@ class TrainingSessionRepository {
     fun deleteATrainingSession(userId: String, trainingSession: TrainingSession) =
         trainingSession.trainingSessionId?.let {
             UserRepository.getUsersCollection()
-                ?.document(userId)
-                ?.collection(COLLECTION_NAME)
-                ?.document(it)
-                ?.delete()
+                .document(userId)
+                .collection(COLLECTION_NAME)
+                .document(it)
+                .delete()
         }
 }

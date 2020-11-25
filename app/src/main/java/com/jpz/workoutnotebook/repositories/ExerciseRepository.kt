@@ -18,39 +18,39 @@ class ExerciseRepository {
 
     // --- CREATE ---
 
-    fun createExercise(userId: String, exercise: Exercise): Task<DocumentReference>? =
+    fun createExercise(userId: String, exercise: Exercise): Task<DocumentReference> =
         UserRepository.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
-            ?.add(exercise)
+            .document(userId)
+            .collection(COLLECTION_NAME)
+            .add(exercise)
 
     // --- READ ---
 
-    fun getExercise(userId: String, exerciseId: String): Task<DocumentSnapshot>? =
+    fun getExercise(userId: String, exerciseId: String): Task<DocumentSnapshot> =
         UserRepository.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
-            ?.document(exerciseId)
-            ?.get()
+            .document(userId)
+            .collection(COLLECTION_NAME)
+            .document(exerciseId)
+            .get()
 
     // --- QUERY ---
 
-    fun getListOfExercises(userId: String): Query? =
-        UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
+    fun getListOfExercises(userId: String): Query =
+        UserRepository.getUsersCollection().document(userId).collection(COLLECTION_NAME)
 
-    fun getOrderedListOfExercises(userId: String): Query? =
-        UserRepository.getUsersCollection()?.document(userId)?.collection(COLLECTION_NAME)
-            ?.orderBy(EXERCISE_NAME_FIELD, Query.Direction.ASCENDING)
+    fun getOrderedListOfExercises(userId: String): Query =
+        UserRepository.getUsersCollection().document(userId).collection(COLLECTION_NAME)
+            .orderBy(EXERCISE_NAME_FIELD, Query.Direction.ASCENDING)
 
     // --- UPDATE ---
 
     fun updateExerciseIdAfterCreate(userId: String, documentReference: DocumentReference) =
         UserRepository.getUsersCollection()
-            ?.document(userId)
-            ?.collection(COLLECTION_NAME)
-            ?.document(documentReference.id)
+            .document(userId)
+            .collection(COLLECTION_NAME)
+            .document(documentReference.id)
             // Use SetOptions.merge() to only update the exerciseId
-            ?.set(hashMapOf(EXERCISE_ID_FIELD to documentReference.id), SetOptions.merge())
+            .set(hashMapOf(EXERCISE_ID_FIELD to documentReference.id), SetOptions.merge())
 
     fun updateExercise(
         userId: String, previousExercise: Exercise, exercise: Exercise
@@ -58,19 +58,19 @@ class ExerciseRepository {
         // First update the exercise
         exercise.exerciseId?.let {
             UserRepository.getUsersCollection()
-                ?.document(userId)
-                ?.collection(COLLECTION_NAME)
-                ?.document(it)
-                ?.set(exercise)
+                .document(userId)
+                .collection(COLLECTION_NAME)
+                .document(it)
+                .set(exercise)
 
             // Then update this exercise in all workouts that contain it
             Log.d(TAG, "previousExercise = $previousExercise")
             // Find all workouts that contain this exercise
             val workoutRepository = WorkoutRepository()
             workoutRepository.getListOfWorkouts(userId)
-                ?.whereArrayContains(EXERCISE_LIST_FIELD, previousExercise)
-                ?.get()
-                ?.addOnSuccessListener { documents ->
+                .whereArrayContains(EXERCISE_LIST_FIELD, previousExercise)
+                .get()
+                .addOnSuccessListener { documents ->
                     Log.d(TAG, "documents = ${documents.documents}")
                     if (documents.isEmpty) {
                         Log.w(TAG, "documents.isEmpty")
@@ -78,7 +78,7 @@ class ExerciseRepository {
                         for (document in documents) {
                             // For each workout
                             workoutRepository.getWorkout(userId, document.id)
-                                ?.addOnSuccessListener { doc ->
+                                .addOnSuccessListener { doc ->
                                     // Get Workout object to update
                                     val workout = doc.toObject(Workout::class.java)
                                     // Get a workout before changes, which is used to update the training sessions
@@ -106,11 +106,11 @@ class ExerciseRepository {
                                         }
                                     }
                                 }
-                                ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+                                .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
                         }
                     }
                 }
-                ?.addOnFailureListener { exception ->
+                .addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }

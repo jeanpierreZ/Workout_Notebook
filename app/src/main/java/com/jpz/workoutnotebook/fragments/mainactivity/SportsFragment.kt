@@ -3,9 +3,7 @@ package com.jpz.workoutnotebook.fragments.mainactivity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
@@ -42,8 +40,7 @@ class SportsFragment : Fragment() {
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_sports, container, false)
@@ -82,11 +79,11 @@ class SportsFragment : Fragment() {
         userId?.let {
             trainingSessionViewModel.getListOfTrainingSessions(it)
                 // Filter the list with upcoming parsed dates and training sessions that are not still completed
-                ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
-                ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
-                ?.orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-                ?.limit(1)
-                ?.addSnapshotListener { snapshot, e ->
+                .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
+                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+                .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+                .limit(1)
+                .addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         Log.w(TAG, "Listen failed.", e)
                         return@addSnapshotListener

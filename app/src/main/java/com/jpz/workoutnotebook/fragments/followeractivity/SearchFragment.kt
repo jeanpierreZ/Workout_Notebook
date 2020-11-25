@@ -123,9 +123,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         // Get result for nickName field
         userId?.let {
             followViewModel.getListOfUsers(it)
-                ?.whereEqualTo(USER_NICKNAME_FIELD, query)
-                ?.get()
-                ?.addOnSuccessListener { documents ->
+                .whereEqualTo(USER_NICKNAME_FIELD, query)
+                .get()
+                .addOnSuccessListener { documents ->
                     Log.d(TAG, "For nickName : documents.size() => ${documents.size()}")
                     if (!documents.isEmpty) {
                         for (document in documents) {
@@ -138,7 +138,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
                     getResultForFirstName(query)
 
                 }
-                ?.addOnFailureListener { exception ->
+                .addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }
@@ -148,9 +148,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         // Get result for firstName field
         userId?.let {
             followViewModel.getListOfUsers(it)
-                ?.whereEqualTo(USER_FIRST_NAME_FIELD, query)
-                ?.get()
-                ?.addOnSuccessListener { documents ->
+                .whereEqualTo(USER_FIRST_NAME_FIELD, query)
+                .get()
+                .addOnSuccessListener { documents ->
                     Log.d(TAG, "For firstName : documents.size() => ${documents.size()}")
                     if (!documents.isEmpty) {
                         for (document in documents) {
@@ -162,7 +162,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
                     }
                     getResultForName(query)
                 }
-                ?.addOnFailureListener { exception ->
+                .addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }
@@ -172,9 +172,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         // Get result for name field
         userId?.let {
             followViewModel.getListOfUsers(it)
-                ?.whereEqualTo(USER_NAME_FIELD, query)
-                ?.get()
-                ?.addOnSuccessListener { documents ->
+                .whereEqualTo(USER_NAME_FIELD, query)
+                .get()
+                .addOnSuccessListener { documents ->
                     Log.d(TAG, "For name : documents.size() => ${documents.size()}")
                     if (!documents.isEmpty) {
                         for (document in documents) {
@@ -186,7 +186,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
                     }
                     showResult()
                 }
-                ?.addOnFailureListener { exception ->
+                .addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }

@@ -71,7 +71,7 @@ class ProfileFragment : BaseProfileFragment() {
     // Listener of current user data in real time from Firebase
 
     private fun getCurrentUserDataInRealTime(userId: String) {
-        userViewModel.getCurrentUser(userId)?.addSnapshotListener { snapshot, e ->
+        userViewModel.getCurrentUser(userId).addSnapshotListener { snapshot, e ->
 
             if (e != null) {
                 Log.w(TAG, "listen:error", e)
@@ -81,12 +81,10 @@ class ProfileFragment : BaseProfileFragment() {
             if (snapshot != null) {
                 for (dc in snapshot.documentChanges) {
                     if (dc.type == DocumentChange.Type.ADDED || dc.type == DocumentChange.Type.MODIFIED) {
-                        val user: User? = dc.document.toObject(User::class.java)
-                        user?.let {
-                            Log.d(TAG, "user = $user")
-                            // Display user data with binding
-                            binding.user = user
-                        }
+                        val user: User = dc.document.toObject(User::class.java)
+                        Log.d(TAG, "user = $user")
+                        // Display user data with binding
+                        binding.user = user
                     }
                 }
             }

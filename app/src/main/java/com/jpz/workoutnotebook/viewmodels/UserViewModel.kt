@@ -2,8 +2,8 @@ package com.jpz.workoutnotebook.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.jpz.workoutnotebook.repositories.UserRepository
 import com.jpz.workoutnotebook.models.User
+import com.jpz.workoutnotebook.repositories.UserRepository
 
 class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
 
@@ -11,12 +11,12 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     fun createUser(userId: String, data: HashMap<String, String>) =
         userRepository.createUser(userId, data)
-            ?.addOnFailureListener { e -> Log.e("createUser", "Error writing document", e) }
+            .addOnFailureListener { e -> Log.e("createUser", "Error writing document", e) }
 
     // --- READ ---
 
     fun getUser(userId: String) = userRepository.getUser(userId)
-        ?.addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
+        .addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
 
     // --- QUERY ---
 
@@ -26,5 +26,5 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     // --- UPDATE ---
 
     fun updateUser(user: User) = userRepository.updateUser(user)
-        ?.addOnFailureListener { e -> Log.e("updateUser", "Error updating document", e) }
+        .addOnFailureListener { e -> Log.e("updateUser", "Error updating document", e) }
 }

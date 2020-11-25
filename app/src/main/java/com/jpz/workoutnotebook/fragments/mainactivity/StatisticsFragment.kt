@@ -174,8 +174,8 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun getAllExercises(userId: String) {
-        exerciseViewModel.getOrderedListOfExercises(userId)?.get()
-            ?.addOnSuccessListener { documents ->
+        exerciseViewModel.getOrderedListOfExercises(userId).get()
+            .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     myUtils.showSnackBar(
                         fragmentStatisticsCoordinatorLayout, R.string.no_exercise
@@ -195,7 +195,7 @@ class StatisticsFragment : Fragment() {
                     activity?.let { activity -> exerciseDropDownMenu(activity) }
                 }
             }
-            ?.addOnFailureListener { exception ->
+            .addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
             }
     }
@@ -280,11 +280,11 @@ class StatisticsFragment : Fragment() {
         userId?.let {
             // Get all training sessions that are completed and according to dates
             trainingSessionViewModel.getListOfTrainingSessions(it)
-                ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
-                ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
-                ?.whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
-                ?.get()
-                ?.addOnCompleteListener { task ->
+                .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
+                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
+                .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
+                .get()
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful && task.isComplete) {
                         val document = task.result
                         Log.d(TAG, "document.size = ${document?.size()}")
@@ -331,7 +331,7 @@ class StatisticsFragment : Fragment() {
                         Log.d(TAG, "Task get failed: ", task.exception)
                     }
                 }
-                ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+                .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
         }
     }
 

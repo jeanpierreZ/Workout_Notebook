@@ -16,12 +16,12 @@ class FollowViewModel(private val followRepository: FollowRepository) : ViewMode
 
     fun follow(userId: String, follow: User) =
         followRepository.follow(userId, follow)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- QUERY ---
 
     // Recover the list of follow of the user in real-time
-    fun getListOfFollow(userId: String): Query? = followRepository.getListOfFollow(userId)
+    fun getListOfFollow(userId: String): Query = followRepository.getListOfFollow(userId)
 
     // Recover list of all users (without the current user) in real-time
     fun getListOfUsers(userId: String) = followRepository.getListOfUsers(userId)
@@ -30,5 +30,5 @@ class FollowViewModel(private val followRepository: FollowRepository) : ViewMode
 
     fun noLongerFollow(userId: String, follow: User) =
         followRepository.noLongerFollow(userId, follow)
-            ?.addOnFailureListener { e -> Log.e(TAG, "Error deleted document", e) }
+            .addOnFailureListener { e -> Log.e(TAG, "Error deleted document", e) }
 }

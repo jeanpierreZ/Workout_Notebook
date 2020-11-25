@@ -51,12 +51,8 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
     // Configure RecyclerView with a Query
     private fun configureRecyclerView(userId: String) {
         // Create the adapter by passing the list of follow of the user
-        val list: Query? = followViewModel.getListOfFollow(userId)
-
-        if (list != null) {
-            itemCommunityAdapter =
-                generateOptionsForCommunityAdapter(list)?.let { ItemCommunityAdapter(it, this) }
-        }
+        val list: Query = followViewModel.getListOfFollow(userId)
+        itemCommunityAdapter = ItemCommunityAdapter(generateOptionsForCommunityAdapter(list), this)
         // Attach the adapter to the recyclerView to populate the exercises
         communityFragmentFollowRecyclerView?.adapter = itemCommunityAdapter
         // Set layout manager to position the exercises or workouts
@@ -64,7 +60,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
     }
 
     // Create options for RecyclerView from a Query
-    private fun generateOptionsForCommunityAdapter(query: Query): FirestoreRecyclerOptions<User?>? {
+    private fun generateOptionsForCommunityAdapter(query: Query): FirestoreRecyclerOptions<User?> {
         return FirestoreRecyclerOptions.Builder<User>()
             .setQuery(query, User::class.java)
             .setLifecycleOwner(this)

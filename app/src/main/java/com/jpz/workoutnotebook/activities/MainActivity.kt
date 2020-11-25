@@ -92,8 +92,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     }
 
     private fun configureViewPagerAdapter() {
-        val viewPagerAdapter = ViewPagerAdapter(this)
-        mainActivityViewPager.adapter = viewPagerAdapter
+        mainActivityViewPager.adapter = ViewPagerAdapter(this)
+        mainActivityViewPager.offscreenPageLimit = 1
     }
 
     private fun configureTabLayout() {

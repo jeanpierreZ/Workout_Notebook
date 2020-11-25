@@ -78,8 +78,8 @@ class FollowerFragment : BaseProfileFragment() {
 
     private fun addAPersonToFollow(userId: String, follow: User) {
         followViewModel.getListOfFollow(userId)
-            ?.get()
-            ?.addOnSuccessListener { documents ->
+            .get()
+            .addOnSuccessListener { documents ->
                 // Check if the person to follow is already added
                 for (document in documents) {
                     if (document.id == follow.userId) {
@@ -92,7 +92,7 @@ class FollowerFragment : BaseProfileFragment() {
                 }
                 // Else add the person
                 followViewModel.follow(userId, follow)
-                    ?.addOnSuccessListener {
+                    .addOnSuccessListener {
                         Log.d(TAG, "DocumentSnapshot written with id: ${follow.userId}")
                         // Inform the user
                         myUtils.showSnackBar(
@@ -105,7 +105,7 @@ class FollowerFragment : BaseProfileFragment() {
 
     private fun noLongerFollow(userId: String, follow: User) {
         followViewModel.noLongerFollow(userId, follow)
-            ?.addOnSuccessListener {
+            .addOnSuccessListener {
                 Log.d(TAG, "DocumentSnapshot successfully deleted!")
                 // Inform the user
                 myUtils.showSnackBar(

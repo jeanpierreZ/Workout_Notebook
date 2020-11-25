@@ -57,9 +57,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private var itemSeriesAdapter: ItemSeriesAdapter? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_edit_exercise, container, false)
         return binding.root
@@ -202,9 +201,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 // If the name is different and it is not an update,
                 // check if an exerciseName already exists
                 exerciseViewModel.getListOfExercises(it)
-                    ?.whereEqualTo(EXERCISE_NAME_FIELD, exercise?.exerciseName)
-                    ?.get()
-                    ?.addOnSuccessListener { documents ->
+                    .whereEqualTo(EXERCISE_NAME_FIELD, exercise?.exerciseName)
+                    .get()
+                    .addOnSuccessListener { documents ->
                         if (documents.isEmpty) {
                             // There is no document with this exerciseName so create the exercise
                             Log.d(TAG, "documents.isEmpty")
@@ -220,7 +219,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                             }
                         }
                     }
-                    ?.addOnFailureListener { exception ->
+                    .addOnFailureListener { exception ->
                         Log.w(TAG, "Error getting documents: ", exception)
                     }
             }
@@ -251,10 +250,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             // Create the exercise
             exercise?.let {
                 exerciseViewModel.createExercise(userId, it)
-                    ?.addOnSuccessListener { documentReference ->
+                    .addOnSuccessListener { documentReference ->
                         // Set exerciseId
                         exerciseViewModel.updateExerciseIdAfterCreate(userId, documentReference)
-                            ?.addOnSuccessListener {
+                            .addOnSuccessListener {
                                 Log.d(
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"
                                 )

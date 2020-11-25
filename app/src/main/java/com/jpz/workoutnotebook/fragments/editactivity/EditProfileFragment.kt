@@ -101,7 +101,7 @@ class EditProfileFragment : BaseProfileFragment() {
 
     private fun getUserDataToObject(userId: String?) {
         userId?.let {
-            userViewModel.getUser(it)?.addOnSuccessListener { documentSnapshot ->
+            userViewModel.getUser(it).addOnSuccessListener { documentSnapshot ->
                 user = documentSnapshot.toObject(User::class.java)
                 user?.let { binding.user = user }
             }
@@ -150,10 +150,10 @@ class EditProfileFragment : BaseProfileFragment() {
     private fun updateUser() {
         user?.let { it ->
             Log.d(TAG, "user = $it")
-            userViewModel.updateUser(it)?.addOnSuccessListener {
+            userViewModel.updateUser(it).addOnSuccessListener {
                 activity?.setResult(Activity.RESULT_OK)
                 activity?.finish()
-            }?.addOnFailureListener {
+            }.addOnFailureListener {
                 activity?.setResult(Activity.RESULT_CANCELED)
                 activity?.finish()
             }
