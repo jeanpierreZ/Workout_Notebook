@@ -1,23 +1,24 @@
 package com.jpz.workoutnotebook.repositories
 
 import com.google.firebase.firestore.Query
-import com.jpz.workoutnotebook.models.User
+import com.google.firebase.firestore.SetOptions
 
 class FollowRepository {
 
     companion object {
-        private const val COLLECTION_NAME = "follow"
+        private const val COLLECTION_NAME = "follows"
         private const val USER_ID_FIELD = "userId"
+        private const val FOLLOWED_ID_FIELD = "followedId"
     }
 
     // --- CREATE ---
 
-    fun follow(userId: String, follow: User) =
+    fun follow(userId: String, followedId: String) =
         UserRepository.getUsersCollection()
             .document(userId)
             .collection(COLLECTION_NAME)
-            .document(follow.userId)
-            .set(follow)
+            .document(followedId)
+            .set(hashMapOf(FOLLOWED_ID_FIELD to followedId), SetOptions.merge())
 
     // --- QUERY ---
 
@@ -31,10 +32,10 @@ class FollowRepository {
 
     // --- DELETE ---
 
-    fun noLongerFollow(userId: String, follow: User) =
+    fun noLongerFollow(userId: String, followedId: String) =
         UserRepository.getUsersCollection()
             .document(userId)
             .collection(COLLECTION_NAME)
-            .document(follow.userId)
+            .document(followedId)
             .delete()
 }

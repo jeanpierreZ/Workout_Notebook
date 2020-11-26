@@ -3,7 +3,6 @@ package com.jpz.workoutnotebook.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.Query
-import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.FollowRepository
 
 class FollowViewModel(private val followRepository: FollowRepository) : ViewModel() {
@@ -14,8 +13,8 @@ class FollowViewModel(private val followRepository: FollowRepository) : ViewMode
 
     // --- CREATE ---
 
-    fun follow(userId: String, follow: User) =
-        followRepository.follow(userId, follow)
+    fun follow(userId: String, followedId: String) =
+        followRepository.follow(userId, followedId)
             .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- QUERY ---
@@ -28,7 +27,7 @@ class FollowViewModel(private val followRepository: FollowRepository) : ViewMode
 
     // --- DELETE ---
 
-    fun noLongerFollow(userId: String, follow: User) =
-        followRepository.noLongerFollow(userId, follow)
+    fun noLongerFollow(userId: String, followedId: String) =
+        followRepository.noLongerFollow(userId, followedId)
             .addOnFailureListener { e -> Log.e(TAG, "Error deleted document", e) }
 }
