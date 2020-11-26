@@ -22,11 +22,11 @@ class FollowRepository {
 
     // --- QUERY ---
 
-    // Recover the list of follow of the user in real-time
-    fun getListOfFollow(userId: String): Query =
+    // Recover the list of people followed by the user
+    fun getListOfPeopleFollowed(userId: String): Query =
         UserRepository.getUsersCollection().document(userId).collection(COLLECTION_NAME)
 
-    // Recover list of all users (without the current user) in real-time
+    // Recover list of all users (without the current user)
     fun getListOfUsers(userId: String): Query =
         UserRepository.getUsersCollection().whereNotEqualTo(USER_ID_FIELD, userId)
 

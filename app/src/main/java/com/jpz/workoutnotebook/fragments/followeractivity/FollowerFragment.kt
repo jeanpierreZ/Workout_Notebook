@@ -78,7 +78,7 @@ class FollowerFragment : BaseProfileFragment() {
     // Methods to create or delete a person to follow
 
     private fun addAPersonToFollow(userId: String, followed: User) {
-        followViewModel.getListOfFollow(userId)
+        followViewModel.getListOfPeopleFollowed(userId)
             .get()
             .addOnSuccessListener { documents ->
                 // Check if the person to follow is already added

@@ -2,15 +2,15 @@ package com.jpz.workoutnotebook.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.databinding.CommunityItemBinding
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.viewholders.ItemCommunityViewHolder
 
 class ItemCommunityAdapter(
-    options: FirestoreRecyclerOptions<User?>, private var callback: Listener
-) : FirestoreRecyclerAdapter<User, ItemCommunityViewHolder>(options) {
+    private val list: ArrayList<User>, private val callback: Listener
+) : RecyclerView.Adapter<ItemCommunityViewHolder>() {
+    // RecyclerView used only to interact with the list of people followed
 
     // Callback
     interface Listener {
@@ -23,7 +23,9 @@ class ItemCommunityAdapter(
         return ItemCommunityViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ItemCommunityViewHolder, position: Int, model: User) {
-        holder.updateUser(model, callback)
+    override fun getItemCount(): Int = list.size
+
+    override fun onBindViewHolder(holder: ItemCommunityViewHolder, position: Int) {
+        holder.updateUser(list[position], callback)
     }
 }

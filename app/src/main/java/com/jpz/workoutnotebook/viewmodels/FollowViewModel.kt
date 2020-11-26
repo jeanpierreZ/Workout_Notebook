@@ -19,10 +19,11 @@ class FollowViewModel(private val followRepository: FollowRepository) : ViewMode
 
     // --- QUERY ---
 
-    // Recover the list of follow of the user in real-time
-    fun getListOfFollow(userId: String): Query = followRepository.getListOfFollow(userId)
+    // Recover the list of people followed by the user
+    fun getListOfPeopleFollowed(userId: String): Query =
+        followRepository.getListOfPeopleFollowed(userId)
 
-    // Recover list of all users (without the current user) in real-time
+    // Recover list of all users (without the current user)
     fun getListOfUsers(userId: String) = followRepository.getListOfUsers(userId)
 
     // --- DELETE ---

@@ -2,18 +2,18 @@ package com.jpz.workoutnotebook.fragments.mainactivity
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ItemCommunityAdapter
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
+import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_community.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,9 +21,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
+    companion object {
+        private val TAG = CommunityFragment::class.java.simpleName
+    }
+
     // Firebase Auth, Firestore
     private val userAuth: UserAuth by inject()
     private val followViewModel: FollowViewModel by viewModel()
+    private val userViewModel: UserViewModel by viewModel()
 
     private var userId: String? = null
 
@@ -46,25 +51,42 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
         userId?.let { configureRecyclerView(it) }
     }
 
+    override fun onResume() {
+        super.onResume()
+        userId?.let { configureRecyclerView(it) }
+    }
+
     //----------------------------------------------------------------------------------
 
     // Configure RecyclerView with a Query
     private fun configureRecyclerView(userId: String) {
-        // Create the adapter by passing the list of follow of the user
-        val list: Query = followViewModel.getListOfFollow(userId)
-        itemCommunityAdapter = ItemCommunityAdapter(generateOptionsForCommunityAdapter(list), this)
-        // Attach the adapter to the recyclerView to populate the exercises
+        // Create the adapter by passing the list of people followed by the user
+        val list = arrayListOf<User>()
+        itemCommunityAdapter = ItemCommunityAdapter(list, this)
+        // Attach the adapter to the recyclerView to populate the people followed
         communityFragmentFollowRecyclerView?.adapter = itemCommunityAdapter
-        // Set layout manager to position the exercises or workouts
+        // Set layout manager to position the list data
         communityFragmentFollowRecyclerView?.layoutManager = LinearLayoutManager(activity)
-    }
 
-    // Create options for RecyclerView from a Query
-    private fun generateOptionsForCommunityAdapter(query: Query): FirestoreRecyclerOptions<User?> {
-        return FirestoreRecyclerOptions.Builder<User>()
-            .setQuery(query, User::class.java)
-            .setLifecycleOwner(this)
-            .build()
+        followViewModel.getListOfPeopleFollowed(userId)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.d(TAG, "${document.id} => ${document.data}")
+                    userViewModel.getUser(document.id)
+                        .addOnSuccessListener { documentSnapshot ->
+                            Log.d(TAG, "documentSnapshot => $documentSnapshot")
+                            val followedObject = documentSnapshot.toObject(User::class.java)
+                            // Add the people followed to the list
+                            followedObject?.let { list.add(it) }
+                            // Notify the adapter
+                            itemCommunityAdapter?.notifyDataSetChanged()
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
     }
 
     //----------------------------------------------------------------------------------
