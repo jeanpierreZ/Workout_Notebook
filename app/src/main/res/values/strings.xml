@@ -125,5 +125,8 @@
     <string name="person_already_followed">This person is already followed</string>
     <string name="no_longer_follow">No longer follow</string>
     <string name="person_no_longer_followed">This person is no longer being followed</string>
-    <string name="history">History</string>
+    <string name="historical">Historical</string>
+
+    <!-- Historical Fragment -->
+    <string name="no_historical_training_sessions">There are no historical training sessions</string>
 </resources>

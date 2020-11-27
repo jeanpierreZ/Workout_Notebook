@@ -17,6 +17,7 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
 import com.jpz.workoutnotebook.fragments.editactivity.*
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
+import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.android.synthetic.main.activity_edit.*
@@ -30,6 +31,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         const val IS_AN_EXERCISE = "IS_AN_EXERCISE"
         const val EXERCISE = "EXERCISE"
         const val WORKOUT = "WORKOUT"
+        const val IS_FOLLOWED = "IS_FOLLOWED"
     }
 
     private val myUtils: MyUtils by inject()
@@ -48,7 +50,11 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         val trainingSession = intent.getParcelableExtra<TrainingSession>(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
 
-        edit?.let { displayFragment(it, trainingSession) }
+        // The user followed from FollowerFragment
+        val followed = intent.getParcelableExtra<User>(FollowerActivity.FOLLOWED)
+        Log.d(TAG, "followed = $followed")
+
+        edit?.let { displayFragment(it, trainingSession, followed) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -77,7 +83,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun displayFragment(edit: String, trainingSession: TrainingSession?) {
+    private fun displayFragment(edit: String, trainingSession: TrainingSession?, followed: User?) {
         var fragment = Fragment()
         val bundle = Bundle()
 
@@ -107,6 +113,12 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
             WORKOUTS -> {
                 fragment = ListSportsFragment()
                 bundle.putBoolean(IS_AN_EXERCISE, false)
+            }
+
+            FollowerActivity.HISTORICAL_FROM_FOLLOWER -> {
+                fragment = HistoricalFragment()
+                bundle.putBoolean(IS_FOLLOWED, true)
+                bundle.putParcelable(FollowerActivity.FOLLOWED, followed)
             }
 
             else -> myUtils.showSnackBar(

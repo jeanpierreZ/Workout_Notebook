@@ -40,7 +40,7 @@ class ItemExerciseViewHolder(exercise: View) : RecyclerView.ViewHolder(exercise)
         }
     }
 
-    // Used in ItemExerciseFromWorkoutAdapter to display exercise data in EditWorkoutFragment and HistoricalFragment
+    // Used in ItemExerciseFromWorkoutAdapter to display exercise data in EditWorkoutFragment
     fun updateExerciseFromWorkout(context: Context, exercise: Exercise?) {
         exerciseName?.text = exercise?.exerciseName
         recyclerView?.visibility = View.VISIBLE

@@ -1,5 +1,6 @@
 package com.jpz.workoutnotebook.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -13,11 +14,14 @@ import com.jpz.workoutnotebook.fragments.followeractivity.SearchFragment
 import com.jpz.workoutnotebook.models.User
 import kotlinx.android.synthetic.main.toolbar.*
 
-class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener {
+class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener,
+    FollowerFragment.FollowerListener {
 
     companion object {
         private val TAG = FollowerActivity::class.java.simpleName
         const val IS_FROM_SEARCH = "IS_FROM_SEARCH"
+        const val HISTORICAL_FROM_FOLLOWER = "HISTORICAL_FROM_FOLLOWER"
+        const val FOLLOWED = "FOLLOWED"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,9 +86,23 @@ class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener {
     }
 
     //--------------------------------------------------------------------------------------
-    // Callback from SearchFragment
 
+    private fun startEditActivityForHistorical(followed: User) {
+        val intent = Intent(this, EditActivity::class.java)
+        intent.putExtra(EDIT, HISTORICAL_FROM_FOLLOWER)
+        intent.putExtra(FOLLOWED, followed)
+        startActivity(intent)
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    // Callback from SearchFragment
     override fun displayFollow(follow: User?) {
         follow?.let { displayFollowerFragment(it, true) }
+    }
+
+    // Callback from FollowerFragment
+    override fun consultHistorical(followed: User) {
+        startEditActivityForHistorical(followed)
     }
 }

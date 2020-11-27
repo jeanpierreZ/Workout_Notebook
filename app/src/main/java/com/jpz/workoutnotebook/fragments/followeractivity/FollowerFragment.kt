@@ -1,9 +1,9 @@
 package com.jpz.workoutnotebook.fragments.followeractivity
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.FollowerActivity.Companion.IS_FROM_SEARCH
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.FOLLOW
@@ -25,6 +25,8 @@ class FollowerFragment : BaseProfileFragment() {
     // Firebase Firestore and utils
     private val followViewModel: FollowViewModel by viewModel()
     private val myUtils: MyUtils by inject()
+
+    private var callback: FollowerListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -66,10 +68,10 @@ class FollowerFragment : BaseProfileFragment() {
             baseProfileFragmentFABNoFollow.setOnClickListener {
                 userId?.let { followed?.let { followed -> noLongerFollow(it, followed) } }
             }
-            // Make FloatingActionButton History visible
-            baseProfileFragmentFABHistory.visibility = View.VISIBLE
-            baseProfileFragmentFABHistory.setOnClickListener {
-                Toast.makeText(activity, "HISTORY", Toast.LENGTH_SHORT).show()
+            // Make FloatingActionButton Historical visible
+            baseProfileFragmentFABHistorical.visibility = View.VISIBLE
+            baseProfileFragmentFABHistorical.setOnClickListener {
+                followed?.let { callback?.consultHistorical(it) }
             }
         }
     }
@@ -119,5 +121,29 @@ class FollowerFragment : BaseProfileFragment() {
     private fun closeFragment() {
         activity?.let { myUtils.closeFragment(baseProfileFragmentProgressBar, it) }
         baseProfileFragmentFABFollow.isEnabled = false
+    }
+
+    //----------------------------------------------------------------------------------
+    // Interface for callback to parent activity when click on historical button
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Call the methods that creating callback after being attached to parent activity
+        callbackToParentActivity()
+    }
+
+    // Declare our interface and methods that will be implemented by any container activity
+    interface FollowerListener {
+        fun consultHistorical(followed: User)
+    }
+
+    // Create callback to parent activity
+    private fun callbackToParentActivity() {
+        try {
+            // Parent activity will automatically subscribe to callback
+            callback = activity as FollowerListener?
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$e must implement FollowerListener")
+        }
     }
 }

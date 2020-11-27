@@ -180,13 +180,12 @@
             android:orientation="vertical">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/baseProfileFragmentFABHistory"
+                android:id="@+id/baseProfileFragmentFABHistorical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="@dimen/fab_margin"
-                android:contentDescription="@string/history"
-                android:text="@string/follow"
+                android:contentDescription="@string/historical"
                 android:visibility="gone"
                 app:backgroundTint="@color/colorAccentLight"
                 app:srcCompat="@drawable/ic_baseline_history_24" />
@@ -198,7 +197,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="@dimen/fab_margin"
-                android:contentDescription="@string/follow"
+                android:contentDescription="@string/no_longer_follow"
                 android:text="@string/no_longer_follow"
                 android:visibility="gone"
                 app:backgroundTint="@color/colorAccentLight" />

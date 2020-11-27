@@ -12,7 +12,7 @@ class ItemTrainingSessionAdapter(
     private var list: ArrayList<TrainingSession>,
     private var context: Context, private val callback: Listener
 ) : RecyclerView.Adapter<ItemTrainingSessionViewHolder>() {
-    // RecyclerView used only to interact with the list of training sessions
+    // RecyclerView used only to interact with the list of training sessions in CalendarFragment
 
     // Callback
     interface Listener {
