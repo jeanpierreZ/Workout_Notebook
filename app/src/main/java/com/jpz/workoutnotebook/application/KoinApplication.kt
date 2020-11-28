@@ -28,6 +28,8 @@ class KoinApplication : Application() {
                     moduleExerciseViewModel,
                     moduleFollowRepository,
                     moduleFollowViewModel,
+                    moduleFollowingRepository,
+                    moduleFollowingViewModel,
                     moduleMyUtils
                 )
             )

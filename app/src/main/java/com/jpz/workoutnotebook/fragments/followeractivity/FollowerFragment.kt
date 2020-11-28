@@ -11,6 +11,7 @@ import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
+import com.jpz.workoutnotebook.viewmodels.FollowingViewModel
 import kotlinx.android.synthetic.main.fragment_base_profile.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -24,6 +25,7 @@ class FollowerFragment : BaseProfileFragment() {
 
     // Firebase Firestore and utils
     private val followViewModel: FollowViewModel by viewModel()
+    private val followingViewModel: FollowingViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
     private var callback: FollowerListener? = null
@@ -97,12 +99,21 @@ class FollowerFragment : BaseProfileFragment() {
                 followViewModel.follow(userId, followed.userId)
                     .addOnSuccessListener {
                         Log.d(TAG, "DocumentSnapshot written with id: ${followed.userId}")
-                        // Inform the user
-                        myUtils.showSnackBar(
-                            baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
-                        )
-                        closeFragment()
+                        // Add the user as a follower in followings collection
+                        addUserAsFollower(userId, followed)
                     }
+            }
+    }
+
+    private fun addUserAsFollower(userId: String, followed: User) {
+        // Add the user as a follower in followings collection
+        followingViewModel.addFollower(userId, followed.userId)
+            .addOnSuccessListener {
+                // Inform the user
+                myUtils.showSnackBar(
+                    baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
+                )
+                closeFragment()
             }
     }
 

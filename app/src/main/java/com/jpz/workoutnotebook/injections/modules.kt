@@ -67,6 +67,16 @@ val moduleFollowViewModel = module {
     viewModel { FollowViewModel(get()) }
 }
 
+val moduleFollowingRepository = module {
+    // Instance of FollowingRepository
+    single { FollowingRepository() }
+}
+
+val moduleFollowingViewModel = module {
+    // Instance of FollowingViewModel
+    viewModel { FollowingViewModel(get()) }
+}
+
 val moduleMyUtils = module {
     // Instance of MyUtils
     single { MyUtils() }
