@@ -13,6 +13,7 @@ import com.jpz.workoutnotebook.adapters.ItemCommunityAdapter
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
+import com.jpz.workoutnotebook.viewmodels.FollowingViewModel
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_community.*
 import org.koin.android.ext.android.inject
@@ -29,10 +30,12 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
     private val userAuth: UserAuth by inject()
     private val followViewModel: FollowViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
+    private val followingViewModel: FollowingViewModel by viewModel()
 
     private var userId: String? = null
 
     private var itemCommunityAdapter: ItemCommunityAdapter? = null
+    private var itemCommunityAdapterFollower: ItemCommunityAdapter? = null
 
     private var callback: CommunityListener? = null
 
@@ -48,18 +51,23 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
         userId = userAuth.getCurrentUser()?.uid
 
-        userId?.let { configureRecyclerView(it) }
+        userId?.let { configureRecyclerViews(it) }
     }
 
     override fun onResume() {
         super.onResume()
-        userId?.let { configureRecyclerView(it) }
+        userId?.let { configureRecyclerViews(it) }
     }
 
     //----------------------------------------------------------------------------------
+    // Configure RecyclerViews
 
-    // Configure RecyclerView with a Query
-    private fun configureRecyclerView(userId: String) {
+    private fun configureRecyclerViews(userId: String) {
+        configureRecyclerViewFollow(userId)
+        configureRecyclerViewFollowers(userId)
+    }
+
+    private fun configureRecyclerViewFollow(userId: String) {
         // Create the adapter by passing the list of people followed by the user
         val list = arrayListOf<User>()
         itemCommunityAdapter = ItemCommunityAdapter(list, this)
@@ -89,8 +97,39 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
             }
     }
 
+    private fun configureRecyclerViewFollowers(userId: String) {
+        // Create the adapter by passing the list of followers of the user
+        val listOfFollowers = arrayListOf<User>()
+        itemCommunityAdapterFollower = ItemCommunityAdapter(listOfFollowers, this)
+        // Attach the adapter to the recyclerView to populate the followers
+        communityFragmentFollowersRecyclerView?.adapter = itemCommunityAdapterFollower
+        // Set layout manager to position the list data
+        communityFragmentFollowersRecyclerView?.layoutManager = LinearLayoutManager(activity)
+
+        followingViewModel.getListOfFollowers(userId)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    Log.d(TAG, "${document.id} => ${document.data}")
+                    userViewModel.getUser(document.id)
+                        .addOnSuccessListener { documentSnapshot ->
+                            Log.d(TAG, "documentSnapshot => $documentSnapshot")
+                            val followerObject = documentSnapshot.toObject(User::class.java)
+                            // Add the follower to the list
+                            followerObject?.let { listOfFollowers.add(it) }
+                            // Notify the adapter
+                            itemCommunityAdapterFollower?.notifyDataSetChanged()
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
+    }
+
     //----------------------------------------------------------------------------------
 
+    // TODO Callback does change for follower in followerFragment, don't display same buttons
     // Interface for callback ItemCommunityAdapter
     override fun onClickProfile(user: User?, position: Int) {
         callback?.displayFollow(user)

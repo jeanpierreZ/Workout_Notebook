@@ -2,6 +2,7 @@ package com.jpz.workoutnotebook.repositories
 
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 class FollowingRepository {
@@ -22,4 +23,12 @@ class FollowingRepository {
             .collection(COLLECTION_NAME)
             .document(userId)
             .set(hashMapOf(FOLLOWER_ID_FIELD to userId), SetOptions.merge())
+
+    // --- QUERY ---
+
+    // Recover the list of followers
+    fun getListOfFollowers(userId: String): Query =
+        getFollowersCollection()
+            .document(userId)
+            .collection(COLLECTION_NAME)
 }

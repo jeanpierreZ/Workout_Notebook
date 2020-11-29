@@ -15,4 +15,9 @@ class FollowingViewModel(private val followingRepository: FollowingRepository) :
     fun addFollower(userId: String, followedId: String) =
         followingRepository.addFollower(userId, followedId)
             .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+
+    // --- QUERY ---
+
+    // Recover the list of followers
+    fun getListOfFollowers(userId: String) = followingRepository.getListOfFollowers(userId)
 }
