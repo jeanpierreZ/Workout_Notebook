@@ -26,19 +26,38 @@ class ItemCommunityViewHolder(private val binding: CommunityItemBinding) :
         name = itemView.findViewById(R.id.communityItemName)
     }
 
-    // Used in ItemCommunityAdapter to display followers and people the user follows in CommunityFragment
-    fun updateUser(user: User?, callback: ItemCommunityAdapter.Listener) {
-        binding.user = user
+    // Used in ItemCommunityAdapter to display people the user follows in CommunityFragment
+    fun updateFollowed(followed: User?, callback: ItemCommunityAdapter.FollowedListener) {
+        binding.user = followed
 
         // Create a new weak Reference to our Listener
-        val callbackWeakRef: WeakReference<ItemCommunityAdapter.Listener> = WeakReference(callback)
+        val callbackWeakRef: WeakReference<ItemCommunityAdapter.FollowedListener> =
+            WeakReference(callback)
         // Redefine callback to use it with lambda
-        val finalCallback: ItemCommunityAdapter.Listener? = callbackWeakRef.get()
+        val finalCallback: ItemCommunityAdapter.FollowedListener? = callbackWeakRef.get()
         // Implement Listener
         itemView.setOnClickListener {
             // When a click happens, we fire our listener to get the user position in the list
             if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
-                finalCallback.onClickProfile(user, adapterPosition)
+                finalCallback.onClickFollowed(followed, adapterPosition)
+            }
+        }
+    }
+
+    // Used in ItemCommunityAdapter to display followers in CommunityFragment
+    fun updateFollower(follower: User?, callback: ItemCommunityAdapter.FollowerListener) {
+        binding.user = follower
+
+        // Create a new weak Reference to our Listener
+        val callbackWeakRef: WeakReference<ItemCommunityAdapter.FollowerListener> =
+            WeakReference(callback)
+        // Redefine callback to use it with lambda
+        val finalCallback: ItemCommunityAdapter.FollowerListener? = callbackWeakRef.get()
+        // Implement Listener
+        itemView.setOnClickListener {
+            // When a click happens, we fire our listener to get the user position in the list
+            if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
+                finalCallback.onClickFollower(follower, adapterPosition)
             }
         }
     }

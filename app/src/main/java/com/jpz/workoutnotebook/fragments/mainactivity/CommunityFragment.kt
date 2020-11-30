@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
@@ -20,7 +21,8 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
+class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
+    ItemCommunityAdapter.FollowerListener {
 
     companion object {
         private val TAG = CommunityFragment::class.java.simpleName
@@ -34,7 +36,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     private var userId: String? = null
 
-    private var itemCommunityAdapter: ItemCommunityAdapter? = null
+    private var itemCommunityAdapterFollowed: ItemCommunityAdapter? = null
     private var itemCommunityAdapterFollower: ItemCommunityAdapter? = null
 
     private var callback: CommunityListener? = null
@@ -63,16 +65,16 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
     // Configure RecyclerViews
 
     private fun configureRecyclerViews(userId: String) {
-        configureRecyclerViewFollow(userId)
+        configureRecyclerViewFollowed(userId)
         configureRecyclerViewFollowers(userId)
     }
 
-    private fun configureRecyclerViewFollow(userId: String) {
+    private fun configureRecyclerViewFollowed(userId: String) {
         // Create the adapter by passing the list of people followed by the user
         val list = arrayListOf<User>()
-        itemCommunityAdapter = ItemCommunityAdapter(list, this)
+        itemCommunityAdapterFollowed = ItemCommunityAdapter(list, this, this, true)
         // Attach the adapter to the recyclerView to populate the people followed
-        communityFragmentFollowRecyclerView?.adapter = itemCommunityAdapter
+        communityFragmentFollowRecyclerView?.adapter = itemCommunityAdapterFollowed
         // Set layout manager to position the list data
         communityFragmentFollowRecyclerView?.layoutManager = LinearLayoutManager(activity)
 
@@ -88,7 +90,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
                             // Add the people followed to the list
                             followedObject?.let { list.add(it) }
                             // Notify the adapter
-                            itemCommunityAdapter?.notifyDataSetChanged()
+                            itemCommunityAdapterFollowed?.notifyDataSetChanged()
                         }
                 }
             }
@@ -100,7 +102,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
     private fun configureRecyclerViewFollowers(userId: String) {
         // Create the adapter by passing the list of followers of the user
         val listOfFollowers = arrayListOf<User>()
-        itemCommunityAdapterFollower = ItemCommunityAdapter(listOfFollowers, this)
+        itemCommunityAdapterFollower = ItemCommunityAdapter(listOfFollowers, this, this, false)
         // Attach the adapter to the recyclerView to populate the followers
         communityFragmentFollowersRecyclerView?.adapter = itemCommunityAdapterFollower
         // Set layout manager to position the list data
@@ -129,10 +131,15 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.Listener {
 
     //----------------------------------------------------------------------------------
 
-    // TODO Callback does change for follower in followerFragment, don't display same buttons
-    // Interface for callback ItemCommunityAdapter
-    override fun onClickProfile(user: User?, position: Int) {
-        callback?.displayFollow(user)
+    // Interface for callback ItemCommunityAdapter FollowedListener
+    override fun onClickFollowed(followed: User?, position: Int) {
+        callback?.displayFollow(followed)
+    }
+
+    // Interface for callback ItemCommunityAdapter FollowerListener
+    override fun onClickFollower(follower: User?, position: Int) {
+        // TODO show for follower in followerFragment, don't display same buttons
+        Toast.makeText(activity, "FOLLOWER", Toast.LENGTH_SHORT).show()
     }
 
     //----------------------------------------------------------------------------------
