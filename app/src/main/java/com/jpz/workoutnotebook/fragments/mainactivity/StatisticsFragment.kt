@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
+import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -28,7 +29,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class StatisticsFragment : Fragment() {
@@ -283,6 +283,7 @@ class StatisticsFragment : Fragment() {
                 .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
                 .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
                 .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
+                .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful && task.isComplete) {
@@ -339,48 +340,13 @@ class StatisticsFragment : Fragment() {
         Log.d(TAG, "trainingSessionList = $trainingSessionList")
         Log.d(TAG, "trainingSessionList.size = ${trainingSessionList.size}")
 
-        // --- Sort trainingSessionDate ---
-
-        // Create a list of Date
-        val listOfDates = mutableListOf<Date>()
-
-        trainingSessionList.forEach { training ->
-            // Get the date format for each trainingSessionDate
-            training.trainingSessionDate?.let {
-                val parsedDate: Date? = sdf.parse(it)
-                parsedDate?.let {
-                    // Add it to a list of Date format
-                    listOfDates.add(parsedDate)
-                }
-            }
-        }
-        // Sort the list
-        listOfDates.sort()
-        Log.d(TAG, "listOfDates = $listOfDates")
-
-        // Create a list of training sessions sorted
-        val trainingSessionListSorted = ArrayList<TrainingSession>()
-
-        listOfDates.forEach { date ->
-            // Get the string format for each date
-            val dateString = sdf.format(date)
-            for (training in trainingSessionList) {
-                // if it's the same date, add it to the final training sessions list
-                if (dateString == training.trainingSessionDate) {
-                    trainingSessionListSorted.add(training)
-                    break
-                }
-            }
-        }
-        Log.d(TAG, "trainingSessionListSorted = $trainingSessionListSorted")
-
         // x axis
         val xDates = arrayListOf<String>()
 
         // Create a list of exercises completed
         val exercisesCompletedList = arrayListOf<Exercise>()
 
-        for (training in trainingSessionListSorted) {
+        for (training in trainingSessionList) {
             // Get the date of each training session
             training.trainingSessionDate?.let {
                 // Format the trainingSessionDate

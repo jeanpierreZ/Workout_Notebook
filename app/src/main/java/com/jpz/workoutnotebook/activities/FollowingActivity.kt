@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.SEARCH_FRAGMENT
-import com.jpz.workoutnotebook.fragments.followeractivity.FollowingFragment
-import com.jpz.workoutnotebook.fragments.followeractivity.SearchFragment
+import com.jpz.workoutnotebook.fragments.followingactivity.FollowingFragment
+import com.jpz.workoutnotebook.fragments.followingactivity.SearchFragment
 import com.jpz.workoutnotebook.models.User
 import kotlinx.android.synthetic.main.toolbar.*
 

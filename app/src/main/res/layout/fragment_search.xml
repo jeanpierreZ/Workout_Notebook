@@ -4,7 +4,7 @@
     android:id="@+id/searchFragmentCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.followeractivity.SearchFragment">
+    tools:context=".fragments.followingactivity.SearchFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchFragmentRecyclerView"

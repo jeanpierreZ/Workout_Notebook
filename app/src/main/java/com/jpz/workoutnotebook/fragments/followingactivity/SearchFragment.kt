@@ -1,4 +1,4 @@
-package com.jpz.workoutnotebook.fragments.followeractivity
+package com.jpz.workoutnotebook.fragments.followingactivity
 
 import android.content.Context
 import android.graphics.Color
