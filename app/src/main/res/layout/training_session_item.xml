@@ -17,8 +17,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/exercise_widget_margin"
             app:layout_constraintEnd_toStartOf="@+id/trainingSessionItemWorkoutName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/trainingSessionItemWorkoutName"
@@ -27,8 +26,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/exercise_widget_margin"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/trainingSessionItemTime"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/trainingSessionItemTime" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

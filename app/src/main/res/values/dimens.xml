@@ -16,8 +16,11 @@
     <!-- EditButtonText -->
     <dimen name="edit_button_margin">50dp</dimen>
 
-    <!-- ExerciseWidgetMargin -->
+    <!-- Exercise Widget Margin -->
     <dimen name="exercise_widget_margin">8dp</dimen>
+
+    <!-- Series Item Margin -->
+    <dimen name="series_item_margin">4dp</dimen>
 
     <!-- Button Icon Theme -->
     <dimen name="button_icon_padding_normal">10dp</dimen>
