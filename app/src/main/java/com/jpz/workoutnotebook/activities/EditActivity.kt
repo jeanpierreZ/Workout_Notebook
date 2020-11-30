@@ -31,7 +31,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         const val IS_AN_EXERCISE = "IS_AN_EXERCISE"
         const val EXERCISE = "EXERCISE"
         const val WORKOUT = "WORKOUT"
-        const val IS_FOLLOWED = "IS_FOLLOWED"
+        const val IS_FOLLOWING_HISTORICAL = "IS_FOLLOWING_HISTORICAL"
     }
 
     private val myUtils: MyUtils by inject()
@@ -50,11 +50,11 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         val trainingSession = intent.getParcelableExtra<TrainingSession>(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
 
-        // The user followed from FollowerFragment
-        val followed = intent.getParcelableExtra<User>(FollowerActivity.FOLLOWED)
-        Log.d(TAG, "followed = $followed")
+        // The user following from FollowingFragment
+        val following = intent.getParcelableExtra<User>(FollowingActivity.FOLLOWING)
+        Log.d(TAG, "following = $following")
 
-        edit?.let { displayFragment(it, trainingSession, followed) }
+        edit?.let { displayFragment(it, trainingSession, following) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun displayFragment(edit: String, trainingSession: TrainingSession?, followed: User?) {
+    private fun displayFragment(edit: String, trainingSession: TrainingSession?, following: User?) {
         var fragment = Fragment()
         val bundle = Bundle()
 
@@ -115,10 +115,10 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
                 bundle.putBoolean(IS_AN_EXERCISE, false)
             }
 
-            FollowerActivity.HISTORICAL_FROM_FOLLOWER -> {
+            FollowingActivity.HISTORICAL_FROM_FOLLOWER -> {
                 fragment = HistoricalFragment()
-                bundle.putBoolean(IS_FOLLOWED, true)
-                bundle.putParcelable(FollowerActivity.FOLLOWED, followed)
+                bundle.putBoolean(IS_FOLLOWING_HISTORICAL, true)
+                bundle.putParcelable(FollowingActivity.FOLLOWING, following)
             }
 
             else -> myUtils.showSnackBar(

@@ -45,7 +45,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
-        const val FOLLOW = "FOLLOW"
+        const val FOLLOWED = "FOLLOWED"
+        const val FOLLOWER = "FOLLOWER"
     }
 
     private var pageSelected = 0
@@ -220,17 +221,23 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     }
 
     //--------------------------------------------------------------------------------------
-    // Start FollowerActivity
+    // Start FollowingActivity
 
-    private fun startFollowerActivityForSearch() {
-        val intent = Intent(this, FollowerActivity::class.java)
+    private fun startFollowingActivityForSearch() {
+        val intent = Intent(this, FollowingActivity::class.java)
         intent.putExtra(EDIT, SEARCH_FRAGMENT)
         startActivity(intent)
     }
 
-    private fun startFollowerActivityToDisplayFollow(follow: User?) {
-        val intent = Intent(this, FollowerActivity::class.java)
-        intent.putExtra(FOLLOW, follow)
+    private fun startFollowingActivityToDisplayFollowed(followed: User?) {
+        val intent = Intent(this, FollowingActivity::class.java)
+        intent.putExtra(FOLLOWED, followed)
+        startActivity(intent)
+    }
+
+    private fun startFollowingActivityToDisplayFollower(follower: User?) {
+        val intent = Intent(this, FollowingActivity::class.java)
+        intent.putExtra(FOLLOWER, follower)
         startActivity(intent)
     }
 
@@ -275,9 +282,14 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startEditActivityForHistorical(trainingSession)
     }
 
-    // Implement listener from CommunityFragment to display the profile of a follow/follower
-    override fun displayFollow(follow: User?) {
-        startFollowerActivityToDisplayFollow(follow)
+    // Implement listeners from CommunityFragment to display the profile of a followed or a follower
+
+    override fun displayFollowed(followed: User?) {
+        startFollowingActivityToDisplayFollowed(followed)
+    }
+
+    override fun displayFollower(follower: User?) {
+        startFollowingActivityToDisplayFollower(follower)
     }
 
     //--------------------------------------------------------------------------------------
@@ -286,7 +298,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         when (v?.id) {
             R.id.mainActivityFABEditProfile -> startForResultEditActivityForProfile()
             R.id.mainActivityFABAddCalendar -> startEditActivityForCalendar(null)
-            R.id.mainActivityFABSearchCommunity -> startFollowerActivityForSearch()
+            R.id.mainActivityFABSearchCommunity -> startFollowingActivityForSearch()
         }
     }
 }

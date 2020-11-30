@@ -14,7 +14,7 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.FollowerActivity
+import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
@@ -60,7 +60,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        searchView = (context as FollowerActivity).findViewById(R.id.toolbarSearchView)
+        searchView = (context as FollowingActivity).findViewById(R.id.toolbarSearchView)
 
         userId = userAuth.getCurrentUser()?.uid
 

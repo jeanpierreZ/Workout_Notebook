@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.FollowerActivity.Companion.IS_FROM_SEARCH
-import com.jpz.workoutnotebook.activities.MainActivity.Companion.FOLLOW
+import com.jpz.workoutnotebook.activities.FollowingActivity.Companion.FOLLOWING
+import com.jpz.workoutnotebook.activities.FollowingActivity.Companion.TO_FOLLOW
 import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
@@ -17,10 +17,10 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class FollowerFragment : BaseProfileFragment() {
+class FollowingFragment : BaseProfileFragment() {
 
     companion object {
-        private val TAG = FollowerFragment::class.java.simpleName
+        private val TAG = FollowingFragment::class.java.simpleName
     }
 
     // Firebase Firestore and utils
@@ -52,28 +52,30 @@ class FollowerFragment : BaseProfileFragment() {
         userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")
 
-        val followed = arguments?.getParcelable<User>(FOLLOW)
-        Log.d(TAG, "followed = $followed")
-        binding.user = followed
+        val following = arguments?.getParcelable<User>(FOLLOWING)
+        Log.d(TAG, "following = $following")
+        binding.user = following
 
-        val isFromSearch = arguments?.getBoolean(IS_FROM_SEARCH)
+        // Make FloatingActionButton Historical visible
+        baseProfileFragmentFABHistorical.visibility = View.VISIBLE
+        baseProfileFragmentFABHistorical.setOnClickListener {
+            following?.let { callback?.consultHistorical(it) }
+        }
 
-        if (isFromSearch != null && isFromSearch) {
+        val toFollow = arguments?.getBoolean(TO_FOLLOW)
+
+        if (toFollow != null && toFollow) {
             // Make FloatingActionButton Follow visible
             baseProfileFragmentFABFollow.visibility = View.VISIBLE
             baseProfileFragmentFABFollow.setOnClickListener {
-                userId?.let { followed?.let { followed -> addAPersonToFollow(it, followed) } }
+                userId?.let { following?.let { followed -> addAPersonToFollow(it, followed) } }
+
             }
         } else {
             // Make FloatingActionButton NoFollow visible
             baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
             baseProfileFragmentFABNoFollow.setOnClickListener {
-                userId?.let { followed?.let { followed -> noLongerFollow(it, followed) } }
-            }
-            // Make FloatingActionButton Historical visible
-            baseProfileFragmentFABHistorical.visibility = View.VISIBLE
-            baseProfileFragmentFABHistorical.setOnClickListener {
-                followed?.let { callback?.consultHistorical(it) }
+                userId?.let { following?.let { followed -> noLongerFollow(it, followed) } }
             }
         }
     }

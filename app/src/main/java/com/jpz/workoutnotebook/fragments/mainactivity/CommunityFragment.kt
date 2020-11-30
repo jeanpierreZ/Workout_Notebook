@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
@@ -39,7 +38,8 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
     private var itemCommunityAdapterFollowed: ItemCommunityAdapter? = null
     private var itemCommunityAdapterFollower: ItemCommunityAdapter? = null
 
-    private var callback: CommunityListener? = null
+    private var callbackFollowed: CommunityListener? = null
+    private var callbackFollower: CommunityListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -133,18 +133,17 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
 
     // Interface for callback ItemCommunityAdapter FollowedListener
     override fun onClickFollowed(followed: User?, position: Int) {
-        callback?.displayFollow(followed)
+        callbackFollowed?.displayFollowed(followed)
     }
 
     // Interface for callback ItemCommunityAdapter FollowerListener
     override fun onClickFollower(follower: User?, position: Int) {
-        // TODO show for follower in followerFragment, don't display same buttons
-        Toast.makeText(activity, "FOLLOWER", Toast.LENGTH_SHORT).show()
+        callbackFollower?.displayFollower(follower)
     }
 
     //----------------------------------------------------------------------------------
-    // Interface for callback to parent activity and associated methods
-    // when click on follow/follower item
+    // Interfaces for callback to parent activity and associated methods
+    // when click on followed or follower item
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -152,16 +151,18 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
         callbackToParentActivity()
     }
 
-    // Declare our interface that will be implemented by any container activity
+    // Declare our interfaces that will be implemented by any container activity
     interface CommunityListener {
-        fun displayFollow(follow: User?)
+        fun displayFollowed(followed: User?)
+        fun displayFollower(follower: User?)
     }
 
     // Create callback to parent activity
     private fun callbackToParentActivity() {
         try {
-            // Parent activity will automatically subscribe to callback
-            callback = activity as CommunityListener?
+            // Parent activity will automatically subscribe to callbacks
+            callbackFollowed = activity as CommunityListener?
+            callbackFollower = activity as CommunityListener?
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement CommunityListener")
         }

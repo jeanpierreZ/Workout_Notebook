@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".activities.FollowerActivity"
+            android:name=".activities.FollowingActivity"
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.EditActivity"

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity
-import com.jpz.workoutnotebook.activities.FollowerActivity
+import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.activities.MainActivity
 import com.jpz.workoutnotebook.adapters.ItemHistoricalAdapter
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -54,12 +54,12 @@ class HistoricalFragment : Fragment() {
 
         val list = arrayListOf<TrainingSession>()
 
-        val isFollowed = arguments?.getBoolean(EditActivity.IS_FOLLOWED)
+        val isFollowingHistorical = arguments?.getBoolean(EditActivity.IS_FOLLOWING_HISTORICAL)
 
-        if (isFollowed == true) {
-            val followed = arguments?.getParcelable<User>(FollowerActivity.FOLLOWED)
-            Log.d(TAG, "followed = $followed")
-            followed?.let { getFollowedHistorical(it, list) }
+        if (isFollowingHistorical == true) {
+            val following = arguments?.getParcelable<User>(FollowingActivity.FOLLOWING)
+            Log.d(TAG, "following = $following")
+            following?.let { getFollowedHistorical(it, list) }
         } else {
             trainingSession = arguments?.getParcelable(MainActivity.TRAINING_SESSION)
             Log.d(TAG, "trainingSession = $trainingSession")

@@ -7,26 +7,25 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
-import com.jpz.workoutnotebook.activities.MainActivity.Companion.FOLLOW
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.SEARCH_FRAGMENT
-import com.jpz.workoutnotebook.fragments.followeractivity.FollowerFragment
+import com.jpz.workoutnotebook.fragments.followeractivity.FollowingFragment
 import com.jpz.workoutnotebook.fragments.followeractivity.SearchFragment
 import com.jpz.workoutnotebook.models.User
 import kotlinx.android.synthetic.main.toolbar.*
 
-class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener,
-    FollowerFragment.FollowerListener {
+class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
+    FollowingFragment.FollowerListener {
 
     companion object {
-        private val TAG = FollowerActivity::class.java.simpleName
-        const val IS_FROM_SEARCH = "IS_FROM_SEARCH"
+        private val TAG = FollowingActivity::class.java.simpleName
+        const val TO_FOLLOW = "toFollow"
         const val HISTORICAL_FROM_FOLLOWER = "HISTORICAL_FROM_FOLLOWER"
-        const val FOLLOWED = "FOLLOWED"
+        const val FOLLOWING = "FOLLOWING"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_follower)
+        setContentView(R.layout.activity_following)
 
         configureToolbar()
 
@@ -38,11 +37,15 @@ class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener,
             displaySearchFragment()
         }
 
-        // The follow from communityFragment
-        val follow = intent.getParcelableExtra<User>(FOLLOW)
-        Log.d(TAG, "follow = $follow")
+        // The followed from communityFragment
+        val followed = intent.getParcelableExtra<User>(MainActivity.FOLLOWED)
+        Log.d(TAG, "followed = $followed")
+        followed?.let { displayFollowingFragment(it, false) }
 
-        follow?.let { displayFollowerFragment(it, false) }
+        // The follower from communityFragment
+        val follower = intent.getParcelableExtra<User>(MainActivity.FOLLOWER)
+        Log.d(TAG, "follower = $follower")
+        follower?.let { displayFollowingFragment(it, true) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -73,11 +76,11 @@ class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener,
             .commit()
     }
 
-    private fun displayFollowerFragment(follow: User, isFromSearch: Boolean) {
-        val followerFragment = FollowerFragment()
+    private fun displayFollowingFragment(follow: User, toFollow: Boolean) {
+        val followerFragment = FollowingFragment()
         val bundle = Bundle()
-        bundle.putParcelable(FOLLOW, follow)
-        bundle.putBoolean(IS_FROM_SEARCH, isFromSearch)
+        bundle.putParcelable(FOLLOWING, follow)
+        bundle.putBoolean(TO_FOLLOW, toFollow)
         followerFragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()
@@ -90,7 +93,7 @@ class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener,
     private fun startEditActivityForHistorical(followed: User) {
         val intent = Intent(this, EditActivity::class.java)
         intent.putExtra(EDIT, HISTORICAL_FROM_FOLLOWER)
-        intent.putExtra(FOLLOWED, followed)
+        intent.putExtra(FOLLOWING, followed)
         startActivity(intent)
     }
 
@@ -98,7 +101,7 @@ class FollowerActivity : AppCompatActivity(), SearchFragment.FollowListener,
 
     // Callback from SearchFragment
     override fun displayFollow(follow: User?) {
-        follow?.let { displayFollowerFragment(it, true) }
+        follow?.let { displayFollowingFragment(it, true) }
     }
 
     // Callback from FollowerFragment
