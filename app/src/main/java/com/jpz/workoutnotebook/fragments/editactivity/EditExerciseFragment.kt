@@ -179,8 +179,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     private fun closeFragment() {
         activity?.let { myUtils.closeFragment(editExerciseFragmentProgressBar, it) }
-        editExerciseFragmentFABSave.isEnabled = false
-        editExerciseFragmentFABAddSeries.isEnabled = false
+        editExerciseFragmentFABSave?.isEnabled = false
+        editExerciseFragmentFABAddSeries?.isEnabled = false
     }
 
     private fun createOrUpdateExercise() {
@@ -236,11 +236,12 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                     Log.d(TAG, "previousExercise = $previousExercise")
                     exerciseViewModel.updateExercise(userId, previousExercise, it)
                         ?.addOnSuccessListener {
-                            myUtils.showSnackBar(
-                                editExerciseFragmentCoordinatorLayout, getString(
-                                    R.string.exercise_updated, exercise?.exerciseName
-                                )
-                            )
+                            context?.getString(R.string.exercise_updated, exercise?.exerciseName)
+                                ?.let { text ->
+                                    myUtils.showSnackBar(
+                                        editExerciseFragmentCoordinatorLayout, text
+                                    )
+                                }
                             Log.d(TAG, "DocumentSnapshot successfully updated!")
                             closeFragment()
                         }
@@ -258,11 +259,13 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"
                                 )
                                 // Inform the user
-                                myUtils.showSnackBar(
-                                    editExerciseFragmentCoordinatorLayout, getString(
-                                        R.string.new_exercise_created, exercise?.exerciseName
+                                context?.getString(
+                                    R.string.new_exercise_created, exercise?.exerciseName
+                                )?.let { text ->
+                                    myUtils.showSnackBar(
+                                        editExerciseFragmentCoordinatorLayout, text
                                     )
-                                )
+                                }
                                 closeFragment()
                             }
                     }

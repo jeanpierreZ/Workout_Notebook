@@ -244,8 +244,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     private fun closeFragment() {
         activity?.let { myUtils.closeFragment(editWorkoutFragmentProgressBar, it) }
-        editWorkoutFragmentFABSave.isEnabled = false
-        editWorkoutFragmentFABAddExercise.isEnabled = false
+        editWorkoutFragmentFABSave?.isEnabled = false
+        editWorkoutFragmentFABAddExercise?.isEnabled = false
     }
 
     private fun createOrUpdateWorkout() {
@@ -301,11 +301,12 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                     Log.d(TAG, "previousWorkout = $previousWorkout")
                     workoutViewModel.updateWorkout(userId, previousWorkout, it)
                         ?.addOnSuccessListener {
-                            myUtils.showSnackBar(
-                                editWorkoutFragmentCoordinatorLayout, getString(
-                                    R.string.workout_updated, workout?.workoutName
-                                )
-                            )
+                            context?.getString(R.string.workout_updated, workout?.workoutName)
+                                ?.let { text ->
+                                    myUtils.showSnackBar(
+                                        editWorkoutFragmentCoordinatorLayout, text
+                                    )
+                                }
                             Log.d(TAG, "DocumentSnapshot successfully updated!")
                             closeFragment()
                         }
@@ -323,11 +324,13 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"
                                 )
                                 // Inform the user
-                                myUtils.showSnackBar(
-                                    editWorkoutFragmentCoordinatorLayout, getString(
-                                        R.string.new_workout_created, workout?.workoutName
+                                context?.getString(
+                                    R.string.new_workout_created, workout?.workoutName
+                                )?.let { text ->
+                                    myUtils.showSnackBar(
+                                        editWorkoutFragmentCoordinatorLayout, text
                                     )
-                                )
+                                }
                                 closeFragment()
                             }
                     }

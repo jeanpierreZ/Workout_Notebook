@@ -244,7 +244,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     private fun closeFragment() {
         activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
-        editCalendarFragmentButtonSave.isEnabled = false
+        editCalendarFragmentButtonSave?.isEnabled = false
         setHasOptionsMenu(false)
     }
 
@@ -308,10 +308,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         )
                         trainingSessionViewModel.updateTrainingSession(userId, trainingSession)
                             ?.addOnSuccessListener {
-                                myUtils.showSnackBar(
-                                    editCalendarFragmentCoordinatorLayout,
-                                    R.string.training_session_updated
-                                )
+                                context?.getString(R.string.training_session_updated)?.let { text ->
+                                    myUtils.showSnackBar(
+                                        editCalendarFragmentCoordinatorLayout, text
+                                    )
+                                }
                                 Log.d(TAG, "DocumentSnapshot successfully updated!")
                                 closeFragment()
                             }
@@ -333,12 +334,14 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                             "DocumentSnapshot written with id: ${documentReference.id}"
                                         )
                                         // Inform the user
-                                        myUtils.showSnackBar(
-                                            editCalendarFragmentCoordinatorLayout, getString(
-                                                R.string.new_training_session_created,
-                                                trainingSession.workout?.workoutName
+                                        context?.getString(
+                                            R.string.new_training_session_created,
+                                            trainingSession.workout?.workoutName
+                                        )?.let { text ->
+                                            myUtils.showSnackBar(
+                                                editCalendarFragmentCoordinatorLayout, text
                                             )
-                                        )
+                                        }
                                         closeFragment()
                                     }
                             }
@@ -391,10 +394,12 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     // Delete the training session
                     trainingSessionViewModel.deleteATrainingSession(userId, trainingSession)
                         ?.addOnSuccessListener {
-                            myUtils.showSnackBar(
-                                editCalendarFragmentCoordinatorLayout,
-                                R.string.training_session_deleted
-                            )
+                            context?.getString(R.string.training_session_deleted)
+                                ?.let { text ->
+                                    myUtils.showSnackBar(
+                                        editCalendarFragmentCoordinatorLayout, text
+                                    )
+                                }
                             Log.d(TAG, "DocumentSnapshot successfully deleted!")
                             closeFragment()
                         }
