@@ -111,8 +111,7 @@ class StatisticsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_statistics, container, false)
@@ -128,12 +127,12 @@ class StatisticsFragment : Fragment() {
         val endDate = false
 
         fragmentStatisticsEntryDate.editText?.setOnClickListener {
-            val datePicker = DatePickerFragment(historical, entryDate)
+            val datePicker = DatePickerFragment(historical, entryDate, null, null, null)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
 
         fragmentStatisticsEndDate.editText?.setOnClickListener {
-            val datePicker = DatePickerFragment(historical, endDate)
+            val datePicker = DatePickerFragment(historical, endDate, null, null, null)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
 

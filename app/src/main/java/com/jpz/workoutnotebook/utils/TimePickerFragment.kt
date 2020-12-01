@@ -9,7 +9,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import java.util.*
 
-class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
+class TimePickerFragment(private var hourOfDay: Int?, private var minute: Int?) : DialogFragment(),
+    TimePickerDialog.OnTimeSetListener {
 
     companion object {
         const val REQUEST_KEY_TIME = "REQUEST_KEY_TIME"
@@ -18,15 +19,17 @@ class TimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener 
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // Use the current time as the default values for the picker
-        val c = Calendar.getInstance()
-        val hour = c.get(Calendar.HOUR_OF_DAY)
-        val minute = c.get(Calendar.MINUTE)
+        if (hourOfDay == null && minute == null) {
+            // Use the current time as the default values for the picker
+            val c = Calendar.getInstance()
+            hourOfDay = c.get(Calendar.HOUR_OF_DAY)
+            minute = c.get(Calendar.MINUTE)
+        }
 
         // Set TimePickerDialog with time from the calendar
         val dialog = activity?.let {
             TimePickerDialog(
-                it, this, hour, minute, android.text.format.DateFormat.is24HourFormat(it)
+                it, this, hourOfDay!!, minute!!, android.text.format.DateFormat.is24HourFormat(it)
             )
         }
 

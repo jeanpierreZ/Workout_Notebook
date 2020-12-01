@@ -9,8 +9,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import java.util.*
 
-class DatePickerFragment(private val historical: Boolean, private val entryDate: Boolean) :
-    DialogFragment(), DatePickerDialog.OnDateSetListener {
+class DatePickerFragment(
+    private val historical: Boolean, private val entryDate: Boolean,
+    private var year: Int?, private var month: Int?, private var day: Int?
+) : DialogFragment(), DatePickerDialog.OnDateSetListener {
 
     companion object {
         const val REQUEST_KEY_ENTRY_DATE = "REQUEST_KEY_ENTRY_DATE"
@@ -21,14 +23,16 @@ class DatePickerFragment(private val historical: Boolean, private val entryDate:
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // Use the current date as the default date in the picker
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
+        if (year == null && month == null && day == null) {
+            // Use the current date as the default date in the picker
+            val c = Calendar.getInstance()
+            year = c.get(Calendar.YEAR)
+            month = c.get(Calendar.MONTH)
+            day = c.get(Calendar.DAY_OF_MONTH)
+        }
 
         // Set DatePickerDialog with date from the calendar
-        val dialog = activity?.let { DatePickerDialog(it, this, year, month, day) }
+        val dialog = activity?.let { DatePickerDialog(it, this, year!!, month!!, day!!) }
 
         if (historical) {
             // Configure the calendar to not choose a future date

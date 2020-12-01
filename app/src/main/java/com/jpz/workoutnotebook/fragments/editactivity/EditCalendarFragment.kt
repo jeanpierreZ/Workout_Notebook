@@ -421,12 +421,24 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             R.id.editCalendarFragmentButtonWorkout -> getAllWorkouts()
 
             R.id.editCalendarFragmentButtonDate -> {
-                val datePicker = DatePickerFragment(historical, entryDate)
+                val datePicker = if (trainingSession != null) {
+                    // Set calendar data from training session to update
+                    DatePickerFragment(historical, entryDate, year, month, day)
+                } else {
+                    // Don't set calendar data
+                    DatePickerFragment(historical, entryDate, null, null, null)
+                }
                 datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
             }
 
             R.id.editCalendarFragmentButtonTime -> {
-                val timePicker = TimePickerFragment()
+                val timePicker = if (trainingSession != null) {
+                    // Set calendar data from training session to update
+                    TimePickerFragment(hour, minute)
+                } else {
+                    // Don't set calendar data
+                    TimePickerFragment(null, null)
+                }
                 timePicker.show(childFragmentManager, TimePickerFragment::class.java.simpleName)
             }
 
