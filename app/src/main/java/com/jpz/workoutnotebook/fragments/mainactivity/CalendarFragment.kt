@@ -93,8 +93,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     private fun configureRecyclerView(list: ArrayList<TrainingSession>) {
         // Create the adapter by passing the list of training sessions
-        itemTrainingSessionAdapter =
-            activity?.let { ItemTrainingSessionAdapter(list, it, this) }
+        itemTrainingSessionAdapter = ItemTrainingSessionAdapter(list, this)
         // Attach the adapter to the recyclerView to populate the training sessions
         calendarFragmentRecyclerView?.adapter = itemTrainingSessionAdapter
         // Set layout manager to position the training sessions

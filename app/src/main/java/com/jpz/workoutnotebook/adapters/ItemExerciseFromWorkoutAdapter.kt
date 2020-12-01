@@ -11,12 +11,11 @@ import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.viewholders.ItemExerciseViewHolder
 
 class ItemExerciseFromWorkoutAdapter(
-    private var list: ArrayList<Exercise>, private var context: Context
+    private val list: ArrayList<Exercise>, private val context: Context
 ) : RecyclerView.Adapter<ItemExerciseViewHolder>() {
     // RecyclerView used only to interact with the list of exercises chosen for a workout
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemExerciseViewHolder {
-        context = parent.context
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.sport_item, parent, false)
         return ItemExerciseViewHolder(view)

@@ -15,7 +15,7 @@ import com.jpz.workoutnotebook.viewholders.ItemExerciseViewHolder
 
 
 class ItemExerciseAdapter(
-    options: FirestoreRecyclerOptions<Exercise?>, private var callback: Listener
+    options: FirestoreRecyclerOptions<Exercise?>, private val callback: Listener
 ) : FirestoreRecyclerAdapter<Exercise, ItemExerciseViewHolder>(options) {
 
     companion object {

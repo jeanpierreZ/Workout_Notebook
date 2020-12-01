@@ -7,7 +7,7 @@ import com.jpz.workoutnotebook.databinding.CommunityItemBinding
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.viewholders.ItemCommunityViewHolder
 
-class ItemSearchAdapter(private var list: ArrayList<User>, private var callback: Listener) :
+class ItemSearchAdapter(private val list: ArrayList<User>, private val callback: Listener) :
     RecyclerView.Adapter<ItemCommunityViewHolder>() {
     // RecyclerView used only to interact with the list of users find in searchFragment
 

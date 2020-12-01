@@ -14,7 +14,7 @@ import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.viewholders.ItemWorkoutViewHolder
 
 class ItemWorkoutAdapter(
-    options: FirestoreRecyclerOptions<Workout?>, private var callback: Listener
+    options: FirestoreRecyclerOptions<Workout?>, private val callback: Listener
 ) : FirestoreRecyclerAdapter<Workout, ItemWorkoutViewHolder>(options) {
 
     companion object {

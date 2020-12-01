@@ -9,12 +9,11 @@ import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.viewholders.ItemHistoricalViewHolder
 
 class ItemHistoricalAdapter(
-    private val list: ArrayList<TrainingSession>, private var context: Context
+    private val list: ArrayList<TrainingSession>, private val context: Context
 ) : RecyclerView.Adapter<ItemHistoricalViewHolder>() {
     // RecyclerView used only to display historical training sessions
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHistoricalViewHolder {
-        context = parent.context
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.historical_item, parent, false)
         return ItemHistoricalViewHolder(view)

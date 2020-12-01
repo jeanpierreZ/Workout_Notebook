@@ -106,8 +106,8 @@ class SportsFragment : Fragment() {
                                     R.string.next_training_session_data,
                                     workoutName, dateStringFormatted
                                 )
-                                sportsFragmentTrainingSessionButton.isEnabled = true
-                                sportsFragmentTrainingSessionButton.visibility = View.VISIBLE
+                                sportsFragmentTrainingSessionButton?.isEnabled = true
+                                sportsFragmentTrainingSessionButton?.visibility = View.VISIBLE
                             }
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
@@ -115,8 +115,8 @@ class SportsFragment : Fragment() {
                         sportsFragmentTrainingSession?.text =
                             getString(R.string.no_upcoming_training_session)
                         Log.d(TAG, "Current data: null")
-                        sportsFragmentTrainingSessionButton.isEnabled = false
-                        sportsFragmentTrainingSessionButton.visibility = View.INVISIBLE
+                        sportsFragmentTrainingSessionButton?.isEnabled = false
+                        sportsFragmentTrainingSessionButton?.visibility = View.INVISIBLE
                     }
                 }
         }

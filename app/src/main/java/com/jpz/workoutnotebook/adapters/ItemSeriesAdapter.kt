@@ -14,9 +14,9 @@ import com.jpz.workoutnotebook.viewholders.ItemSeriesViewHolder
 
 
 class ItemSeriesAdapter(
-    private var list: ArrayList<Series>, private val isDisabled: Boolean,
+    private val list: ArrayList<Series>, private val isDisabled: Boolean,
     private val isForTrainingSession: Boolean, private val seriesDisabledName: String?,
-    private val noOfSeries: Int?, private var context: Context
+    private val noOfSeries: Int?, private val context: Context
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -25,7 +25,6 @@ class ItemSeriesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        context = parent.context
         val inflater = LayoutInflater.from(context)
         val view = SeriesItemBinding.inflate(inflater, parent, false)
         return if (viewType == TYPE_SERIES) {
