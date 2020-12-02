@@ -134,7 +134,16 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         }
     }
 
-    //--------------------------------------------------------------------------------------
+    override fun onBackPressed() {
+        if (mainActivityViewPager.currentItem == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed()
+        } else {
+            // Otherwise, select the previous step.
+            mainActivityViewPager.currentItem = mainActivityViewPager.currentItem - 1
+        }
+    }
 
     // FAB disappear and appear when a page is scrolled or selected
     private fun animateFAB() {

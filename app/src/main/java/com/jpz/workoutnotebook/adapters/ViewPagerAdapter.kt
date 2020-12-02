@@ -1,11 +1,11 @@
 package com.jpz.workoutnotebook.adapters
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.jpz.workoutnotebook.fragments.mainactivity.*
 
-class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+class ViewPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
 
     companion object {
         // Field for the number of page to show
@@ -15,16 +15,14 @@ class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activ
     override fun getItemCount(): Int = NUM_ITEMS
 
     override fun createFragment(position: Int): Fragment {
-        var fragment = Fragment()
-
         // Fragment to return
-        when (position) {
-            0 -> fragment = SportsFragment()
-            1 -> fragment = CalendarFragment()
-            2 -> fragment = StatisticsFragment()
-            3 -> fragment = CommunityFragment()
-            4 -> fragment = ProfileFragment()
+        return when (position) {
+            0 -> SportsFragment()
+            1 -> CalendarFragment()
+            2 -> StatisticsFragment()
+            3 -> CommunityFragment()
+            4 -> ProfileFragment()
+            else -> SportsFragment()
         }
-        return fragment
     }
 }
