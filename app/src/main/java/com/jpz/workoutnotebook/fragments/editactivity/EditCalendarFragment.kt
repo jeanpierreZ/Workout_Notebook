@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -29,6 +30,7 @@ import com.jpz.workoutnotebook.utils.TimePickerFragment.Companion.REQUEST_KEY_TI
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import kotlinx.android.synthetic.main.fragment_edit_calendar.*
+import kotlinx.android.synthetic.main.fragment_sports.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormat
@@ -41,6 +43,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     companion object {
         private val TAG = EditCalendarFragment::class.java.simpleName
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
+        private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
         const val WORKOUT_NAME = "WORKOUT_NAME"
     }
 
@@ -320,9 +323,12 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                         editCalendarFragmentCoordinatorLayout, text
                                     )
                                 }
-                                scheduleNotification()
+                            }?.continueWith {
+                                // For notification
+                                getNextTrainingSession()
                                 closeFragment()
                             }
+
                     } else {
                         // Create the training session
                         val trainingSession = TrainingSession(
@@ -349,7 +355,9 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                                 editCalendarFragmentCoordinatorLayout, text
                                             )
                                         }
-                                        scheduleNotification()
+                                    }.continueWith {
+                                        // For notification
+                                        getNextTrainingSession()
                                         closeFragment()
                                     }
                             }
@@ -384,25 +392,63 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     }
 
     //----------------------------------------------------------------------------------
-    // Schedule a notification to prevent user one hour before the time of the training session
+    // Get the next training session and schedule a notification to prevent user one hour before the time of the training session
 
-    private fun scheduleNotification() {
-        // TODO get the next training session and not the current training session
+    private fun getNextTrainingSession() {
+        // Instantiate a Calendar
+        val nowCalendar = Calendar.getInstance()
+        val now: Date = nowCalendar.time
+        // Parse the date in SimpleDateFormat to compare it with the list of training sessions
+        val formattedDate = sdf.format(now)
+
+        userId?.let {
+            trainingSessionViewModel.getListOfTrainingSessions(it)
+                // Filter the list with upcoming parsed dates and training sessions that are not still completed
+                .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
+                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+                .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+                .limit(1)
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e)
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null && !snapshot.isEmpty) {
+                        Log.d(TAG, "Current data: ${snapshot.documents}")
+                        val list = snapshot.documents
+                        // Get the training session object
+                        list[0].reference.get().addOnCompleteListener { document ->
+                            trainingSession = document.result?.toObject(TrainingSession::class.java)
+                            // Get next trainingSessionDate with its workout name to schedule a notification
+                            val date = trainingSession?.trainingSessionDate!!
+                            val workoutName: String = trainingSession?.workout?.workoutName!!
+                            scheduleNotification(workoutName, date)
+                        }
+                    } else {
+                        Log.d(TAG, "Current data: null")
+                    }
+                }
+        }
+    }
+
+    private fun scheduleNotification(workoutName: String, date: String) {
+        // Configure alarm manager and intent
         val alarmMgr = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(activity, NotificationReceiver::class.java)
-        val workoutName = trainingSession?.workout?.workoutName
         intent.putExtra(WORKOUT_NAME, workoutName)
         val alarmIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
 
-        // Set the schedule to one hour before the time of the training session
-        val notificationCalendar = Calendar.getInstance()
-        notificationCalendar.timeInMillis = System.currentTimeMillis()
-        notificationCalendar[Calendar.YEAR] = year
-        notificationCalendar[Calendar.MONTH] = month
-        notificationCalendar[Calendar.DATE] = day
-        notificationCalendar[Calendar.HOUR_OF_DAY] = hour - 1
-        notificationCalendar[Calendar.MINUTE] = minute
+        // Format the date
+        val dateFormatted: Date = sdf.parse(date)!!
+        // Subtract the number of milliseconds in an hour from the date
+        dateFormatted.time = dateFormatted.time - (3600 * 1000)
 
+        // Create a calendar for the notification
+        val notificationCalendar = Calendar.getInstance()
+        notificationCalendar.time = dateFormatted
+
+        // Set alarm manager
         alarmMgr.setExact(AlarmManager.RTC_WAKEUP, notificationCalendar.timeInMillis, alarmIntent)
     }
 
