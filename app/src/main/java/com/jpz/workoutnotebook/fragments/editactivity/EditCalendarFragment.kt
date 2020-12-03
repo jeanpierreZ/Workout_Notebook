@@ -1,6 +1,10 @@
 package com.jpz.workoutnotebook.fragments.editactivity
 
+import android.app.AlarmManager
 import android.app.Dialog
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -10,6 +14,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
+import com.jpz.workoutnotebook.notifications.NotificationReceiver
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.DatePickerFragment.Companion.BUNDLE_KEY_DAY
@@ -36,6 +41,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     companion object {
         private val TAG = EditCalendarFragment::class.java.simpleName
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
+        const val WORKOUT_NAME = "WORKOUT_NAME"
     }
 
     private var calendar = Calendar.getInstance()
@@ -308,12 +314,13 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         )
                         trainingSessionViewModel.updateTrainingSession(userId, trainingSession)
                             ?.addOnSuccessListener {
+                                Log.d(TAG, "DocumentSnapshot successfully updated!")
                                 context?.getString(R.string.training_session_updated)?.let { text ->
                                     myUtils.showSnackBar(
                                         editCalendarFragmentCoordinatorLayout, text
                                     )
                                 }
-                                Log.d(TAG, "DocumentSnapshot successfully updated!")
+                                scheduleNotification()
                                 closeFragment()
                             }
                     } else {
@@ -342,6 +349,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                                 editCalendarFragmentCoordinatorLayout, text
                                             )
                                         }
+                                        scheduleNotification()
                                         closeFragment()
                                     }
                             }
@@ -373,6 +381,29 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             )
             true
         } else false
+    }
+
+    //----------------------------------------------------------------------------------
+    // Schedule a notification to prevent user one hour before the time of the training session
+
+    private fun scheduleNotification() {
+        // TODO get the next training session and not the current training session
+        val alarmMgr = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(activity, NotificationReceiver::class.java)
+        val workoutName = trainingSession?.workout?.workoutName
+        intent.putExtra(WORKOUT_NAME, workoutName)
+        val alarmIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
+
+        // Set the schedule to one hour before the time of the training session
+        val notificationCalendar = Calendar.getInstance()
+        notificationCalendar.timeInMillis = System.currentTimeMillis()
+        notificationCalendar[Calendar.YEAR] = year
+        notificationCalendar[Calendar.MONTH] = month
+        notificationCalendar[Calendar.DATE] = day
+        notificationCalendar[Calendar.HOUR_OF_DAY] = hour - 1
+        notificationCalendar[Calendar.MINUTE] = minute
+
+        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, notificationCalendar.timeInMillis, alarmIntent)
     }
 
     //----------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 package com.jpz.workoutnotebook.injections
 
+import com.jpz.workoutnotebook.notifications.Notification
 import com.jpz.workoutnotebook.repositories.*
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.*
@@ -80,4 +81,9 @@ val moduleFollowingViewModel = module {
 val moduleMyUtils = module {
     // Instance of MyUtils
     single { MyUtils() }
+}
+
+val moduleNotification = module {
+    // Instance of Notification
+    single { Notification() }
 }

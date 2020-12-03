@@ -30,7 +30,8 @@ class KoinApplication : Application() {
                     moduleFollowViewModel,
                     moduleFollowingRepository,
                     moduleFollowingViewModel,
-                    moduleMyUtils
+                    moduleMyUtils,
+                    moduleNotification
                 )
             )
         }

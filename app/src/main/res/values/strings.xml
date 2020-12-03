@@ -129,4 +129,9 @@
 
     <!-- Historical Fragment -->
     <string name="no_historical_training_sessions">There are no historical training sessions</string>
+
+    <!-- Used for the Notifications -->
+    <string name="channel_name">"Channel</string>
+    <string name="channel_description">Channel for notifications</string>
+    <string name="notification_text">You must start your training session for %s in one hour!</string>
 </resources>
