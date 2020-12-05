@@ -9,8 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.viewpager2.widget.ViewPager2
+import com.algolia.search.client.ClientSearch
+import com.algolia.search.model.APIKey
+import com.algolia.search.model.ApplicationID
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.jpz.workoutnotebook.BuildConfig.algoliaApiKey
+import com.jpz.workoutnotebook.BuildConfig.algoliaAppId
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
 import com.jpz.workoutnotebook.fragments.mainactivity.CalendarFragment
