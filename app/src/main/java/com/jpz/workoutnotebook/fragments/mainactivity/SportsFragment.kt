@@ -5,12 +5,25 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.algolia.search.client.ClientSearch
+import com.algolia.search.client.Index
+import com.algolia.search.model.APIKey
+import com.algolia.search.model.ApplicationID
+import com.algolia.search.model.IndexName
+import com.algolia.search.model.ObjectID
 import com.google.firebase.firestore.Query
+import com.jpz.workoutnotebook.BuildConfig
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.TrainingSession
+import com.jpz.workoutnotebook.models.User
+import com.jpz.workoutnotebook.models.UserIndex
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
+import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.android.synthetic.main.fragment_sports.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormat
@@ -24,6 +37,7 @@ class SportsFragment : Fragment() {
         private val TAG = SportsFragment::class.java.simpleName
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
         private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
+        const val INDEX_NAME = "users"
     }
 
     private var userId: String? = null
@@ -38,6 +52,9 @@ class SportsFragment : Fragment() {
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
+
+    // To send the existing database to Algolia
+    private val userViewModel: UserViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -65,6 +82,8 @@ class SportsFragment : Fragment() {
         sportsFragmentWorkoutsButton.setOnClickListener {
             callback?.onClickedExerciseOrWorkoutButton(getString(R.string.workouts))
         }
+
+        // sendExistingDatabaseToAlgolia()
     }
 
     //----------------------------------------------------------------------------------
@@ -145,5 +164,45 @@ class SportsFragment : Fragment() {
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement SportsFragmentButtonListener")
         }
+    }
+
+    //----------------------------------------------------------------------------------
+
+    // For Algolia, used only to create an index with users already present in the database.
+    // No need to call it after first use.
+    private fun sendExistingDatabaseToAlgolia() {
+        // Set client with keys and index name
+        val appID = ApplicationID(BuildConfig.algoliaAppId)
+        val apiKey = APIKey(BuildConfig.algoliaApiKey)
+        val indexName = IndexName(INDEX_NAME)
+        val client = ClientSearch(appID, apiKey)
+        // Init the index
+        val index: Index = client.initIndex(indexName)
+
+        // Add an index for all users in database
+        userViewModel.getAllUsers()
+            .get()
+            .addOnSuccessListener { documents ->
+                Log.d(TAG, "documents.size() => ${documents.size()}")
+                if (!documents.isEmpty) {
+                    for (document in documents) {
+                        Log.d(TAG, "${document.id} => ${document.data}")
+                        // Get User object from Firestore
+                        val user = document.toObject(User::class.java)
+                        // Create a UserIndex used in Algolia
+                        val myUserIndex =
+                            UserIndex(
+                                user.nickName, user.name, user.firstName, ObjectID(user.userId)
+                            )
+                        GlobalScope.launch {
+                            // Save object in Algolia
+                            index.saveObject(UserIndex.serializer(), myUserIndex)
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
     }
 }

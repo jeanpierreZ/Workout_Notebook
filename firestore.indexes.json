@@ -1,0 +1,89 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "trainingSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "trainingSessionCompleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "trainingSessionDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "trainingSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "trainingSessionCompleted",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "trainingSessionDate",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "trainingSessions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "workoutId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "trainingSessionDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "firstName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "nickName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

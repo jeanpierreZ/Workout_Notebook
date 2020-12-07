@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  // Grant only a user access to read and create data
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      // Only the authenticated user can update its on data
+      allow update: if request.auth != null && request.auth.uid == resource.data.userId;
+    }
+  }
+  
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      // Only authenticated users can read
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      // Only the authenticated user can update and delete its on data
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+  
+  match /databases/{database}/documents {
+  // Grant only a user access to read and create data
+    match /followings/{userId}/{document=**} {
+          allow read, write: if request.auth != null;
+    }
+  }
+}

@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 // For Kotlin use kapt instead of annotationProcessor
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion 30
@@ -125,5 +126,11 @@ dependencies {
 
     // Algolia
     implementation 'com.algolia:algoliasearch-client-kotlin-jvm:1.6.0'
+    // HTTP clients
+    implementation 'io.ktor:ktor-client-android:1.4.0'
+
+    // Kotlin Serialization
+    // Already included in core ktx
+    // implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
 }
 apply plugin: 'com.google.gms.google-services'
