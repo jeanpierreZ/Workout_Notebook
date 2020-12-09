@@ -28,7 +28,35 @@ const client = algoliasearch(ALGOLIA_ID, ALGOLIA_ADMIN_KEY);
 
 const index = client.initIndex(ALGOLIA_INDEX_NAME);
 
+index.setSettings({	searchableAttributes: ['nickName', 'firstName', 'name']});
+
 // Cloud Functions
+
+// Used once to transfer the database to Algolia. To trigger it, go to the Cloud Functions in GCP and click on the url in Trigger tab.
+// Loading initial users data
+exports.sendCollectionToAlgolia = functions.https.onRequest((req, res) => {
+	var userArray = [];
+	
+	//Get all the documents from the Firestore collection called users
+	admin.firestore().collection(ALGOLIA_INDEX_NAME).get().then((docs) => {
+		//Get all the data from each document
+		docs.forEach((doc) => {
+			let user = doc.data();
+			//As per the algolia rules, each object needs to have a key called objectID
+			user.objectID = doc.id;
+			userArray.push(user);
+		})
+		return index.saveObjects(userArray).then(() => {
+			console.log('Documents imported into Algolia');
+			return true;
+		}).catch(error => {
+			console.error('Error when importing documents into Algolia', error);
+			return true;
+		});
+	}).catch((error) => {
+		console.log('Error getting the users collection', error)
+	});
+});
 
 // Update the search index every time a user is written for the first time.
 exports.onUserCreated = functions.firestore
@@ -64,4 +92,4 @@ exports.onUserDeleted = functions.firestore
 .onDelete(snapshot => 
 // Delete to the Algolia index
 index.deleteObject(snapshot.id)
-); 
+);

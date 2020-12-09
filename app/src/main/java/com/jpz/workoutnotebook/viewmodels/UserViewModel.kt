@@ -23,9 +23,6 @@ class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
     // Recover data from user in real-time
     fun getCurrentUser(userId: String) = userRepository.getCurrentUser(userId)
 
-    // Recover all users
-    fun getAllUsers() = userRepository.getAllUsers()
-
     // --- UPDATE ---
 
     fun updateUser(user: User) = userRepository.updateUser(user)

@@ -31,9 +31,6 @@ class UserRepository {
     fun getCurrentUser(userId: String): Query =
         getUsersCollection().whereEqualTo(FIELD_USER_ID, userId)
 
-    // Recover all users
-    fun getAllUsers(): Query = getUsersCollection()
-
     // --- UPDATE ---
 
     fun updateUser(user: User) = getUsersCollection().document(user.userId).set(user)
