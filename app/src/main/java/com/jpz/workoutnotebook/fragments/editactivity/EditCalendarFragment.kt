@@ -434,7 +434,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     private fun scheduleNotification(workoutName: String, date: String) {
         // Configure alarm manager and intent
-        val alarmMgr = activity?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmMgr = activity?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val intent = Intent(activity, NotificationReceiver::class.java)
         intent.putExtra(WORKOUT_NAME, workoutName)
         val alarmIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
@@ -449,7 +449,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         notificationCalendar.time = dateFormatted
 
         // Set alarm manager
-        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, notificationCalendar.timeInMillis, alarmIntent)
+        alarmMgr?.setExact(AlarmManager.RTC_WAKEUP, notificationCalendar.timeInMillis, alarmIntent)
     }
 
     //----------------------------------------------------------------------------------

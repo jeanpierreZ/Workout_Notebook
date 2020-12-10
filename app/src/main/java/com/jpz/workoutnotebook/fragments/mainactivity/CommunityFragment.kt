@@ -90,7 +90,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
                             // Add the people followed to the list
                             followedObject?.let { list.add(it) }
                             // Notify the adapter
-                            itemCommunityAdapterFollowed?.notifyItemInserted(list.size - 1)
+                            itemCommunityAdapterFollowed?.notifyDataSetChanged()
                         }
                 }
             }
@@ -120,7 +120,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
                             // Add the follower to the list
                             followerObject?.let { listOfFollowers.add(it) }
                             // Notify the adapter
-                            itemCommunityAdapterFollower?.notifyItemInserted(listOfFollowers.size - 1)
+                            itemCommunityAdapterFollower?.notifyDataSetChanged()
                         }
                 }
             }

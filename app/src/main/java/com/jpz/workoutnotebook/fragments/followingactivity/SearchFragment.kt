@@ -13,16 +13,26 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.algolia.search.client.ClientSearch
+import com.algolia.search.client.Index
+import com.algolia.search.helper.deserialize
+import com.algolia.search.model.APIKey
+import com.algolia.search.model.ApplicationID
+import com.algolia.search.model.Attribute
+import com.algolia.search.model.IndexName
+import com.algolia.search.model.search.Query
+import com.jpz.workoutnotebook.BuildConfig
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
-import com.jpz.workoutnotebook.viewmodels.FollowViewModel
 import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
@@ -32,13 +42,13 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         private const val USER_NICKNAME_FIELD = "nickName"
         private const val USER_FIRST_NAME_FIELD = "firstName"
         private const val USER_NAME_FIELD = "name"
+        const val INDEX_NAME = "users"
     }
 
     private var userId: String? = null
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
-    private val followViewModel: FollowViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
     private var searchView: SearchView? = null
@@ -50,8 +60,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     private var callback: FollowListener? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_search, container, false)
@@ -103,7 +112,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         // When the user valid a query in the searchView
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                getResultFromFirestore(query)
+                GlobalScope.launch { getResultFromAlgolia(query) }
                 return false
             }
 
@@ -115,93 +124,45 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun getResultFromFirestore(query: String) {
+    private suspend fun getResultFromAlgolia(query: String) {
+        // Set client with keys and index name
+        val appID = ApplicationID(BuildConfig.algoliaAppId)
+        val apiKey = APIKey(BuildConfig.algoliaApiKey)
+        val indexName = IndexName(INDEX_NAME)
+        val client = ClientSearch(appID, apiKey)
+        // Init the index
+        val index: Index = client.initIndex(indexName)
+        // Set the attibutes
+        val nickName = Attribute(USER_NICKNAME_FIELD)
+        val name = Attribute(USER_NAME_FIELD)
+        val firstName = Attribute(USER_FIRST_NAME_FIELD)
+        // Set the attributes in Algolia query
+        Query(attributesToRetrieve = listOf(nickName, name, firstName), hitsPerPage = 50)
+
         if (resultList.isNotEmpty()) {
             resultList.clear()
         }
 
-        // Get result for nickName field
-        userId?.let {
-            followViewModel.getListOfUsers(it)
-                .whereEqualTo(USER_NICKNAME_FIELD, query)
-                .get()
-                .addOnSuccessListener { documents ->
-                    Log.d(TAG, "For nickName : documents.size() => ${documents.size()}")
-                    if (!documents.isEmpty) {
-                        for (document in documents) {
-                            Log.d(TAG, "For nickName : ${document.id} => ${document.data}")
-                            val followToAdd = document.toObject(User::class.java)
-                            // Add the result to the nickNameList
-                            resultList.add(followToAdd)
-                        }
-                    }
-                    getResultForFirstName(query)
-
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
+        val list = GlobalScope.async {
+            // Search in Algolia with the query from the searchView
+            val result = index.search(Query(query))
+            Log.d(TAG, "result from Algolia = $result")
+            // For each result add a user to the list
+            result.hits.deserialize(User.serializer()).forEach { user ->
+                val userToAdd: User = user
+                resultList.add(userToAdd)
+            }
         }
-    }
 
-    private fun getResultForFirstName(query: String) {
-        // Get result for firstName field
-        userId?.let {
-            followViewModel.getListOfUsers(it)
-                .whereEqualTo(USER_FIRST_NAME_FIELD, query)
-                .get()
-                .addOnSuccessListener { documents ->
-                    Log.d(TAG, "For firstName : documents.size() => ${documents.size()}")
-                    if (!documents.isEmpty) {
-                        for (document in documents) {
-                            Log.d(TAG, "For firstName : ${document.id} => ${document.data}")
-                            val followToAdd = document.toObject(User::class.java)
-                            // Add the result to the firstNameList
-                            resultList.add(followToAdd)
-                        }
-                    }
-                    getResultForName(query)
+        // When the previous task is done, pass the list to the recyclerView
+        list.await().run {
+            activity?.runOnUiThread {
+                if (resultList.isNotEmpty()) {
+                    configureRecyclerView(resultList)
+                } else {
+                    myUtils.showSnackBar(searchFragmentCoordinatorLayout, R.string.search_no_result)
                 }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-        }
-    }
-
-    private fun getResultForName(query: String) {
-        // Get result for name field
-        userId?.let {
-            followViewModel.getListOfUsers(it)
-                .whereEqualTo(USER_NAME_FIELD, query)
-                .get()
-                .addOnSuccessListener { documents ->
-                    Log.d(TAG, "For name : documents.size() => ${documents.size()}")
-                    if (!documents.isEmpty) {
-                        for (document in documents) {
-                            Log.d(TAG, "For name : ${document.id} => ${document.data}")
-                            val followToAdd = document.toObject(User::class.java)
-                            // Add the result to the nameList
-                            resultList.add(followToAdd)
-                        }
-                    }
-                    showResult()
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-        }
-    }
-
-    private fun showResult() {
-        if (resultList.isNotEmpty()) {
-            // Convert resultList to set (avoid duplicates) then to list
-            val listSorted = resultList.toSet().toList()
-            Log.w(TAG, "distinct = $listSorted")
-            Log.w(TAG, "distinct size = ${listSorted.size}")
-            // Pass the list to the recyclerView
-            configureRecyclerView(ArrayList(listSorted))
-        } else {
-            myUtils.showSnackBar(searchFragmentCoordinatorLayout, R.string.search_no_result)
+            }
         }
     }
 

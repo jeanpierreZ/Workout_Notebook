@@ -7,7 +7,6 @@ class FollowRepository {
 
     companion object {
         private const val COLLECTION_NAME = "follows"
-        private const val USER_ID_FIELD = "userId"
         private const val FOLLOWED_ID_FIELD = "followedId"
     }
 
@@ -25,10 +24,6 @@ class FollowRepository {
     // Recover the list of people followed by the user
     fun getListOfPeopleFollowed(userId: String): Query =
         UserRepository.getUsersCollection().document(userId).collection(COLLECTION_NAME)
-
-    // Recover list of all users (without the current user)
-    fun getListOfUsers(userId: String): Query =
-        UserRepository.getUsersCollection().whereNotEqualTo(USER_ID_FIELD, userId)
 
     // --- DELETE ---
 

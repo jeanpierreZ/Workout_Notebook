@@ -23,9 +23,6 @@ class FollowViewModel(private val followRepository: FollowRepository) : ViewMode
     fun getListOfPeopleFollowed(userId: String): Query =
         followRepository.getListOfPeopleFollowed(userId)
 
-    // Recover list of all users (without the current user)
-    fun getListOfUsers(userId: String) = followRepository.getListOfUsers(userId)
-
     // --- DELETE ---
 
     fun noLongerFollow(userId: String, followedId: String) =

@@ -60,9 +60,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.20"
     implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.activity:activity-ktx:1.2.0-beta01'
+    implementation 'androidx.activity:activity-ktx:1.2.0-beta02'
     // The Fragment KTX module provides a number of extensions to simplify the fragment API.
-    implementation "androidx.fragment:fragment-ktx:1.3.0-beta01"
+    implementation "androidx.fragment:fragment-ktx:1.3.0-beta02"
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.material:material:1.2.1'
@@ -83,9 +83,6 @@ dependencies {
 
     // FirebaseUI for Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:6.0.2'
-
-    // Cloud Firestore Android SDK with Kotlin Extensions (used with not equal operator)
-    implementation 'com.google.firebase:firebase-firestore-ktx:22.0.0'
 
     // Firebase Storage
     implementation 'com.firebaseui:firebase-ui-storage:6.2.0'
@@ -126,11 +123,8 @@ dependencies {
 
     // Algolia
     implementation 'com.algolia:algoliasearch-client-kotlin-jvm:1.6.0'
-    // HTTP clients
-    implementation 'io.ktor:ktor-client-android:1.4.0'
-
-    // Kotlin Serialization
-    // Already included in core ktx
-    // implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
+    // HTTP client
+    implementation 'io.ktor:ktor-client-android:1.4.3'
+    implementation "org.slf4j:slf4j-simple:1.6.1"
 }
 apply plugin: 'com.google.gms.google-services'

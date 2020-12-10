@@ -134,6 +134,7 @@ class FollowingFragment : BaseProfileFragment() {
     private fun closeFragment() {
         activity?.let { myUtils.closeFragment(baseProfileFragmentProgressBar, it) }
         baseProfileFragmentFABFollow?.isEnabled = false
+        baseProfileFragmentFABHistorical?.isEnabled = false
     }
 
     //----------------------------------------------------------------------------------
