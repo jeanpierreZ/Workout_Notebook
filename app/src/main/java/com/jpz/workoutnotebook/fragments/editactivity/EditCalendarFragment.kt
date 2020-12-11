@@ -328,7 +328,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                 getNextTrainingSession()
                                 closeFragment()
                             }
-
                     } else {
                         // Create the training session
                         val trainingSession = TrainingSession(

@@ -44,8 +44,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     private var callback: CalendarListener? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calendar, container, false)
@@ -134,9 +133,26 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     // Methods to add the training sessions to the current month of the calendar
 
     private fun addTrainingSessionsToCalendarView() {
+        // Get the first day of month at midnight in SDF format
+        val beginCurrentCalendarDate: Date? = calendarFragmentCalendarView?.currentPageDate?.time
+        Log.d(TAG, "beginCurrentCalendarDate = $beginCurrentCalendarDate")
+        var beginMonthSDFFormat = ""
+        beginCurrentCalendarDate?.let { beginMonthSDFFormat = sdf.format(it) }
+
+        // Get the first day of next month at midnight in SDF format
+        val endCurrentCalendarCalendar: Calendar? = calendarFragmentCalendarView?.currentPageDate
+        // Add a month to the actual calendar
+        endCurrentCalendarCalendar?.add(Calendar.MONTH, 1)
+        val endCurrentCalendarDate: Date? = endCurrentCalendarCalendar?.time
+        Log.d(TAG, "endCurrentCalendarDate = $endCurrentCalendarDate")
+        var endMonthSDFFormat = ""
+        endCurrentCalendarDate?.let { endMonthSDFFormat = sdf.format(it) }
+
         userId?.let {
-            // Get the list of training sessions from Firestore in real time
+            // Get the list of training sessions of the current month from Firestore in real time
             trainingSessionViewModel.getListOfTrainingSessions(it)
+                .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endMonthSDFFormat)
+                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, beginMonthSDFFormat)
                 .addSnapshotListener { value, e ->
                     if (e != null) {
                         Log.w(TAG, "Listen failed.", e)
@@ -149,32 +165,24 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
                             trainingSessionDateList.add(doc.get(TRAINING_SESSION_DATE_FIELD) as String)
                         }
                         // Add an event to each training session in calendarView
-                        addEventInCurrentMonth(trainingSessionDateList)
+                        addEvent(trainingSessionDateList)
                     }
                 }
         }
     }
 
-    private fun addEventInCurrentMonth(dateList: ArrayList<String>) {
+    private fun addEvent(dateList: ArrayList<String>) {
         val events = arrayListOf<EventDay>()
-        val currentMonth = calendarFragmentCalendarView?.currentPageDate?.get(Calendar.MONTH)
-        Log.d(TAG, "currentMonth = $currentMonth")
-
         for (date in dateList) {
             // Set calendar with the date from the list
             val parsedDate: Date? = sdf.parse(date)
             Log.d(TAG, "parsedDate = $parsedDate")
-
             if (parsedDate != null) {
                 // Instantiate a calendar
                 val calendar = Calendar.getInstance()
                 // Get time from parsedDate
                 calendar.time = parsedDate
-                val dateMonth = calendar.get(Calendar.MONTH)
-                if (dateMonth == currentMonth) {
-                    // if month from date == current page month, add the event
-                    events.add(EventDay(calendar, R.drawable.ic_baseline_fitness_center_24))
-                }
+                events.add(EventDay(calendar, R.drawable.ic_baseline_fitness_center_24))
             }
         }
         // Log.d(TAG, " events.size = ${events.size}, events = $events")

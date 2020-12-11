@@ -132,7 +132,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         val client = ClientSearch(appID, apiKey)
         // Init the index
         val index: Index = client.initIndex(indexName)
-        // Set the attibutes
+        // Set the attributes
         val nickName = Attribute(USER_NICKNAME_FIELD)
         val name = Attribute(USER_NAME_FIELD)
         val firstName = Attribute(USER_FIRST_NAME_FIELD)
