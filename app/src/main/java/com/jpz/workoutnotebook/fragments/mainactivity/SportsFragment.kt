@@ -4,12 +4,15 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
+import kotlinx.android.synthetic.main.activity_connection.*
 import kotlinx.android.synthetic.main.fragment_sports.*
 import kotlinx.serialization.*
 import org.koin.android.ext.android.inject
@@ -39,6 +42,7 @@ class SportsFragment : Fragment() {
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
+    private val myUtils: MyUtils by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -66,6 +70,17 @@ class SportsFragment : Fragment() {
         sportsFragmentWorkoutsButton.setOnClickListener {
             callback?.onClickedExerciseOrWorkoutButton(getString(R.string.workouts))
         }
+
+        if (!myUtils.isOnline(requireActivity())) isOnline()
+    }
+
+    private fun isOnline() {
+        // Create an AlertDialog to alert the user that he is not connected to the network
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())
+        builder.setMessage(R.string.no_network)
+        builder.apply { setPositiveButton(android.R.string.ok) { _, _ -> } }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
     //----------------------------------------------------------------------------------

@@ -42,6 +42,7 @@
     <string name="start_training_session">Start the training session</string>
     <string name="exercises">Exercises</string>
     <string name="workouts">Workouts</string>
+    <string name="no_network">Lost network connection</string>
 
     <!-- Exercise / Workout / Series -->
     <string name="exercise_name">Exercise name</string>
