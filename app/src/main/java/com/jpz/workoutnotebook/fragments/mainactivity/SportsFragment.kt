@@ -74,6 +74,8 @@ class SportsFragment : Fragment() {
         if (!myUtils.isOnline(requireActivity())) isOnline()
     }
 
+    //----------------------------------------------------------------------------------
+
     private fun isOnline() {
         // Create an AlertDialog to alert the user that he is not connected to the network
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireActivity())

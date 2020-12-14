@@ -2,7 +2,10 @@ package com.jpz.workoutnotebook.repositories
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 
@@ -54,7 +57,7 @@ class ExerciseRepository {
 
     fun updateExercise(
         userId: String, previousExercise: Exercise, exercise: Exercise
-    ): Task<QuerySnapshot>? =
+    ): Task<Void>? =
         // First update the exercise
         exercise.exerciseId?.let {
             UserRepository.getUsersCollection()
@@ -62,56 +65,46 @@ class ExerciseRepository {
                 .collection(COLLECTION_NAME)
                 .document(it)
                 .set(exercise)
+                .addOnSuccessListener {
+                    // Then update this exercise in all workouts that contain it
+                    Log.d(TAG, "previousExercise = $previousExercise")
 
-            // Then update this exercise in all workouts that contain it
-            Log.d(TAG, "previousExercise = $previousExercise")
-            // Find all workouts that contain this exercise
-            val workoutRepository = WorkoutRepository()
-            workoutRepository.getListOfWorkouts(userId)
-                .whereArrayContains(EXERCISE_LIST_FIELD, previousExercise)
-                .get()
-                .addOnSuccessListener { documents ->
-                    Log.d(TAG, "documents = ${documents.documents}")
-                    if (documents.isEmpty) {
-                        Log.w(TAG, "documents.isEmpty")
-                    } else {
-                        for (document in documents) {
-                            // For each workout
-                            workoutRepository.getWorkout(userId, document.id)
-                                .addOnSuccessListener { doc ->
+                    // Find all workouts that contain this exercise
+                    val workoutRepository = WorkoutRepository()
+                    workoutRepository.getListOfWorkouts(userId)
+                        .whereArrayContains(EXERCISE_LIST_FIELD, previousExercise)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            Log.d(TAG, "documents = ${documents.documents}")
+                            if (documents.isEmpty) {
+                                Log.w(TAG, "documents.isEmpty")
+                            } else {
+                                for (document in documents) {
+                                    // For each workout
                                     // Get Workout object to update
-                                    val workout = doc.toObject(Workout::class.java)
+                                    val workout = document.toObject(Workout::class.java)
                                     // Get a workout before changes, which is used to update the training sessions
-                                    val previousWorkout = doc.toObject(Workout::class.java)
+                                    val previousWorkout = document.toObject(Workout::class.java)
                                     // Get the position of this exercise in the list
-                                    val index: Int? =
-                                        workout?.exercisesList?.indexOf(previousExercise)
+                                    val index: Int = workout.exercisesList.indexOf(previousExercise)
                                     // Update this exercise in the list
-                                    index?.let { workout.exercisesList.set(index, exercise) }
+                                    workout.exercisesList[index] = exercise
                                     // Update this exercise in the workout
-                                    workout?.let {
-                                        if (previousWorkout != null) {
-                                            workoutRepository.updateWorkout(
-                                                userId, previousWorkout, workout
-                                            )
-                                                ?.addOnSuccessListener {
-                                                    Log.d(
-                                                        TAG,
-                                                        "DocumentSnapshot successfully updated!"
-                                                    )
-                                                }
-                                                ?.addOnFailureListener { e ->
-                                                    Log.e(TAG, "Error updating document", e)
-                                                }
+                                    workoutRepository
+                                        .updateWorkout(userId, previousWorkout, workout)
+                                        ?.addOnSuccessListener {
+                                            Log.d(TAG, "DocumentSnapshot successfully updated!")
                                         }
-                                    }
+                                        ?.addOnFailureListener { e ->
+                                            Log.e(TAG, "Error updating document", e)
+                                        }
                                 }
-                                .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+                            }
                         }
-                    }
+                        .addOnFailureListener { exception ->
+                            Log.e(TAG, "Error getting documents: ", exception)
+                        }
                 }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
+                .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
         }
 }
