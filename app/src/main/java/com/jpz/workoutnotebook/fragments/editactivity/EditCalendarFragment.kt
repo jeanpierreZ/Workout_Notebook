@@ -73,6 +73,9 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
+    // Context used for notification intent
+    private var attachedContext: Context? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -125,6 +128,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         editCalendarFragmentButtonDate.setOnClickListener(this)
         editCalendarFragmentButtonTime.setOnClickListener(this)
         editCalendarFragmentButtonSave.setOnClickListener(this)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        attachedContext = context
     }
 
     //--------------------------------------------------------------------------------------
@@ -251,12 +259,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
     // Methods to create or update a training session
 
-    private fun closeFragment() {
-        activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
-        editCalendarFragmentButtonSave?.isEnabled = false
-        setHasOptionsMenu(false)
-    }
-
     private fun createOrUpdateTrainingSession() {
         val dateToRegister = calendar.time
 
@@ -326,7 +328,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             }?.continueWith {
                                 // For notification
                                 getNextTrainingSession()
-                                closeFragment()
                             }
                     } else {
                         // Create the training session
@@ -357,7 +358,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                     }.continueWith {
                                         // For notification
                                         getNextTrainingSession()
-                                        closeFragment()
                                     }
                             }
                     }
@@ -434,9 +434,9 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private fun scheduleNotification(workoutName: String, date: String) {
         // Configure alarm manager and intent
         val alarmMgr = activity?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-        val intent = Intent(activity, NotificationReceiver::class.java)
+        val intent = Intent(attachedContext, NotificationReceiver::class.java)
         intent.putExtra(WORKOUT_NAME, workoutName)
-        val alarmIntent = PendingIntent.getBroadcast(activity, 0, intent, 0)
+        val alarmIntent = PendingIntent.getBroadcast(attachedContext, 0, intent, 0)
 
         // Format the date
         val dateFormatted: Date = sdf.parse(date)!!
@@ -449,6 +449,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         // Set alarm manager
         alarmMgr?.setExact(AlarmManager.RTC_WAKEUP, notificationCalendar.timeInMillis, alarmIntent)
+        // Close the fragment
+        closeFragment()
     }
 
     //----------------------------------------------------------------------------------
@@ -477,13 +479,22 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                     )
                                 }
                             Log.d(TAG, "DocumentSnapshot successfully deleted!")
-                            closeFragment()
+                            // For notification
+                            getNextTrainingSession()
                         }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ ->
                 }
                 .show()
         }
+    }
+
+    //--------------------------------------------------------------------------------------
+
+    private fun closeFragment() {
+        activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
+        editCalendarFragmentButtonSave?.isEnabled = false
+        setHasOptionsMenu(false)
     }
 
     //--------------------------------------------------------------------------------------
