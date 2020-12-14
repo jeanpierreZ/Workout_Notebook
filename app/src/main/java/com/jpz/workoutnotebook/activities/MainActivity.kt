@@ -19,6 +19,7 @@ import com.jpz.workoutnotebook.fragments.mainactivity.SportsFragment
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
+import com.jpz.workoutnotebook.utils.ZoomOutPageTransformer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
@@ -95,6 +96,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     private fun configureViewPagerAdapter() {
         mainActivityViewPager.adapter = ViewPagerAdapter(this)
         mainActivityViewPager.offscreenPageLimit = 1
+        mainActivityViewPager.setPageTransformer(ZoomOutPageTransformer())
     }
 
     private fun configureTabLayout() {
