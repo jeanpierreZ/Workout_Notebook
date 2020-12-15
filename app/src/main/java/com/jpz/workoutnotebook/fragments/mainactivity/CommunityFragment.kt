@@ -20,8 +20,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
-    ItemCommunityAdapter.FollowerListener {
+class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
 
     companion object {
         private val TAG = CommunityFragment::class.java.simpleName
@@ -38,8 +37,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
     private var itemCommunityAdapterFollowed: ItemCommunityAdapter? = null
     private var itemCommunityAdapterFollower: ItemCommunityAdapter? = null
 
-    private var callbackFollowed: CommunityListener? = null
-    private var callbackFollower: CommunityListener? = null
+    private var callbackFollow: CommunityListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -72,7 +70,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
     private fun configureRecyclerViewFollowed(userId: String) {
         // Create the adapter by passing the list of people followed by the user
         val list = arrayListOf<User>()
-        itemCommunityAdapterFollowed = ItemCommunityAdapter(list, this, this, true)
+        itemCommunityAdapterFollowed = ItemCommunityAdapter(list, this, true)
         // Attach the adapter to the recyclerView to populate the people followed
         communityFragmentFollowRecyclerView?.adapter = itemCommunityAdapterFollowed
         // Set layout manager to position the list data
@@ -102,7 +100,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
     private fun configureRecyclerViewFollowers(userId: String) {
         // Create the adapter by passing the list of followers of the user
         val listOfFollowers = arrayListOf<User>()
-        itemCommunityAdapterFollower = ItemCommunityAdapter(listOfFollowers, this, this, false)
+        itemCommunityAdapterFollower = ItemCommunityAdapter(listOfFollowers, this, false)
         // Attach the adapter to the recyclerView to populate the followers
         communityFragmentFollowersRecyclerView?.adapter = itemCommunityAdapterFollower
         // Set layout manager to position the list data
@@ -131,19 +129,15 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
 
     //----------------------------------------------------------------------------------
 
-    // Interface for callback ItemCommunityAdapter FollowedListener
-    override fun onClickFollowed(followed: User?, position: Int) {
-        callbackFollowed?.displayFollowed(followed)
-    }
-
-    // Interface for callback ItemCommunityAdapter FollowerListener
-    override fun onClickFollower(follower: User?, position: Int) {
-        callbackFollower?.displayFollower(follower)
+    // Interface for callback ItemCommunityAdapter FollowListener
+    override fun onClickFollow(
+        user: User?, position: Int, viewClicked: View?, isFollowed: Boolean
+    ) {
+        callbackFollow?.displayFollow(user, viewClicked, isFollowed)
     }
 
     //----------------------------------------------------------------------------------
-    // Interfaces for callback to parent activity and associated methods
-    // when click on followed or follower item
+    // Interface for callback to parent activity and associated methods when click on follow item
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -151,18 +145,16 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowedListener,
         callbackToParentActivity()
     }
 
-    // Declare our interfaces that will be implemented by any container activity
+    // Declare our interface that will be implemented by any container activity
     interface CommunityListener {
-        fun displayFollowed(followed: User?)
-        fun displayFollower(follower: User?)
+        fun displayFollow(user: User?, viewClicked: View?, isFollowed: Boolean)
     }
 
     // Create callback to parent activity
     private fun callbackToParentActivity() {
         try {
-            // Parent activity will automatically subscribe to callbacks
-            callbackFollowed = activity as CommunityListener?
-            callbackFollower = activity as CommunityListener?
+            // Parent activity will automatically subscribe to callback
+            callbackFollow = activity as CommunityListener?
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement CommunityListener")
         }

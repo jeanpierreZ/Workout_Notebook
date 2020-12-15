@@ -18,7 +18,7 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
 
     companion object {
         private val TAG = FollowingActivity::class.java.simpleName
-        const val TO_FOLLOW = "toFollow"
+        const val IS_FOLLOWED = "IS_FOLLOWED"
         const val HISTORICAL_FROM_FOLLOWER = "HISTORICAL_FROM_FOLLOWER"
         const val FOLLOWING = "FOLLOWING"
     }
@@ -37,15 +37,11 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
             displaySearchFragment()
         }
 
-        // The followed from communityFragment
-        val followed = intent.getParcelableExtra<User>(MainActivity.FOLLOWED)
-        Log.d(TAG, "followed = $followed")
-        followed?.let { displayFollowingFragment(it, false) }
-
-        // The follower from communityFragment
-        val follower = intent.getParcelableExtra<User>(MainActivity.FOLLOWER)
-        Log.d(TAG, "follower = $follower")
-        follower?.let { displayFollowingFragment(it, true) }
+        val isFollowed = intent.getBooleanExtra(MainActivity.IS_FOLLOWED, false)
+        // The followed people or the follower from communityFragment
+        val follow = intent.getParcelableExtra<User>(MainActivity.FOLLOW)
+        Log.d(TAG, "follow = $follow")
+        follow?.let { displayFollowingFragment(it, isFollowed) }
     }
 
     //--------------------------------------------------------------------------------------
@@ -76,11 +72,11 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
             .commit()
     }
 
-    private fun displayFollowingFragment(follow: User, toFollow: Boolean) {
+    private fun displayFollowingFragment(follow: User, isFollowed: Boolean) {
         val followerFragment = FollowingFragment()
         val bundle = Bundle()
         bundle.putParcelable(FOLLOWING, follow)
-        bundle.putBoolean(TO_FOLLOW, toFollow)
+        bundle.putBoolean(IS_FOLLOWED, isFollowed)
         followerFragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()
@@ -101,7 +97,7 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
 
     // Callback from SearchFragment
     override fun displayFollow(follow: User?) {
-        follow?.let { displayFollowingFragment(it, true) }
+        follow?.let { displayFollowingFragment(it, false) }
     }
 
     // Callback from FollowerFragment

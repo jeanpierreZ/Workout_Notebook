@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.jpz.workoutnotebook.utils.DataBindingConverters" />
+
+        <variable
+            name="user"
+            type="com.jpz.workoutnotebook.models.User" />
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/baseProfileFragmentCoordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.BaseProfileFragment">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/baseProfileFragmentConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/baseProfileFragmentGuidelineStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.2" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/baseProfileFragmentGuidelineEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.8" />
+
+            <ImageView
+                android:id="@+id/baseProfileFragmentPhoto"
+                profileImage="@{user.photoProfile}"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:contentDescription="@string/profile_photo"
+                android:transitionName="@string/animation_profile_photo_list_to_detail"
+                app:layout_constraintBottom_toTopOf="@+id/baseProfileFragmentNickname"
+                app:layout_constraintEnd_toEndOf="@id/baseProfileFragmentGuidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/baseProfileFragmentGuidelineStart"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/baseProfileFragmentNickname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/nick_name"
+                app:counterEnabled="true"
+                app:counterMaxLength="25"
+                app:layout_constraintBottom_toTopOf="@+id/baseProfileFragmentName"
+                app:layout_constraintEnd_toEndOf="@id/baseProfileFragmentGuidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/baseProfileFragmentGuidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/baseProfileFragmentPhoto">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:maxLength="25"
+                    android:text="@={user.nickName}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/baseProfileFragmentName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/name"
+                app:counterEnabled="true"
+                app:counterMaxLength="25"
+                app:layout_constraintBottom_toTopOf="@+id/baseProfileFragmentFirstName"
+                app:layout_constraintEnd_toEndOf="@id/baseProfileFragmentGuidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/baseProfileFragmentGuidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/baseProfileFragmentNickname">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:maxLength="25"
+                    android:text="@={user.name}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/baseProfileFragmentFirstName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/first_name"
+                app:counterEnabled="true"
+                app:counterMaxLength="25"
+                app:layout_constraintBottom_toTopOf="@+id/baseProfileFragmentAge"
+                app:layout_constraintEnd_toEndOf="@id/baseProfileFragmentGuidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/baseProfileFragmentGuidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/baseProfileFragmentName">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:maxLength="25"
+                    android:text="@={user.firstName}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/baseProfileFragmentAge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/age"
+                app:counterEnabled="true"
+                app:counterMaxLength="3"
+                app:layout_constraintBottom_toTopOf="@+id/baseProfileFragmentSports"
+                app:layout_constraintEnd_toEndOf="@id/baseProfileFragmentGuidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/baseProfileFragmentGuidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/baseProfileFragmentFirstName">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:text="@={DataBindingConverters.convertIntegerToString(user.age)}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/baseProfileFragmentSports"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/sports_practiced"
+                app:counterEnabled="true"
+                app:counterMaxLength="25"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/baseProfileFragmentGuidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/baseProfileFragmentGuidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/baseProfileFragmentAge">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:maxLength="25"
+                    android:text="@={user.sports}"
+                    android:textColor="@color/colorTextPrimary" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <include
+            android:id="@+id/baseProfileFragmentFABSave"
+            layout="@layout/fab_save" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/baseProfileFragmentFABHistorical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:contentDescription="@string/historical"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorAccentLight"
+                app:srcCompat="@drawable/ic_baseline_history_24" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/baseProfileFragmentFABFollow"
+                style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:contentDescription="@string/follow"
+                android:text="@string/follow"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorAccentLight" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/baseProfileFragmentFABNoFollow"
+                style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="@dimen/fab_margin"
+                android:contentDescription="@string/no_longer_follow"
+                android:text="@string/no_longer_follow"
+                android:visibility="gone"
+                app:backgroundTint="@color/colorAccentLight" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/baseProfileFragmentProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

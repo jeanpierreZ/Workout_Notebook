@@ -5,8 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import com.jpz.workoutnotebook.R
-import com.jpz.workoutnotebook.activities.FollowingActivity.Companion.FOLLOWING
-import com.jpz.workoutnotebook.activities.FollowingActivity.Companion.TO_FOLLOW
+import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
@@ -52,7 +51,7 @@ class FollowingFragment : BaseProfileFragment() {
         userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")
 
-        val following = arguments?.getParcelable<User>(FOLLOWING)
+        val following = arguments?.getParcelable<User>(FollowingActivity.FOLLOWING)
         Log.d(TAG, "following = $following")
         binding.user = following
 
@@ -62,20 +61,19 @@ class FollowingFragment : BaseProfileFragment() {
             following?.let { callback?.consultHistorical(it) }
         }
 
-        val toFollow = arguments?.getBoolean(TO_FOLLOW)
+        val isFollowed = arguments?.getBoolean(FollowingActivity.IS_FOLLOWED)
 
-        if (toFollow != null && toFollow) {
+        if (isFollowed != null && isFollowed) {
+            // People already followed, make FloatingActionButton NoFollow visible
+            baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
+            baseProfileFragmentFABNoFollow.setOnClickListener {
+                userId?.let { following?.let { followed -> noLongerFollow(it, followed) } }
+            }
+        } else {
             // Make FloatingActionButton Follow visible
             baseProfileFragmentFABFollow.visibility = View.VISIBLE
             baseProfileFragmentFABFollow.setOnClickListener {
                 userId?.let { following?.let { followed -> addAPersonToFollow(it, followed) } }
-
-            }
-        } else {
-            // Make FloatingActionButton NoFollow visible
-            baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
-            baseProfileFragmentFABNoFollow.setOnClickListener {
-                userId?.let { following?.let { followed -> noLongerFollow(it, followed) } }
             }
         }
     }

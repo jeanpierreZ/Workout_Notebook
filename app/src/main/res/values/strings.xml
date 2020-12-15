@@ -135,4 +135,7 @@
     <string name="channel_name">"Channel</string>
     <string name="channel_description">Channel for notifications</string>
     <string name="notification_text">You must start your training session for %s in one hour!</string>
+
+    <!-- Animations -->
+    <string name="animation_profile_photo_list_to_detail" translatable="false">Animation profile photo list to detail</string>
 </resources>

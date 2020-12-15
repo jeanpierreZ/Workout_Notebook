@@ -1,6 +1,8 @@
 package com.jpz.workoutnotebook.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.ActivityResult
@@ -46,8 +48,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val TRAINING_SESSION = "TRAINING_SESSION"
         const val EXERCISES = "EXERCISES"
         const val WORKOUTS = "WORKOUTS"
-        const val FOLLOWED = "FOLLOWED"
-        const val FOLLOWER = "FOLLOWER"
+        const val FOLLOW = "FOLLOW"
+        const val IS_FOLLOWED = "IS_FOLLOWED"
     }
 
     private var pageSelected = 0
@@ -240,16 +242,25 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startActivity(intent)
     }
 
-    private fun startFollowingActivityToDisplayFollowed(followed: User?) {
-        val intent = Intent(this, FollowingActivity::class.java)
-        intent.putExtra(FOLLOWED, followed)
-        startActivity(intent)
-    }
 
-    private fun startFollowingActivityToDisplayFollower(follower: User?) {
+    private fun startFollowingActivityToDisplayFollow(
+        user: User?, viewClicked: View?, isFollowed: Boolean
+    ) {
         val intent = Intent(this, FollowingActivity::class.java)
-        intent.putExtra(FOLLOWER, follower)
-        startActivity(intent)
+        intent.putExtra(FOLLOW, user)
+        intent.putExtra(IS_FOLLOWED, isFollowed)
+
+        // Start Animation if the version > Lollipop
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Animation options
+            val options: ActivityOptions = ActivityOptions.makeSceneTransitionAnimation(
+                this, viewClicked, getString(R.string.animation_profile_photo_list_to_detail)
+            )
+            startActivity(intent, options.toBundle())
+        } else {
+            // No animation if the version < Lollipop
+            startActivity(intent)
+        }
     }
 
     //--------------------------------------------------------------------------------------
@@ -293,14 +304,9 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startEditActivityForHistorical(trainingSession)
     }
 
-    // Implement listeners from CommunityFragment to display the profile of a followed or a follower
-
-    override fun displayFollowed(followed: User?) {
-        startFollowingActivityToDisplayFollowed(followed)
-    }
-
-    override fun displayFollower(follower: User?) {
-        startFollowingActivityToDisplayFollower(follower)
+    // Implement listener from CommunityFragment to display the profile of a followed people or a follower
+    override fun displayFollow(user: User?, viewClicked: View?, isFollowed: Boolean) {
+        startFollowingActivityToDisplayFollow(user, viewClicked, isFollowed)
     }
 
     //--------------------------------------------------------------------------------------
