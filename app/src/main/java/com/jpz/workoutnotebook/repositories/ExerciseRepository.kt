@@ -8,6 +8,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ExerciseRepository {
 
@@ -55,9 +58,7 @@ class ExerciseRepository {
             // Use SetOptions.merge() to only update the exerciseId
             .set(hashMapOf(EXERCISE_ID_FIELD to documentReference.id), SetOptions.merge())
 
-    fun updateExercise(
-        userId: String, previousExercise: Exercise, exercise: Exercise
-    ): Task<Void>? =
+    fun updateExercise(userId: String, previousExercise: Exercise, exercise: Exercise) =
         // First update the exercise
         exercise.exerciseId?.let {
             UserRepository.getUsersCollection()
@@ -79,25 +80,36 @@ class ExerciseRepository {
                             if (documents.isEmpty) {
                                 Log.w(TAG, "documents.isEmpty")
                             } else {
-                                for (document in documents) {
-                                    // For each workout
-                                    // Get Workout object to update
-                                    val workout = document.toObject(Workout::class.java)
-                                    // Get a workout before changes, which is used to update the training sessions
-                                    val previousWorkout = document.toObject(Workout::class.java)
-                                    // Get the position of this exercise in the list
-                                    val index: Int = workout.exercisesList.indexOf(previousExercise)
-                                    // Update this exercise in the list
-                                    workout.exercisesList[index] = exercise
-                                    // Update this exercise in the workout
-                                    workoutRepository
-                                        .updateWorkout(userId, previousWorkout, workout)
-                                        ?.addOnSuccessListener {
-                                            Log.d(TAG, "DocumentSnapshot successfully updated!")
+                                GlobalScope.launch {
+                                    for (document in documents) {
+                                        // For each workout
+                                        // Get Workout object to update
+                                        val workout = document.toObject(Workout::class.java)
+                                        // Get a workout before changes, which is used to update the training sessions
+                                        val previousWorkout = document.toObject(Workout::class.java)
+                                        // Get the position of this exercise in the list
+                                        val index: Int =
+                                            workout.exercisesList.indexOf(previousExercise)
+                                        // Update this exercise in the list
+                                        workout.exercisesList[index] = exercise
+                                        // Launch a job and wait it has finished
+                                        val job: Job = launch {
+                                            // Update this exercise in the workout
+                                            workoutRepository
+                                                .updateWorkout(userId, previousWorkout, workout)
+                                                ?.addOnSuccessListener {
+                                                    Log.d(
+                                                        TAG,
+                                                        "DocumentSnapshot successfully updated!"
+                                                    )
+                                                }
+                                                ?.addOnFailureListener { e ->
+                                                    Log.e(TAG, "Error updating document", e)
+                                                }
                                         }
-                                        ?.addOnFailureListener { e ->
-                                            Log.e(TAG, "Error updating document", e)
-                                        }
+                                        // Wait that updateWorkout has finished before setting the next document in loop
+                                        job.join()
+                                    }
                                 }
                             }
                         }

@@ -8,6 +8,9 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class WorkoutRepository {
 
@@ -56,7 +59,7 @@ class WorkoutRepository {
             // Use SetOptions.merge() to only update the workoutId
             .set(hashMapOf(WORKOUT_ID_FIELD to documentReference.id), SetOptions.merge())
 
-    fun updateWorkout(userId: String, previousWorkout: Workout, workout: Workout): Task<Void>? =
+    fun updateWorkout(userId: String, previousWorkout: Workout, workout: Workout) =
         // First update the workout
         workout.workoutId?.let {
             UserRepository.getUsersCollection()
@@ -79,22 +82,32 @@ class WorkoutRepository {
                             if (documents.isEmpty) {
                                 Log.w(TAG, "documents.isEmpty")
                             } else {
-                                for (document in documents) {
-                                    // For each training session
-                                    // Get TrainingSession object
-                                    val trainingSession =
-                                        document.toObject(TrainingSession::class.java)
-                                    // Update this workout in the trainingSession
-                                    trainingSession.workout = workout
-                                    // Update the trainingSession
-                                    trainingSessionRepository
-                                        .updateTrainingSession(userId, trainingSession)
-                                        ?.addOnSuccessListener {
-                                            Log.d(TAG, "DocumentSnapshot successfully updated!")
+                                GlobalScope.launch {
+                                    for (document in documents) {
+                                        // For each training session
+                                        // Get TrainingSession object
+                                        val trainingSession =
+                                            document.toObject(TrainingSession::class.java)
+                                        // Update this workout in the trainingSession
+                                        trainingSession.workout = workout
+                                        // Launch a job and wait it has finished
+                                        val job: Job = launch {
+                                            // Update the trainingSession
+                                            trainingSessionRepository
+                                                .updateTrainingSession(userId, trainingSession)
+                                                ?.addOnSuccessListener {
+                                                    Log.d(
+                                                        TAG,
+                                                        "DocumentSnapshot successfully updated!"
+                                                    )
+                                                }
+                                                ?.addOnFailureListener { e ->
+                                                    Log.e(TAG, "Error updating document", e)
+                                                }
                                         }
-                                        ?.addOnFailureListener { e ->
-                                            Log.e(TAG, "Error updating document", e)
-                                        }
+                                        // Wait that updateTrainingSession has finished before setting the next document in loop
+                                        job.join()
+                                    }
                                 }
                             }
                         }

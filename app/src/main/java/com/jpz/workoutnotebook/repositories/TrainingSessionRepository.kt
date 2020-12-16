@@ -2,7 +2,6 @@ package com.jpz.workoutnotebook.repositories
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -23,15 +22,6 @@ class TrainingSessionRepository {
             .document(userId)
             .collection(COLLECTION_NAME)
             .add(trainingSession)
-
-    // --- READ ---
-
-    fun getTrainingSession(userId: String, trainingSessionId: String): Task<DocumentSnapshot> =
-        UserRepository.getUsersCollection()
-            .document(userId)
-            .collection(COLLECTION_NAME)
-            .document(trainingSessionId)
-            .get()
 
     // --- QUERY ---
 
