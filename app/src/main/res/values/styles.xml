@@ -26,7 +26,7 @@
 
     <!-- TextInputLayout theme -->
     <style name="TextInputLayoutTheme" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/colorAccentLight</item>
+        <item name="boxStrokeColor">@color/colorAccent</item>
         <item name="hintTextColor">@color/colorAccentDark</item>
     </style>
 

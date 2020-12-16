@@ -36,7 +36,7 @@ class HistoricalFragment : Fragment() {
 
     private var itemHistoricalAdapter: ItemHistoricalAdapter? = null
 
-    // Firebase Auth, Firestore and utils
+    // Firebase Firestore and utils
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 

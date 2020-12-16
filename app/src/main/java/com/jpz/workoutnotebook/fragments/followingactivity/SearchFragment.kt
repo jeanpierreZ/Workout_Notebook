@@ -47,7 +47,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     private var userId: String? = null
 
-    // Firebase Auth, Firestore and utils
+    // Firebase Auth and utils
     private val userAuth: UserAuth by inject()
     private val myUtils: MyUtils by inject()
 

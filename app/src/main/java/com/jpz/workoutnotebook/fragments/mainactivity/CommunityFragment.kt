@@ -85,7 +85,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
                         .addOnSuccessListener { documentSnapshot ->
                             Log.d(TAG, "documentSnapshot => $documentSnapshot")
                             val followedObject = documentSnapshot.toObject(User::class.java)
-                            // Add the people followed to the list
+                            // Add the followed people to the list
                             followedObject?.let { list.add(it) }
                             // Notify the adapter
                             itemCommunityAdapterFollowed?.notifyDataSetChanged()

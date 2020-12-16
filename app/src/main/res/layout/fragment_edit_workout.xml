@@ -86,7 +86,7 @@
             android:layout_gravity="bottom|center"
             android:layout_margin="@dimen/fab_margin"
             android:text="@string/add_an_exercise"
-            app:backgroundTint="@color/colorAccentLight"
+            app:backgroundTint="@color/colorAccent"
             app:icon="@drawable/ic_baseline_add_24" />
 
         <ProgressBar

@@ -52,7 +52,7 @@ class ConnectionActivity : AppCompatActivity() {
         configureToolbar()
 
         GlobalScope.launch {
-            delay(2000L)
+            delay(MyUtils.DELAY)
             if (userAuth.isCurrentUserLogged()) {
                 Log.i(TAG, "user logged = " + userAuth.isCurrentUserLogged())
                 startMainActivity()

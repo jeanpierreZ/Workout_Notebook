@@ -16,6 +16,7 @@ import com.jpz.workoutnotebook.viewholders.ItemWorkoutViewHolder
 class ItemWorkoutAdapter(
     options: FirestoreRecyclerOptions<Workout?>, private val callback: Listener
 ) : FirestoreRecyclerAdapter<Workout, ItemWorkoutViewHolder>(options) {
+    // RecyclerView used to interact with the list of workouts in ListSportFragment
 
     companion object {
         private val TAG = ItemWorkoutAdapter::class.java.simpleName

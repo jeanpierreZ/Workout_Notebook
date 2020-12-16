@@ -45,6 +45,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
         private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
         const val WORKOUT_NAME = "WORKOUT_NAME"
+        private const val SECONDS_IN_AN_HOUR = 3600
+        private const val MILLISECONDS_IN_A_SECOND = 1000
     }
 
     private var calendar = Calendar.getInstance()
@@ -441,7 +443,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         // Format the date
         val dateFormatted: Date = sdf.parse(date)!!
         // Subtract the number of milliseconds in an hour from the date
-        dateFormatted.time = dateFormatted.time - (3600 * 1000)
+        dateFormatted.time = dateFormatted.time - (SECONDS_IN_AN_HOUR * MILLISECONDS_IN_A_SECOND)
 
         // Create a calendar for the notification
         val notificationCalendar = Calendar.getInstance()

@@ -20,6 +20,7 @@ class DatePickerFragment(
         const val BUNDLE_KEY_YEAR = "BUNDLE_KEY_YEAR"
         const val BUNDLE_KEY_MONTH = "BUNDLE_KEY_MONTH"
         const val BUNDLE_KEY_DAY = "BUNDLE_KEY_DAY"
+        private const val MILLISECONDS_IN_A_SECOND = 1000
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -36,10 +37,10 @@ class DatePickerFragment(
 
         if (historical) {
             // Configure the calendar to not choose a future date
-            dialog?.datePicker?.maxDate = System.currentTimeMillis() + 1000
+            dialog?.datePicker?.maxDate = System.currentTimeMillis() + MILLISECONDS_IN_A_SECOND
         } else {
             // Configure the calendar to not choose a past date
-            dialog?.datePicker?.minDate = System.currentTimeMillis() - 1000
+            dialog?.datePicker?.minDate = System.currentTimeMillis() - MILLISECONDS_IN_A_SECOND
         }
         return dialog!!
     }

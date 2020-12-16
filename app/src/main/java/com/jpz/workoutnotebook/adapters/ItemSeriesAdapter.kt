@@ -18,6 +18,8 @@ class ItemSeriesAdapter(
     private val isForTrainingSession: Boolean, private val seriesDisabledName: String?,
     private val noOfSeries: Int?, private val context: Context
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    // RecyclerView used to interact with the list of series in EditExerciseFragment
+    // and to interact or display these series in TrainingSessionFragment
 
     companion object {
         const val TYPE_SERIES = 1

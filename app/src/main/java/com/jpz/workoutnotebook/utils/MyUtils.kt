@@ -16,6 +16,10 @@ import kotlinx.coroutines.launch
 
 class MyUtils {
 
+    companion object {
+        const val DELAY = 2000L
+    }
+
     fun showSnackBar(coordinatorLayout: CoordinatorLayout?, text: Int) {
         coordinatorLayout?.let { Snackbar.make(it, text, Snackbar.LENGTH_SHORT).show() }
     }
@@ -27,7 +31,7 @@ class MyUtils {
     fun closeFragment(progressBar: ProgressBar, activity: Activity) {
         progressBar.visibility = View.VISIBLE
         GlobalScope.launch {
-            delay(2000L)
+            delay(DELAY)
             if (!activity.isFinishing) {
                 activity.runOnUiThread { activity.onBackPressed() }
             }

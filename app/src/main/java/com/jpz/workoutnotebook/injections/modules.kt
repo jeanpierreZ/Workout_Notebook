@@ -34,7 +34,7 @@ val moduleTrainingSessionRepository = module {
 }
 
 val moduleTrainingSessionViewModel = module {
-    // Instance of TrainingViewModel
+    // Instance of TrainingSessionViewModel
     viewModel { TrainingSessionViewModel(get()) }
 }
 

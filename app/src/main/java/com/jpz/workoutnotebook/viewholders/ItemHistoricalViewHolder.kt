@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ItemHistoricalViewHolder(trainingSession: View) : RecyclerView.ViewHolder(trainingSession) {
-    // Represent a line of an historical training session in the RecyclerView
+    // Represent a line of a past training session in the RecyclerView
 
     private var workoutName: MaterialTextView? = null
     private var time: MaterialTextView? = null
