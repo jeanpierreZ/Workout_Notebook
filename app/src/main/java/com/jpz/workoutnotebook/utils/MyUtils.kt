@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.View
 import android.widget.ProgressBar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -18,6 +19,7 @@ class MyUtils {
 
     companion object {
         const val DELAY = 2000L
+        const val SCALE_VIEW_ANIMATION_DURATION = 500L
     }
 
     fun showSnackBar(coordinatorLayout: CoordinatorLayout?, text: Int) {
@@ -53,5 +55,19 @@ class MyUtils {
         } else {
             return connMgr?.activeNetworkInfo?.isConnected ?: false
         }
+    }
+
+    fun scaleViewAnimation(view: View, startDelay: Long) {
+        // Reset view
+        view.scaleX = 0f
+        view.scaleY = 0f
+        // Animate view
+        view.animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .setInterpolator(FastOutSlowInInterpolator())
+            .setStartDelay(startDelay)
+            .setDuration(SCALE_VIEW_ANIMATION_DURATION)
+            .start()
     }
 }

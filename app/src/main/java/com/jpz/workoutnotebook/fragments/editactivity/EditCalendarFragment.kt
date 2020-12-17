@@ -47,6 +47,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         const val WORKOUT_NAME = "WORKOUT_NAME"
         private const val SECONDS_IN_AN_HOUR = 3600
         private const val MILLISECONDS_IN_A_SECOND = 1000
+        private const val START_DELAY = 500L
     }
 
     private var calendar = Calendar.getInstance()
@@ -125,6 +126,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         // Get TrainingSession data
         trainingSession?.let { getTrainingSessionData(it) }
+
+        myUtils.scaleViewAnimation(editCalendarFragmentButtonSave, START_DELAY)
 
         editCalendarFragmentButtonWorkout.setOnClickListener(this)
         editCalendarFragmentButtonDate.setOnClickListener(this)

@@ -12,6 +12,7 @@ import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
 import com.jpz.workoutnotebook.viewmodels.FollowingViewModel
 import kotlinx.android.synthetic.main.fragment_base_profile.*
+import kotlinx.android.synthetic.main.fragment_sports.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -20,6 +21,7 @@ class FollowingFragment : BaseProfileFragment() {
 
     companion object {
         private val TAG = FollowingFragment::class.java.simpleName
+        private const val START_DELAY = 500L
     }
 
     // Firebase Firestore and utils
@@ -56,6 +58,7 @@ class FollowingFragment : BaseProfileFragment() {
         binding.user = following
 
         // Make FloatingActionButton Historical visible
+        myUtils.scaleViewAnimation(baseProfileFragmentFABHistorical, START_DELAY)
         baseProfileFragmentFABHistorical.visibility = View.VISIBLE
         baseProfileFragmentFABHistorical.setOnClickListener {
             following?.let { callback?.consultHistorical(it) }
@@ -65,12 +68,14 @@ class FollowingFragment : BaseProfileFragment() {
 
         if (isFollowed != null && isFollowed) {
             // People already followed, make FloatingActionButton NoFollow visible
+            myUtils.scaleViewAnimation(baseProfileFragmentFABNoFollow, START_DELAY)
             baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
             baseProfileFragmentFABNoFollow.setOnClickListener {
                 userId?.let { following?.let { followed -> noLongerFollow(it, followed) } }
             }
         } else {
             // Make FloatingActionButton Follow visible
+            myUtils.scaleViewAnimation(baseProfileFragmentFABFollow, START_DELAY)
             baseProfileFragmentFABFollow.visibility = View.VISIBLE
             baseProfileFragmentFABFollow.setOnClickListener {
                 userId?.let { following?.let { followed -> addAPersonToFollow(it, followed) } }

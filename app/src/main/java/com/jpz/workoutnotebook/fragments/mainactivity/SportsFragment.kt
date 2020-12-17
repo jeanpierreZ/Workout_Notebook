@@ -28,6 +28,7 @@ class SportsFragment : Fragment() {
         private val TAG = SportsFragment::class.java.simpleName
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
         private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
+        private const val START_DELAY = 500L
     }
 
     private var userId: String? = null
@@ -58,7 +59,6 @@ class SportsFragment : Fragment() {
 
         displayNextTrainingSessionDate()
 
-        sportsFragmentTrainingSessionButton.visibility = View.INVISIBLE
         sportsFragmentTrainingSessionButton.setOnClickListener {
             trainingSession?.let { callback?.onClickedTrainingSessionButton(it) }
         }
@@ -125,6 +125,9 @@ class SportsFragment : Fragment() {
                                     workoutName, dateStringFormatted
                                 )
                                 sportsFragmentTrainingSessionButton?.isEnabled = true
+                                myUtils.scaleViewAnimation(
+                                    sportsFragmentTrainingSessionButton, START_DELAY
+                                )
                                 sportsFragmentTrainingSessionButton?.visibility = View.VISIBLE
                             }
                         }

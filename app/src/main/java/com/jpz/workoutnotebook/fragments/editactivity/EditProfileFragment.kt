@@ -31,6 +31,7 @@ class EditProfileFragment : BaseProfileFragment() {
 
     companion object {
         private val TAG = EditProfileFragment::class.java.simpleName
+        private const val START_DELAY = 500L
     }
 
     private val myUtils: MyUtils by inject()
@@ -90,6 +91,8 @@ class EditProfileFragment : BaseProfileFragment() {
         baseProfileFragmentPhoto.setOnClickListener {
             permissionsRequester.launch()
         }
+
+        myUtils.scaleViewAnimation(baseProfileFragmentFABSave, START_DELAY)
 
         baseProfileFragmentFABSave.setOnClickListener {
             saveUpdatedData()

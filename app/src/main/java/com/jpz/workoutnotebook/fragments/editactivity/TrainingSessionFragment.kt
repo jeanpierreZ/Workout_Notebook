@@ -35,6 +35,7 @@ class TrainingSessionFragment : Fragment() {
 
     companion object {
         private val TAG = TrainingSessionFragment::class.java.simpleName
+        private const val COUNTDOWN_INTERVAL = 1000L
     }
 
     private var trainingSession: TrainingSession? = null
@@ -42,7 +43,6 @@ class TrainingSessionFragment : Fragment() {
     private var countDownTimer: CountDownTimer? = null
     private var timerRunning = false
     private var timeLeftInMillis = 0L
-    private var countDownInterval = 1000L
 
     private var currentItemSeriesAdapter: ItemSeriesAdapter? = null
     private var nextItemSeriesAdapter: ItemSeriesAdapter? = null
@@ -198,7 +198,7 @@ class TrainingSessionFragment : Fragment() {
         if (timeLeftInMillis == 0L) {
             timeLeftInMillis = 1L
         }
-        countDownTimer = object : CountDownTimer(timeLeftInMillis, countDownInterval) {
+        countDownTimer = object : CountDownTimer(timeLeftInMillis, COUNTDOWN_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 timeLeftInMillis = millisUntilFinished
                 updateCountDownText()
@@ -228,7 +228,7 @@ class TrainingSessionFragment : Fragment() {
         if (isFinished) {
             return
         } else {
-            val secondsLeft = (timeLeftInMillis / countDownInterval).toInt()
+            val secondsLeft = (timeLeftInMillis / COUNTDOWN_INTERVAL).toInt()
             trainingSessionFragmentRestTime?.text = secondsLeft.toString()
         }
     }
@@ -237,7 +237,7 @@ class TrainingSessionFragment : Fragment() {
         // Display the rest time
         trainingSessionFragmentRestTime?.text = restTime
         // Set the countDownTimer with restTime
-        timeLeftInMillis = restTime.toLong().times(countDownInterval)
+        timeLeftInMillis = restTime.toLong().times(COUNTDOWN_INTERVAL)
     }
 
     //--------------------------------------------------------------------------------------

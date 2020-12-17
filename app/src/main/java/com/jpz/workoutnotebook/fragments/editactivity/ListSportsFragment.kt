@@ -21,6 +21,7 @@ import com.jpz.workoutnotebook.adapters.ItemWorkoutAdapter
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.repositories.UserAuth
+import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -33,12 +34,14 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
     companion object {
         private val TAG = ListSportsFragment::class.java.simpleName
+        private const val START_DELAY = 500L
     }
 
-    // Firebase Auth, Firestore
+    // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val workoutViewModel: WorkoutViewModel by viewModel()
+    private val myUtils: MyUtils by inject()
 
     private var itemExerciseAdapter: ItemExerciseAdapter? = null
     private var itemWorkoutAdapter: ItemWorkoutAdapter? = null
@@ -65,6 +68,8 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         } else {
             listSportsFragmentTitle.setText(R.string.workouts)
         }
+
+        myUtils.scaleViewAnimation(listSportsFragmentFABAdd, START_DELAY)
 
         listSportsFragmentFABAdd.setOnClickListener {
             if (isAnExercise) {

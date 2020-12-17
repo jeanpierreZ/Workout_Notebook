@@ -37,6 +37,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     companion object {
         private val TAG = EditWorkoutFragment::class.java.simpleName
         private const val WORKOUT_NAME_FIELD = "workoutName"
+        private const val START_DELAY = 500L
     }
 
     private lateinit var binding: FragmentEditWorkoutBinding
@@ -88,6 +89,9 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
 
         swipeToDeleteAnExercise()
+
+        myUtils.scaleViewAnimation(editWorkoutFragmentFABAddExercise, START_DELAY)
+        myUtils.scaleViewAnimation(editWorkoutFragmentFABSave, START_DELAY)
 
         editWorkoutFragmentFABAddExercise.setOnClickListener(this)
         editWorkoutFragmentFABSave.setOnClickListener(this)

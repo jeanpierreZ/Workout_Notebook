@@ -34,6 +34,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     companion object {
         private val TAG = EditExerciseFragment::class.java.simpleName
         private const val EXERCISE_NAME_FIELD = "exerciseName"
+        private const val START_DELAY = 500L
     }
 
     private lateinit var binding: FragmentEditExerciseBinding
@@ -87,6 +88,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         }
 
         swipeToDeleteASeries()
+
+        myUtils.scaleViewAnimation(editExerciseFragmentFABAddSeries, START_DELAY)
+        myUtils.scaleViewAnimation(editExerciseFragmentFABSave, START_DELAY)
 
         editExerciseFragmentFABAddSeries.setOnClickListener(this)
         editExerciseFragmentFABSave.setOnClickListener(this)
