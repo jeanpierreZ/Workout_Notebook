@@ -38,6 +38,14 @@
         <item name="android:layout_margin">@dimen/title_text_margin</item>
     </style>
 
+    <!-- SportsFragment Title TextView Theme -->
+    <style name="SportsFragmentTitleTextViewTheme" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textSize">@dimen/subtitle_text_size</item>
+        <item name="android:textStyle">italic</item>
+        <item name="android:layout_margin">@dimen/title_text_margin</item>
+    </style>
+
     <!-- SubTitle TextView Theme -->
     <style name="SubTitleTextViewTheme" parent="Widget.MaterialComponents.TextView">
         <item name="android:textColor">@color/colorTextPrimary</item>
