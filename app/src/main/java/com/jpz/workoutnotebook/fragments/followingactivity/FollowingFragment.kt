@@ -5,6 +5,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.transition.TransitionInflater
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.FollowingActivity
@@ -44,6 +46,12 @@ class FollowingFragment : BaseProfileFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Make searchView gone
+        val searchView: SearchView =
+            (context as FollowingActivity).findViewById(R.id.toolbarSearchView)
+        if (searchView.isVisible) {
+            searchView.visibility = View.GONE
+        }
 
         // Disable EditText and counter
         baseProfileFragmentNickname.editText?.isEnabled = false
