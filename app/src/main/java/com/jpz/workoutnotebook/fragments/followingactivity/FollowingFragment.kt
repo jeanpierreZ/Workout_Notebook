@@ -1,9 +1,11 @@
 package com.jpz.workoutnotebook.fragments.followingactivity
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.transition.TransitionInflater
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.fragments.BaseProfileFragment
@@ -30,6 +32,16 @@ class FollowingFragment : BaseProfileFragment() {
     private val myUtils: MyUtils by inject()
 
     private var callback: FollowerListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Start Animation if the version > Lollipop
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            sharedElementEnterTransition =
+                TransitionInflater.from(requireContext())
+                    .inflateTransition(android.R.transition.slide_left)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 

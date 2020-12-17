@@ -169,8 +169,8 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     //--------------------------------------------------------------------------------------
     // Interface for callback ItemSearchAdapter
 
-    override fun onClickProfileAfterSearch(user: User?, position: Int) {
-        callback?.displayFollow(user)
+    override fun onClickProfileAfterSearch(user: User?, position: Int, viewClicked: View?) {
+        callback?.displayFollow(user, viewClicked)
     }
 
     //----------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     // Declare our interface that will be implemented by any container activity
     interface FollowListener {
-        fun displayFollow(follow: User?)
+        fun displayFollow(follow: User?, viewClicked: View?)
     }
 
     // Create callback to parent activity

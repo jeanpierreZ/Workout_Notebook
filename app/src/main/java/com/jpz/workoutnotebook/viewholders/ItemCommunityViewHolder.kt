@@ -58,7 +58,7 @@ class ItemCommunityViewHolder(private val binding: CommunityItemBinding) :
         itemView.setOnClickListener {
             // When a click happens, we fire our listener to get the user position in the list
             if (finalCallback != null && adapterPosition != RecyclerView.NO_POSITION) {
-                finalCallback.onClickProfileAfterSearch(user, adapterPosition)
+                finalCallback.onClickProfileAfterSearch(user, adapterPosition, photo)
             }
         }
     }

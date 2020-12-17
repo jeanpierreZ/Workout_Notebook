@@ -1,10 +1,13 @@
 package com.jpz.workoutnotebook.activities
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.SEARCH_FRAGMENT
@@ -12,6 +15,7 @@ import com.jpz.workoutnotebook.fragments.followingactivity.FollowingFragment
 import com.jpz.workoutnotebook.fragments.followingactivity.SearchFragment
 import com.jpz.workoutnotebook.models.User
 import kotlinx.android.synthetic.main.toolbar.*
+
 
 class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
     FollowingFragment.FollowerListener {
@@ -73,15 +77,41 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
     }
 
     private fun displayFollowingFragment(follow: User, isFollowed: Boolean) {
-        val followerFragment = FollowingFragment()
+        val followingFragment = FollowingFragment()
         val bundle = Bundle()
         bundle.putParcelable(FOLLOWING, follow)
         bundle.putBoolean(IS_FOLLOWED, isFollowed)
-        followerFragment.arguments = bundle
+        followingFragment.arguments = bundle
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.followerActivityContainer, followerFragment)
+            .replace(R.id.followerActivityContainer, followingFragment)
             .commit()
+    }
+
+    private fun displayFollowingFragmentFromSearch(follow: User, viewClicked: View?) {
+        val followingFragment = FollowingFragment()
+        val bundle = Bundle()
+        val isFollowed = false
+        bundle.putParcelable(FOLLOWING, follow)
+        bundle.putBoolean(IS_FOLLOWED, isFollowed)
+        followingFragment.arguments = bundle
+
+        // Start Animation if the version > Lollipop
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (viewClicked != null) {
+                supportFragmentManager.commit {
+                    addSharedElement(
+                        viewClicked, getString(R.string.animation_profile_photo_list_to_detail)
+                    )
+                    replace(R.id.followerActivityContainer, followingFragment)
+                    addToBackStack(TAG)
+                }
+            }
+        } else {
+            supportFragmentManager.commit {
+                replace(R.id.followerActivityContainer, followingFragment)
+            }
+        }
     }
 
     //--------------------------------------------------------------------------------------
@@ -96,8 +126,8 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
     //--------------------------------------------------------------------------------------
 
     // Callback from SearchFragment
-    override fun displayFollow(follow: User?) {
-        follow?.let { displayFollowingFragment(it, false) }
+    override fun displayFollow(follow: User?, viewClicked: View?) {
+        follow?.let { displayFollowingFragmentFromSearch(it, viewClicked) }
     }
 
     // Callback from FollowerFragment

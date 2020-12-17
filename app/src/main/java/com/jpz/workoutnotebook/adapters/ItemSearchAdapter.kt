@@ -1,6 +1,7 @@
 package com.jpz.workoutnotebook.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jpz.workoutnotebook.databinding.CommunityItemBinding
@@ -13,7 +14,7 @@ class ItemSearchAdapter(private val list: ArrayList<User>, private val callback:
 
     // Callback
     interface Listener {
-        fun onClickProfileAfterSearch(user: User?, position: Int)
+        fun onClickProfileAfterSearch(user: User?, position: Int, viewClicked: View?)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemCommunityViewHolder {
