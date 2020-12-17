@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.Query
@@ -29,6 +31,7 @@ class SportsFragment : Fragment() {
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
         private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
         private const val START_DELAY = 500L
+        const val ALPHA_VIEW_ANIMATION_DURATION = 500L
     }
 
     private var userId: String? = null
@@ -120,6 +123,8 @@ class SportsFragment : Fragment() {
                                     DateFormat.MEDIUM, DateFormat.SHORT
                                 ).format(nextDate)
                                 val workoutName: String? = trainingSession?.workout?.workoutName
+                                alphaViewAnimation(sportsFragmentTrainingSession)
+                                sportsFragmentTrainingSession.visibility = View.VISIBLE
                                 sportsFragmentTrainingSession?.text = getString(
                                     R.string.next_training_session_data,
                                     workoutName, dateStringFormatted
@@ -133,6 +138,8 @@ class SportsFragment : Fragment() {
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
                     } else {
+                        alphaViewAnimation(sportsFragmentTrainingSession)
+                        sportsFragmentTrainingSession.visibility = View.VISIBLE
                         sportsFragmentTrainingSession?.text =
                             getString(R.string.no_upcoming_training_session)
                         Log.d(TAG, "Current data: null")
@@ -141,6 +148,16 @@ class SportsFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    //----------------------------------------------------------------------------------
+    // Private animation for the text of the next training session
+
+    private fun alphaViewAnimation(view: View) {
+        val animation: Animation = AlphaAnimation(0.0f, 1.0f)
+        animation.duration = ALPHA_VIEW_ANIMATION_DURATION
+        animation.startOffset = START_DELAY
+        view.startAnimation(animation)
     }
 
     //----------------------------------------------------------------------------------
