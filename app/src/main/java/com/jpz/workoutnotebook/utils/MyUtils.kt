@@ -57,17 +57,17 @@ class MyUtils {
         }
     }
 
-    fun scaleViewAnimation(view: View, startDelay: Long) {
+    fun scaleViewAnimation(view: View?, startDelay: Long) {
         // Reset view
-        view.scaleX = 0f
-        view.scaleY = 0f
+        view?.scaleX = 0f
+        view?.scaleY = 0f
         // Animate view
-        view.animate()
-            .scaleX(1f)
-            .scaleY(1f)
-            .setInterpolator(FastOutSlowInInterpolator())
-            .setStartDelay(startDelay)
-            .setDuration(SCALE_VIEW_ANIMATION_DURATION)
-            .start()
+        view?.animate()
+            ?.scaleX(1f)
+            ?.scaleY(1f)
+            ?.setInterpolator(FastOutSlowInInterpolator())
+            ?.setStartDelay(startDelay)
+            ?.setDuration(SCALE_VIEW_ANIMATION_DURATION)
+            ?.start()
     }
 }
