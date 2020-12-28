@@ -9,6 +9,7 @@ import android.view.animation.Animation
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.Query
+import com.jpz.workoutnotebook.BuildConfig
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -94,7 +95,7 @@ class SportsFragment : Fragment() {
 
     private fun displayNextTrainingSessionDate() {
         // Idle Resource for test
-        EspressoIdlingResource.incrementIdlingResource()
+        if (BuildConfig.DEBUG) EspressoIdlingResource.incrementIdlingResource()
         // Instantiate a Calendar
         val nowCalendar = Calendar.getInstance()
         val now: Date = nowCalendar.time
@@ -142,7 +143,7 @@ class SportsFragment : Fragment() {
                                 }
                             }
                             // Idle Resource for test
-                            EspressoIdlingResource.decrementIdlingResource()
+                            if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
                     } else {
@@ -155,7 +156,7 @@ class SportsFragment : Fragment() {
                             sportsFragmentTrainingSessionButton?.isEnabled = false
                             sportsFragmentTrainingSessionButton?.visibility = View.INVISIBLE
                             // Idle Resource for test
-                            EspressoIdlingResource.decrementIdlingResource()
+                            if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
                         }
                     }
                 }

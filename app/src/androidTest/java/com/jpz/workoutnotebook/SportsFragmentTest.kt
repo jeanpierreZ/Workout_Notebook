@@ -92,7 +92,7 @@ class SportsFragmentTest {
     }
 
     @Test
-    // Only test if a training session is scheduled
+    // Only test if a training session is scheduled, because it's a real call to firestore
     fun sportsFragmentTrainingSessionButtonTest() {
         launchFragmentInContainer<SportsFragment>(themeResId = R.style.AppTheme)
         Espresso.onView(ViewMatchers.withId(R.id.sportsFragmentTrainingSessionButton))
