@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.applandeo.materialcalendarview.EventDay
@@ -102,7 +103,8 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     //----------------------------------------------------------------------------------
     // Methods to have and convert the dates from the click event on the calendar
 
-    private fun getDateOfTraining(
+    @VisibleForTesting
+    fun getDateOfTraining(
         yearOfTraining: Int, monthOfTraining: Int, dayOfTraining: Int, sdf: SimpleDateFormat
     ): String {
         // Instantiate a Calendar to have only the date of Training
@@ -115,7 +117,8 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         return sdf.format(dateOfTraining)
     }
 
-    private fun getDayAfterTraining(
+    @VisibleForTesting
+    fun getDayAfterTraining(
         yearOfTraining: Int, monthOfTraining: Int, dayOfTraining: Int, sdf: SimpleDateFormat
     ): String {
         // Instantiate a Calendar to have only the day after training
