@@ -20,13 +20,13 @@ class CalendarFragmentTest {
     fun getDateOfTrainingTest() {
         val actualSdfDateOfTraining: String =
             calendarFragment.getDateOfTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
-        assertEquals(actualSdfDateOfTraining, expectedSdfDateOfTraining)
+        assertEquals(expectedSdfDateOfTraining, actualSdfDateOfTraining)
     }
 
     @Test
     fun getDayAfterTrainingTest() {
         val actualSdfDayAfterTraining: String = calendarFragment
             .getDayAfterTraining(yearOfTraining, monthOfTraining, dayOfTraining, sdf)
-        assertEquals(actualSdfDayAfterTraining, expectedSdfDayAfterTraining)
+        assertEquals(expectedSdfDayAfterTraining, actualSdfDayAfterTraining)
     }
 }

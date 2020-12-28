@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.annotation.VisibleForTesting
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.github.aachartmodel.aainfographics.aachartcreator.AAChartModel
@@ -217,7 +218,8 @@ class StatisticsFragment : Fragment() {
     //--------------------------------------------------------------------------------------
     // Methods to display data from pickers
 
-    private fun setCalendarEntryDate(bundle: Bundle): String {
+    @VisibleForTesting
+    fun setCalendarEntryDate(bundle: Bundle): String {
         // Get data from bundle
         val year = bundle.getInt(DatePickerFragment.BUNDLE_KEY_YEAR)
         val month = bundle.getInt(DatePickerFragment.BUNDLE_KEY_MONTH)
@@ -230,7 +232,8 @@ class StatisticsFragment : Fragment() {
         return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
 
-    private fun setCalendarEndDate(bundle: Bundle): String {
+    @VisibleForTesting
+    fun setCalendarEndDate(bundle: Bundle): String {
         // Get data from bundle
         val year = bundle.getInt(DatePickerFragment.BUNDLE_KEY_YEAR)
         val month = bundle.getInt(DatePickerFragment.BUNDLE_KEY_MONTH)
