@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.Query
@@ -179,7 +180,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //--------------------------------------------------------------------------------------
     // Methods to display data from pickers
 
-    private fun setCalendarDate(bundle: Bundle): String {
+    @VisibleForTesting
+    fun setCalendarDate(bundle: Bundle): String {
         // Get data from bundle
         year = bundle.getInt(BUNDLE_KEY_YEAR)
         month = bundle.getInt(BUNDLE_KEY_MONTH)
@@ -192,7 +194,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         return DateFormat.getDateInstance(DateFormat.MEDIUM).format(dateChosen)
     }
 
-    private fun setCalendarTime(bundle: Bundle): String {
+    @VisibleForTesting
+    fun setCalendarTime(bundle: Bundle): String {
         // Get data from bundle
         hour = bundle.getInt(BUNDLE_KEY_HOUR)
         minute = bundle.getInt(BUNDLE_KEY_MINUTE)
@@ -382,7 +385,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         } else false
     }
 
-    private fun checkIfDateToRegisterBeforeNow(dateToRegister: Date): Boolean {
+    @VisibleForTesting
+    fun checkIfDateToRegisterBeforeNow(dateToRegister: Date): Boolean {
         val nowCalendar = Calendar.getInstance()
         val now: Date = nowCalendar.time
         return if (dateToRegister.before(now)) {
@@ -461,7 +465,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
 
     // Get the date (and time) chosen and format it
-    private fun getTrainingSessionDateInSDFFormat(dateToRegister: Date): String {
+    @VisibleForTesting
+    fun getTrainingSessionDateInSDFFormat(dateToRegister: Date): String {
         Log.d(TAG, "trainingSessionDate = ${sdf.format(dateToRegister)}")
         return sdf.format(dateToRegister)
     }
