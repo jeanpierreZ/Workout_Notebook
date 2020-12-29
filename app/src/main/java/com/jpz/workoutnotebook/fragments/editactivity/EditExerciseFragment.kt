@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -277,7 +278,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun checkIfExerciseNameIsEmpty(): Boolean {
+    @VisibleForTesting
+    fun checkIfExerciseNameIsEmpty(): Boolean {
         return if (exercise?.exerciseName.isNullOrEmpty() || exercise?.exerciseName.isNullOrBlank()) {
             myUtils.showSnackBar(
                 editExerciseFragmentCoordinatorLayout, R.string.exercise_name_cannot_be_blank
@@ -286,7 +288,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         } else false
     }
 
-    private fun checkIfSeriesListIsEmpty(): Boolean {
+    @VisibleForTesting
+    fun checkIfSeriesListIsEmpty(): Boolean {
         return if (exercise?.seriesList.isNullOrEmpty()) {
             myUtils.showSnackBar(
                 editExerciseFragmentCoordinatorLayout, R.string.sets_cannot_be_empty
