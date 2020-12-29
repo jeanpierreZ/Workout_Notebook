@@ -12,13 +12,12 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P])
-class EditExerciseFragmentTest {
+class EditWorkoutFragmentTest {
 
     private var editActivity: EditActivity? = null
-    private val editExerciseFragment = EditExerciseFragment()
+    private val editWorkoutFragment = EditWorkoutFragment()
 
     @Before
     fun setUp() {
@@ -36,16 +35,16 @@ class EditExerciseFragmentTest {
     }
 
     @Test
-    fun checkIfExerciseNameIsEmptyTest() {
-        val actual = editExerciseFragment.checkIfExerciseNameIsEmpty()
-        // Assert true because there are no exerciseName, no Exercise
+    fun checkIfWorkoutNameIsEmptyTest() {
+        val actual = editWorkoutFragment.checkIfWorkoutNameIsEmpty()
+        // Assert true because there are no workoutName, no Workout
         Assert.assertTrue(actual)
     }
 
     @Test
-    fun checkIfSeriesListIsEmptyTest() {
-        val actual = editExerciseFragment.checkIfSeriesListIsEmpty()
-        // Assert true because there are no seriesList, no Exercise
+    fun checkIfExercisesListIsEmptyTest() {
+        val actual = editWorkoutFragment.checkIfExercisesListIsEmpty()
+        // Assert true because there are no exercisesList, no Workout
         Assert.assertTrue(actual)
     }
 }

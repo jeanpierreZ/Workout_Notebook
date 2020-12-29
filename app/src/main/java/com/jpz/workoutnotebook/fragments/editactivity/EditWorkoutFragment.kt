@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -342,7 +343,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun checkIfWorkoutNameIsEmpty(): Boolean {
+    @VisibleForTesting
+    fun checkIfWorkoutNameIsEmpty(): Boolean {
         return if (workout?.workoutName.isNullOrEmpty() || workout?.workoutName.isNullOrBlank()) {
             myUtils.showSnackBar(
                 editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
@@ -351,7 +353,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         } else false
     }
 
-    private fun checkIfExercisesListIsEmpty(): Boolean {
+    @VisibleForTesting
+    fun checkIfExercisesListIsEmpty(): Boolean {
         return if (workout?.exercisesList.isNullOrEmpty()) {
             myUtils.showSnackBar(
                 editWorkoutFragmentCoordinatorLayout, R.string.exercises_cannot_be_empty

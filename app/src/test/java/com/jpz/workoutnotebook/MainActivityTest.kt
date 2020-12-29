@@ -7,6 +7,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.jpz.workoutnotebook.activities.EditActivity
 import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.activities.MainActivity
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -34,6 +35,12 @@ class MainActivityTest {
             .get()
     }
 
+    @After
+    fun tearDown() {
+        // To avoid the IllegalStateException : A KoinContext is already started
+        stopKoin()
+    }
+
     @Test
     fun clickFABAddCalendarTest() {
         // Navigate to CalendarFragment
@@ -44,7 +51,6 @@ class MainActivityTest {
         val expectedIntent = Intent(mainActivity, EditActivity::class.java)
         val actualIntent: Intent = shadowOf(mainActivity).nextStartedActivity
         assertEquals(expectedIntent.component, actualIntent.component)
-        stopKoin() // To avoid the IllegalStateException : A KoinContext is already started
     }
 
     @Test
@@ -57,7 +63,6 @@ class MainActivityTest {
         val expectedIntent = Intent(mainActivity, FollowingActivity::class.java)
         val actualIntent: Intent = shadowOf(mainActivity).nextStartedActivity
         assertEquals(expectedIntent.component, actualIntent.component)
-        stopKoin() // To avoid the IllegalStateException : A KoinContext is already started
     }
 
     @Test
@@ -70,6 +75,5 @@ class MainActivityTest {
         val expectedIntent = Intent(mainActivity, EditActivity::class.java)
         val actualIntent: Intent = shadowOf(mainActivity).nextStartedActivity
         assertEquals(expectedIntent.component, actualIntent.component)
-        stopKoin() // To avoid the IllegalStateException : A KoinContext is already started
     }
 }
