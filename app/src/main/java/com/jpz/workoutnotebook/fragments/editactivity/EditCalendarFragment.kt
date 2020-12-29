@@ -373,10 +373,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    private fun checkIfATextViewIsEmpty(): Boolean {
-        return if (editCalendarFragmentDate.text.isNullOrEmpty()
-            || editCalendarFragmentTime.text.isNullOrEmpty()
-            || editCalendarFragmentWorkout.text.isNullOrEmpty()
+    @VisibleForTesting
+    fun checkIfATextViewIsEmpty(): Boolean {
+        return if (editCalendarFragmentDate?.text.isNullOrEmpty()
+            || editCalendarFragmentTime?.text.isNullOrEmpty()
+            || editCalendarFragmentWorkout?.text.isNullOrEmpty()
         ) {
             myUtils.showSnackBar(
                 editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout

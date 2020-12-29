@@ -1,18 +1,28 @@
 package com.jpz.workoutnotebook.fragments.editactivity
 
+import android.os.Build
 import android.os.Bundle
+import com.jpz.workoutnotebook.activities.EditActivity
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.TimePickerFragment
+import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 import org.mockito.Mockito
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.util.*
 
-
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [Build.VERSION_CODES.P])
 class EditCalendarFragmentTest {
 
+    private var editActivity: EditActivity? = null
     private val editCalendarFragment = EditCalendarFragment()
     private val mockedBundle: Bundle = Mockito.mock(Bundle::class.java)
 
@@ -21,8 +31,8 @@ class EditCalendarFragmentTest {
     private val day: Int = 4
     private val hour = 16
     private val minute = 30
-    private val expectedCalendarDate = "4 janv. 2021"
-    private val expectedCalendarTime = "16:30"
+    private val expectedCalendarDate = "Jan 4, 2021"
+    private val expectedCalendarTime = "4:30 PM"
     private val expectedTrainingSessionDate = "2021.01.04 16:30"
 
     private fun mockBundle() {
@@ -35,7 +45,18 @@ class EditCalendarFragmentTest {
 
     @Before
     fun setUp() {
+        editActivity = Robolectric.buildActivity(EditActivity::class.java)
+            .create()
+            .start()
+            .resume()
+            .get()
         mockBundle()
+    }
+
+    @After
+    fun tearDown() {
+        // To avoid the IllegalStateException : A KoinContext is already started
+        stopKoin()
     }
 
     @Test
@@ -59,6 +80,12 @@ class EditCalendarFragmentTest {
         val actualDateToRegister = editCalendarFragment.checkIfDateToRegisterBeforeNow(date)
         // Assert false because the date to register and compare to now is in 2200
         Assert.assertFalse(actualDateToRegister)
+    }
+
+    @Test
+    fun checkIfATextViewIsEmptyTest() {
+        val actual = editCalendarFragment.checkIfATextViewIsEmpty()
+        Assert.assertTrue(actual)
     }
 
     @Test
