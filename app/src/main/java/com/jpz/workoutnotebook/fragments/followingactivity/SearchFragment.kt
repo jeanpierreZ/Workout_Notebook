@@ -192,9 +192,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     private fun callbackToParentActivity() {
         try {
             // Parent activity will automatically subscribe to callback
-//            if (activity is FollowingActivity) {
+            if (activity is FollowingActivity) {
                 callback = activity as FollowListener?
-//            }
+            }
         } catch (e: ClassCastException) {
             throw ClassCastException("$e must implement FollowListener")
         }
