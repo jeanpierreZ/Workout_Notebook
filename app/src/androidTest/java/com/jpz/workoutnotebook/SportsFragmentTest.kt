@@ -7,16 +7,13 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import com.jpz.workoutnotebook.activities.MainActivity
 import com.jpz.workoutnotebook.fragments.mainactivity.SportsFragment
 import com.jpz.workoutnotebook.utils.EspressoIdlingResource
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
@@ -56,10 +53,6 @@ class SportsFragmentTest {
     }
 
     //----------------------------------------------------------------------------------
-
-    @get:Rule
-    val activityRule: ActivityScenarioRule<MainActivity> =
-        ActivityScenarioRule(MainActivity::class.java)
 
     @Before
     fun setUp() {

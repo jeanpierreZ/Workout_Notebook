@@ -6,13 +6,10 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.jpz.workoutnotebook.activities.EditActivity
 import com.jpz.workoutnotebook.fragments.editactivity.EditProfileFragment
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -21,10 +18,6 @@ import org.junit.runner.RunWith
 class EditProfileFragmentTest {
 
     private val myPackage = "com.jpz.workoutnotebook"
-
-    @get:Rule
-    val activityRule: ActivityScenarioRule<EditActivity> =
-        ActivityScenarioRule(EditActivity::class.java)
 
     @Before
     fun setUp() {
