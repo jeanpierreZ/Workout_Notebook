@@ -25,16 +25,14 @@ Workout Notebook est une application mobile sous Android qui permet d'effectuer,
 - Algolia for the search implementation.
 - Facebook login support also for Auth.
 
-### Screenshots
+Splash screen image by David Mark from Pixabay.
 
-<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_home.png?raw=true" width="30%" height="30%"/>
-<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_profile.png?raw=true" width="30%" height="30%"/>
-<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_calendar.png?raw=true" width="30%" height="30%"/>
-<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_search.png?raw=true" width="30%" height="30%"/>
-<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_statistics.png?raw=true" width="30%" height="30%"/>
-<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_training_session.png?raw=true" width="30%" height="30%"/>
-
-Image by David Mark from Pixabay.
 Icon launcher made by Nikita Golubev from www.flaticon.com.
 
 Jean-Pierre Zingraff
+
+### Screenshots
+
+<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_home.png?raw=true" width="30%" height="30%"/> <img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_profile.png?raw=true" width="30%" height="30%"/> <img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_calendar.png?raw=true" width="30%" height="30%"/>
+
+<img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_search.png?raw=true" width="30%" height="30%"/> <img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_statistics.png?raw=true" width="30%" height="30%"/> <img src="https://github.com/jeanpierreZ/Workout_Notebook/blob/screenshot/app/src/main/res/drawable/screenshot_training_session.png?raw=true" width="30%" height="30%"/>
