@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
+import com.jpz.workoutnotebook.databinding.FragmentEditCalendarBinding
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.notifications.NotificationReceiver
@@ -30,8 +31,6 @@ import com.jpz.workoutnotebook.utils.TimePickerFragment.Companion.BUNDLE_KEY_MIN
 import com.jpz.workoutnotebook.utils.TimePickerFragment.Companion.REQUEST_KEY_TIME
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
-import kotlinx.android.synthetic.main.fragment_edit_calendar.*
-import kotlinx.android.synthetic.main.fragment_sports.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormat
@@ -50,6 +49,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         private const val MILLISECONDS_IN_A_SECOND = 1000
         private const val START_DELAY = 500L
     }
+
+    private var _binding: FragmentEditCalendarBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var calendar = Calendar.getInstance()
     private var year = 0
@@ -86,24 +90,26 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         // Use the Kotlin extension in the fragment-ktx artifact for setFragmentResultListener
         // Listen the result from DatePickerFragment
         childFragmentManager.setFragmentResultListener(REQUEST_KEY_DATE, this) { _, bundle ->
-            editCalendarFragmentDate.text = setCalendarDate(bundle)
+            binding.editCalendarFragmentDate.text = setCalendarDate(bundle)
         }
         // Listen the result from TimePickerFragment
         childFragmentManager.setFragmentResultListener(REQUEST_KEY_TIME, this) { _, bundle ->
-            editCalendarFragmentTime.text = setCalendarTime(bundle)
+            binding.editCalendarFragmentTime.text = setCalendarTime(bundle)
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        _binding = FragmentEditCalendarBinding.inflate(inflater, container, false)
+        val view = binding.root
+
         trainingSession = arguments?.getParcelable(TRAINING_SESSION)
         Log.d(TAG, "trainingSession = $trainingSession")
         if (trainingSession != null) {
             setHasOptionsMenu(true)
         }
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_calendar, container, false)
+        return view
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -128,17 +134,22 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         // Get TrainingSession data
         trainingSession?.let { getTrainingSessionData(it) }
 
-        myUtils.scaleViewAnimation(editCalendarFragmentButtonSave, START_DELAY)
+        myUtils.scaleViewAnimation(binding.includedLayout.fabSave, START_DELAY)
 
-        editCalendarFragmentButtonWorkout.setOnClickListener(this)
-        editCalendarFragmentButtonDate.setOnClickListener(this)
-        editCalendarFragmentButtonTime.setOnClickListener(this)
-        editCalendarFragmentButtonSave.setOnClickListener(this)
+        binding.editCalendarFragmentButtonWorkout.setOnClickListener(this)
+        binding.editCalendarFragmentButtonDate.setOnClickListener(this)
+        binding.editCalendarFragmentButtonTime.setOnClickListener(this)
+        binding.includedLayout.fabSave.setOnClickListener(this)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         attachedContext = context
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //--------------------------------------------------------------------------------------
@@ -165,15 +176,15 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 hour = calendar.get(Calendar.HOUR_OF_DAY)
                 minute = calendar.get(Calendar.MINUTE)
                 // Set textViews with date and time
-                editCalendarFragmentDate.text =
+                binding.editCalendarFragmentDate.text =
                     DateFormat.getDateInstance(DateFormat.MEDIUM).format(parsedDate)
-                editCalendarFragmentTime.text =
+                binding.editCalendarFragmentTime.text =
                     DateFormat.getTimeInstance(DateFormat.SHORT).format(parsedDate)
             }
             // Set textView with workoutName
-            editCalendarFragmentWorkout.text = trainingSession.workout?.workoutName
+            binding.editCalendarFragmentWorkout.text = trainingSession.workout?.workoutName
             // Set title for update
-            editCalendarFragmentTitle.text = getString(R.string.update_training_session)
+            binding.editCalendarFragmentTitle.text = getString(R.string.update_training_session)
         }
     }
 
@@ -219,7 +230,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 .addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         myUtils.showSnackBar(
-                            editCalendarFragmentCoordinatorLayout, R.string.no_workout
+                            binding.editCalendarFragmentCoordinatorLayout, R.string.no_workout
                         )
                     } else {
                         for (document in documents) {
@@ -257,7 +268,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     // Retrieve the workoutId from the list position
                     workoutIdChosen = workouts[which].workoutId
                     // Display the workout name chosen in textView
-                    editCalendarFragmentWorkout.text = workoutNamesToDisplay[which]
+                    binding.editCalendarFragmentWorkout.text = workoutNamesToDisplay[which]
                 }
                 .create()
             builder.show()
@@ -299,7 +310,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                         } else {
                             // The same trainingSessionDate exists, choose another time
                             myUtils.showSnackBar(
-                                editCalendarFragmentCoordinatorLayout,
+                                binding.editCalendarFragmentCoordinatorLayout,
                                 R.string.training_session_time_already_exists
                             )
                             for (document in documents) {
@@ -330,7 +341,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                 Log.d(TAG, "DocumentSnapshot successfully updated!")
                                 context?.getString(R.string.training_session_updated)?.let { text ->
                                     myUtils.showSnackBar(
-                                        editCalendarFragmentCoordinatorLayout, text
+                                        binding.editCalendarFragmentCoordinatorLayout, text
                                     )
                                 }
                             }?.continueWith {
@@ -360,7 +371,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                             trainingSession.workout?.workoutName
                                         )?.let { text ->
                                             myUtils.showSnackBar(
-                                                editCalendarFragmentCoordinatorLayout, text
+                                                binding.editCalendarFragmentCoordinatorLayout, text
                                             )
                                         }
                                     }.continueWith {
@@ -375,12 +386,12 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     @VisibleForTesting
     fun checkIfATextViewIsEmpty(): Boolean {
-        return if (editCalendarFragmentDate?.text.isNullOrEmpty()
-            || editCalendarFragmentTime?.text.isNullOrEmpty()
-            || editCalendarFragmentWorkout?.text.isNullOrEmpty()
+        return if (binding.editCalendarFragmentDate.text.isNullOrEmpty()
+            || binding.editCalendarFragmentTime.text.isNullOrEmpty()
+            || binding.editCalendarFragmentWorkout.text.isNullOrEmpty()
         ) {
             myUtils.showSnackBar(
-                editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
+                binding.editCalendarFragmentCoordinatorLayout, R.string.add_date_time_workout
             )
             true
         } else false
@@ -393,7 +404,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         return if (dateToRegister.before(now)) {
             // Cannot update a training session with a previous time
             myUtils.showSnackBar(
-                editCalendarFragmentCoordinatorLayout,
+                binding.editCalendarFragmentCoordinatorLayout,
                 R.string.cannot_create_update_training_session_with_past_date
             )
             true
@@ -486,7 +497,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             context?.getString(R.string.training_session_deleted)
                                 ?.let { text ->
                                     myUtils.showSnackBar(
-                                        editCalendarFragmentCoordinatorLayout, text
+                                        binding.editCalendarFragmentCoordinatorLayout, text
                                     )
                                 }
                             Log.d(TAG, "DocumentSnapshot successfully deleted!")
@@ -503,9 +514,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     //--------------------------------------------------------------------------------------
 
     private fun closeFragment() {
-        activity?.let { myUtils.closeFragment(editCalendarFragmentProgressBar, it) }
-        editCalendarFragmentButtonSave?.isEnabled = false
-        setHasOptionsMenu(false)
+        activity?.let {
+            myUtils.closeFragment(binding.editCalendarFragmentProgressBar, it)
+            binding.includedLayout.fabSave.isEnabled = false
+            setHasOptionsMenu(false)
+        }
     }
 
     //--------------------------------------------------------------------------------------
@@ -515,10 +528,10 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         // This is used only for StatisticsFragment
         val entryDate = false
 
-        when (v?.id) {
-            R.id.editCalendarFragmentButtonWorkout -> getAllWorkouts()
+        when (v) {
+            binding.editCalendarFragmentButtonWorkout -> getAllWorkouts()
 
-            R.id.editCalendarFragmentButtonDate -> {
+            binding.editCalendarFragmentButtonDate -> {
                 val datePicker = if (trainingSession != null) {
                     // Set calendar data from training session to update
                     DatePickerFragment(historical, entryDate, year, month, day)
@@ -529,7 +542,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
             }
 
-            R.id.editCalendarFragmentButtonTime -> {
+            binding.editCalendarFragmentButtonTime -> {
                 val timePicker = if (trainingSession != null) {
                     // Set calendar data from training session to update
                     TimePickerFragment(hour, minute)
@@ -540,7 +553,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                 timePicker.show(childFragmentManager, TimePickerFragment::class.java.simpleName)
             }
 
-            R.id.editCalendarFragmentButtonSave -> createOrUpdateTrainingSession()
+            binding.includedLayout.fabSave -> createOrUpdateTrainingSession()
         }
     }
 }

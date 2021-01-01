@@ -153,7 +153,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
-            android:id="@+id/editExerciseFragmentFABSave"
+            android:id="@+id/includedLayout"
             layout="@layout/fab_save" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

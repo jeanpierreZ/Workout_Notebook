@@ -18,7 +18,6 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
-import kotlinx.android.synthetic.main.fragment_base_profile.*
 import org.koin.android.ext.android.inject
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.RuntimePermissions
@@ -88,13 +87,13 @@ class EditProfileFragment : BaseProfileFragment() {
 
         getUserDataToObject(userId)
 
-        baseProfileFragmentPhoto.setOnClickListener {
+        binding.baseProfileFragmentPhoto.setOnClickListener {
             permissionsRequester.launch()
         }
 
-        myUtils.scaleViewAnimation(baseProfileFragmentFABSave, START_DELAY)
+        myUtils.scaleViewAnimation(binding.includedLayout.fabSave, START_DELAY)
 
-        baseProfileFragmentFABSave.setOnClickListener {
+        binding.includedLayout.fabSave.setOnClickListener {
             saveUpdatedData()
         }
     }
@@ -178,7 +177,7 @@ class EditProfileFragment : BaseProfileFragment() {
             Glide.with(it)
                 .load(uri)
                 .circleCrop()
-                .into(baseProfileFragmentPhoto)
+                .into(binding.baseProfileFragmentPhoto)
         }
     }
 
@@ -186,7 +185,9 @@ class EditProfileFragment : BaseProfileFragment() {
     // Permissions
 
     private fun onReadExternalStorageDenied() {
-        myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.permission_denied)
+        myUtils.showSnackBar(
+            binding.baseProfileFragmentCoordinatorLayout, R.string.permission_denied
+        )
     }
 
     private fun showRationaleForReadExternalStorage(request: PermissionRequest) {
@@ -203,6 +204,6 @@ class EditProfileFragment : BaseProfileFragment() {
     }
 
     private fun onPermissionNeverAskAgain() {
-        myUtils.showSnackBar(baseProfileFragmentCoordinatorLayout, R.string.never_ask_again)
+        myUtils.showSnackBar(binding.baseProfileFragmentCoordinatorLayout, R.string.never_ask_again)
     }
 }

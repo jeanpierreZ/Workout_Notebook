@@ -12,11 +12,10 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.databinding.ActivityConnectionBinding
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
-import kotlinx.android.synthetic.main.activity_connection.*
-import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,6 +29,8 @@ class ConnectionActivity : AppCompatActivity() {
         private val TAG = ConnectionActivity::class.java.simpleName
         private const val AUTH_USER_ID = "userId"
     }
+
+    private lateinit var binding: ActivityConnectionBinding
 
     private val userAuth: UserAuth by inject()
     private val userViewModel: UserViewModel by viewModel()
@@ -47,7 +48,9 @@ class ConnectionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_connection)
+        binding = ActivityConnectionBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         configureToolbar()
 
@@ -71,7 +74,7 @@ class ConnectionActivity : AppCompatActivity() {
                 if (result.resultCode == Activity.RESULT_OK) {
                     // Successfully signed in
                     myUtils.showSnackBar(
-                        connectionActivityCoordinatorLayout,
+                        binding.connectionActivityCoordinatorLayout,
                         R.string.authentication_succeed
                     )
                     createUser()
@@ -82,17 +85,17 @@ class ConnectionActivity : AppCompatActivity() {
                     // response.getError().getErrorCode() and handle the error.
                     if (response == null) {
                         myUtils.showSnackBar(
-                            connectionActivityCoordinatorLayout,
+                            binding.connectionActivityCoordinatorLayout,
                             R.string.sign_in_cancelled
                         )
                     } else {
                         when (response.error?.errorCode) {
                             ErrorCodes.NO_NETWORK -> myUtils.showSnackBar(
-                                connectionActivityCoordinatorLayout,
+                                binding.connectionActivityCoordinatorLayout,
                                 R.string.error_no_internet
                             )
                             ErrorCodes.UNKNOWN_ERROR -> myUtils.showSnackBar(
-                                connectionActivityCoordinatorLayout,
+                                binding.connectionActivityCoordinatorLayout,
                                 R.string.error_unknown_error
                             )
                         }
@@ -119,7 +122,7 @@ class ConnectionActivity : AppCompatActivity() {
 
     private fun configureToolbar() {
         // Get the toolbar view inside the activity layout
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.includedLayout.toolbar)
     }
 
     private fun startMainActivity() {

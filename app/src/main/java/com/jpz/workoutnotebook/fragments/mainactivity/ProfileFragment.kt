@@ -8,7 +8,6 @@ import com.google.firebase.firestore.DocumentChange
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
-import kotlinx.android.synthetic.main.fragment_base_profile.*
 
 
 class ProfileFragment : BaseProfileFragment() {
@@ -46,20 +45,20 @@ class ProfileFragment : BaseProfileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         // Disable EditText and counter
-        baseProfileFragmentNickname.editText?.isEnabled = false
-        baseProfileFragmentNickname.isCounterEnabled = false
-        baseProfileFragmentName.editText?.isEnabled = false
-        baseProfileFragmentName.isCounterEnabled = false
-        baseProfileFragmentFirstName.editText?.isEnabled = false
-        baseProfileFragmentFirstName.isCounterEnabled = false
-        baseProfileFragmentAge.editText?.isEnabled = false
-        baseProfileFragmentAge.isCounterEnabled = false
-        baseProfileFragmentSports.editText?.isEnabled = false
-        baseProfileFragmentSports.isCounterEnabled = false
+        binding.baseProfileFragmentNickname.editText?.isEnabled = false
+        binding.baseProfileFragmentNickname.isCounterEnabled = false
+        binding.baseProfileFragmentName.editText?.isEnabled = false
+        binding.baseProfileFragmentName.isCounterEnabled = false
+        binding.baseProfileFragmentFirstName.editText?.isEnabled = false
+        binding.baseProfileFragmentFirstName.isCounterEnabled = false
+        binding.baseProfileFragmentAge.editText?.isEnabled = false
+        binding.baseProfileFragmentAge.isCounterEnabled = false
+        binding.baseProfileFragmentSports.editText?.isEnabled = false
+        binding.baseProfileFragmentSports.isCounterEnabled = false
 
         // Disable FloatingActionButton
-        baseProfileFragmentFABSave.isEnabled = false
-        baseProfileFragmentFABSave.visibility = View.GONE
+        binding.includedLayout.fabSave.isEnabled = false
+        binding.includedLayout.fabSave.visibility = View.GONE
 
         userId = userAuth.getCurrentUser()?.uid
         Log.d(TAG, "uid = $userId")

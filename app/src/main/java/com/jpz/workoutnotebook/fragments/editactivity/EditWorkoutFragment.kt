@@ -28,7 +28,6 @@ import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.fragment_edit_workout.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -41,7 +40,10 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         private const val START_DELAY = 500L
     }
 
-    private lateinit var binding: FragmentEditWorkoutBinding
+    private var _binding: FragmentEditWorkoutBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var workout: Workout? = null
 
@@ -65,7 +67,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding =
+        _binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_edit_workout, container, false)
         return binding.root
     }
@@ -91,11 +93,16 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
         swipeToDeleteAnExercise()
 
-        myUtils.scaleViewAnimation(editWorkoutFragmentFABAddExercise, START_DELAY)
-        myUtils.scaleViewAnimation(editWorkoutFragmentFABSave, START_DELAY)
+        myUtils.scaleViewAnimation(binding.editWorkoutFragmentFABAddExercise, START_DELAY)
+        myUtils.scaleViewAnimation(binding.includedLayout.fabSave, START_DELAY)
 
-        editWorkoutFragmentFABAddExercise.setOnClickListener(this)
-        editWorkoutFragmentFABSave.setOnClickListener(this)
+        binding.editWorkoutFragmentFABAddExercise.setOnClickListener(this)
+        binding.includedLayout.fabSave.setOnClickListener(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //--------------------------------------------------------------------------------------
@@ -122,9 +129,9 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 workout?.exercisesList?.let { it -> ItemExerciseFromWorkoutAdapter(it, activity) }
             }
         // Attach the adapter to the recyclerView to populate the exercises
-        editWorkoutFragmentRecyclerView?.adapter = itemExerciseFromWorkoutAdapter
+        binding.editWorkoutFragmentRecyclerView.adapter = itemExerciseFromWorkoutAdapter
         // Set layout manager to position the exercises
-        editWorkoutFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        binding.editWorkoutFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
     //----------------------------------------------------------------------------------
@@ -148,7 +155,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 val recentlyDeletedItem: Exercise? = workout?.exercisesList?.get(position)
                 Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
                 itemExerciseFromWorkoutAdapter?.deleteAnExercise(
-                    editWorkoutFragmentCoordinatorLayout, position, recentlyDeletedItem
+                    binding.editWorkoutFragmentCoordinatorLayout, position, recentlyDeletedItem
                 )
             }
 
@@ -172,7 +179,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(editWorkoutFragmentRecyclerView)
+        itemTouchHelper.attachToRecyclerView(binding.editWorkoutFragmentRecyclerView)
     }
 
     //----------------------------------------------------------------------------------
@@ -186,7 +193,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 .addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         myUtils.showSnackBar(
-                            editWorkoutFragmentCoordinatorLayout, R.string.no_exercise
+                            binding.editWorkoutFragmentCoordinatorLayout, R.string.no_exercise
                         )
                     } else {
                         for (document in documents) {
@@ -232,7 +239,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                                     exerciseToAdd?.let {
                                         // Add the exercise to the adapter and the workout
                                         itemExerciseFromWorkoutAdapter?.addAnExercise(
-                                            exerciseToAdd, editWorkoutFragmentRecyclerView
+                                            exerciseToAdd, binding.editWorkoutFragmentRecyclerView
                                         )
                                     }
                                 }
@@ -248,9 +255,11 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     // Methods to create or update a workout
 
     private fun closeFragment() {
-        activity?.let { myUtils.closeFragment(editWorkoutFragmentProgressBar, it) }
-        editWorkoutFragmentFABSave?.isEnabled = false
-        editWorkoutFragmentFABAddExercise?.isEnabled = false
+        activity?.let {
+            myUtils.closeFragment(binding.editWorkoutFragmentProgressBar, it)
+            binding.includedLayout.fabSave.isEnabled = false
+            binding.editWorkoutFragmentFABAddExercise.isEnabled = false
+        }
     }
 
     private fun createOrUpdateWorkout() {
@@ -281,7 +290,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                         } else {
                             // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
-                                editWorkoutFragmentCoordinatorLayout,
+                                binding.editWorkoutFragmentCoordinatorLayout,
                                 R.string.workout_name_already_exists
                             )
                             for (document in documents) {
@@ -309,7 +318,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                             context?.getString(R.string.workout_updated, workout?.workoutName)
                                 ?.let { text ->
                                     myUtils.showSnackBar(
-                                        editWorkoutFragmentCoordinatorLayout, text
+                                        binding.editWorkoutFragmentCoordinatorLayout, text
                                     )
                                 }
                             Log.d(TAG, "DocumentSnapshot successfully updated!")
@@ -333,7 +342,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                                     R.string.new_workout_created, workout?.workoutName
                                 )?.let { text ->
                                     myUtils.showSnackBar(
-                                        editWorkoutFragmentCoordinatorLayout, text
+                                        binding.editWorkoutFragmentCoordinatorLayout, text
                                     )
                                 }
                                 closeFragment()
@@ -347,7 +356,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     fun checkIfWorkoutNameIsEmpty(): Boolean {
         return if (workout?.workoutName.isNullOrEmpty() || workout?.workoutName.isNullOrBlank()) {
             myUtils.showSnackBar(
-                editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
+                binding.editWorkoutFragmentCoordinatorLayout, R.string.workout_name_cannot_be_blank
             )
             true
         } else false
@@ -357,7 +366,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     fun checkIfExercisesListIsEmpty(): Boolean {
         return if (workout?.exercisesList.isNullOrEmpty()) {
             myUtils.showSnackBar(
-                editWorkoutFragmentCoordinatorLayout, R.string.exercises_cannot_be_empty
+                binding.editWorkoutFragmentCoordinatorLayout, R.string.exercises_cannot_be_empty
             )
             true
         } else false
@@ -366,9 +375,9 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.editWorkoutFragmentFABAddExercise -> getAllExercises()
-            R.id.editWorkoutFragmentFABSave -> createOrUpdateWorkout()
+        when (v) {
+            binding.editWorkoutFragmentFABAddExercise -> getAllExercises()
+            binding.includedLayout.fabSave -> createOrUpdateWorkout()
         }
     }
 }

@@ -18,6 +18,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity.Companion.IS_AN_EXERCISE
 import com.jpz.workoutnotebook.adapters.ItemExerciseAdapter
 import com.jpz.workoutnotebook.adapters.ItemWorkoutAdapter
+import com.jpz.workoutnotebook.databinding.FragmentListSportsBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.repositories.UserAuth
@@ -25,7 +26,6 @@ import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.fragment_list_sports.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,6 +36,11 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         private val TAG = ListSportsFragment::class.java.simpleName
         private const val START_DELAY = 500L
     }
+
+    private var _binding: FragmentListSportsBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     // Firebase Auth, Firestore and utils
     private val userAuth: UserAuth by inject()
@@ -52,8 +57,9 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_list_sports, container, false)
+    ): View {
+        _binding = FragmentListSportsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,14 +70,14 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         Log.d(TAG, "isAnExercise = $isAnExercise")
 
         if (isAnExercise) {
-            listSportsFragmentTitle.setText(R.string.exercises)
+            binding.listSportsFragmentTitle.setText(R.string.exercises)
         } else {
-            listSportsFragmentTitle.setText(R.string.workouts)
+            binding.listSportsFragmentTitle.setText(R.string.workouts)
         }
 
-        myUtils.scaleViewAnimation(listSportsFragmentFABAdd, START_DELAY)
+        myUtils.scaleViewAnimation(binding.includedLayout.fabAdd, START_DELAY)
 
-        listSportsFragmentFABAdd.setOnClickListener {
+        binding.includedLayout.fabAdd.setOnClickListener {
             if (isAnExercise) {
                 callback?.addOrUpdateExercise(null)
             } else {
@@ -82,6 +88,11 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         val userId = userAuth.getCurrentUser()?.uid
         userId?.let { configureRecyclerView(isAnExercise, it) }
         swipeToDeleteAnItem()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //----------------------------------------------------------------------------------
@@ -95,18 +106,18 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
             list = exerciseViewModel.getOrderedListOfExercises(userId)
             itemExerciseAdapter = ItemExerciseAdapter(generateOptionsForExerciseAdapter(list), this)
             // Attach the adapter to the recyclerView to populate the exercises
-            listSportsFragmentRecyclerView?.adapter = itemExerciseAdapter
+            binding.listSportsFragmentRecyclerView.adapter = itemExerciseAdapter
 
         } else {
             // Create the adapter by passing the list of workouts of the user
             list = workoutViewModel.getOrderedListOfWorkouts(userId)
             itemWorkoutAdapter = ItemWorkoutAdapter(generateOptionsForWorkoutAdapter(list), this)
             // Attach the adapter to the recyclerView to populate the workouts
-            listSportsFragmentRecyclerView?.adapter = itemWorkoutAdapter
+            binding.listSportsFragmentRecyclerView.adapter = itemWorkoutAdapter
         }
 
         // Set layout manager to position the exercises or workouts
-        listSportsFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        binding.listSportsFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
     // Create options for RecyclerView from a Query
@@ -142,11 +153,13 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
                 activity?.let {
                     if (itemExerciseAdapter != null) {
                         itemExerciseAdapter?.deleteAnExercise(
-                            viewHolder.adapterPosition, it, listSportsFragmentCoordinatorLayout
+                            viewHolder.adapterPosition,
+                            it, binding.listSportsFragmentCoordinatorLayout
                         )
                     } else {
                         itemWorkoutAdapter?.deleteAWorkout(
-                            viewHolder.adapterPosition, it, listSportsFragmentCoordinatorLayout
+                            viewHolder.adapterPosition,
+                            it, binding.listSportsFragmentCoordinatorLayout
                         )
                     }
                 }
@@ -172,7 +185,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(listSportsFragmentRecyclerView)
+        itemTouchHelper.attachToRecyclerView(binding.listSportsFragmentRecyclerView)
     }
 
     //----------------------------------------------------------------------------------

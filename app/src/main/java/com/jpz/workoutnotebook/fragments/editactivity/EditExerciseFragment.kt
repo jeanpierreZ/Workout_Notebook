@@ -25,7 +25,6 @@ import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.fragment_edit_exercise.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,7 +37,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         private const val START_DELAY = 500L
     }
 
-    private lateinit var binding: FragmentEditExerciseBinding
+    private var _binding: FragmentEditExerciseBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var exercise: Exercise? = null
 
@@ -61,7 +63,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding =
+        _binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_edit_exercise, container, false)
         return binding.root
     }
@@ -90,11 +92,16 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
         swipeToDeleteASeries()
 
-        myUtils.scaleViewAnimation(editExerciseFragmentFABAddSeries, START_DELAY)
-        myUtils.scaleViewAnimation(editExerciseFragmentFABSave, START_DELAY)
+        myUtils.scaleViewAnimation(binding.editExerciseFragmentFABAddSeries, START_DELAY)
+        myUtils.scaleViewAnimation(binding.includedLayout.fabSave, START_DELAY)
 
-        editExerciseFragmentFABAddSeries.setOnClickListener(this)
-        editExerciseFragmentFABSave.setOnClickListener(this)
+        binding.editExerciseFragmentFABAddSeries.setOnClickListener(this)
+        binding.includedLayout.fabSave.setOnClickListener(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //--------------------------------------------------------------------------------------
@@ -126,9 +133,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 }
             }
         // Attach the adapter to the recyclerView to populate the series
-        editExerciseFragmentRecyclerView?.adapter = itemSeriesAdapter
+        binding.editExerciseFragmentRecyclerView.adapter = itemSeriesAdapter
         // Set layout manager to position the series
-        editExerciseFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        binding.editExerciseFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
     //----------------------------------------------------------------------------------
@@ -152,7 +159,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 val recentlyDeletedItem: Series? = exercise?.seriesList?.get(position)
                 Log.d(TAG, "recentlyDeletedItem = $recentlyDeletedItem")
                 itemSeriesAdapter?.deleteASeries(
-                    editExerciseFragmentCoordinatorLayout, position, recentlyDeletedItem
+                    binding.editExerciseFragmentCoordinatorLayout, position, recentlyDeletedItem
                 )
             }
 
@@ -176,16 +183,18 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(editExerciseFragmentRecyclerView)
+        itemTouchHelper.attachToRecyclerView(binding.editExerciseFragmentRecyclerView)
     }
 
     //----------------------------------------------------------------------------------
     // Methods to create or update an exercise
 
     private fun closeFragment() {
-        activity?.let { myUtils.closeFragment(editExerciseFragmentProgressBar, it) }
-        editExerciseFragmentFABSave?.isEnabled = false
-        editExerciseFragmentFABAddSeries?.isEnabled = false
+        activity?.let {
+            myUtils.closeFragment(binding.editExerciseFragmentProgressBar, it)
+            binding.includedLayout.fabSave.isEnabled = false
+            binding.editExerciseFragmentFABAddSeries.isEnabled = false
+        }
     }
 
     private fun createOrUpdateExercise() {
@@ -216,7 +225,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                         } else {
                             // The same exercise name exists, choose another name
                             myUtils.showSnackBar(
-                                editExerciseFragmentCoordinatorLayout,
+                                binding.editExerciseFragmentCoordinatorLayout,
                                 R.string.exercise_name_already_exists
                             )
                             for (document in documents) {
@@ -244,7 +253,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                             context?.getString(R.string.exercise_updated, exercise?.exerciseName)
                                 ?.let { text ->
                                     myUtils.showSnackBar(
-                                        editExerciseFragmentCoordinatorLayout, text
+                                        binding.editExerciseFragmentCoordinatorLayout, text
                                     )
                                 }
                             Log.d(TAG, "DocumentSnapshot successfully updated!")
@@ -268,7 +277,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                                     R.string.new_exercise_created, exercise?.exerciseName
                                 )?.let { text ->
                                     myUtils.showSnackBar(
-                                        editExerciseFragmentCoordinatorLayout, text
+                                        binding.editExerciseFragmentCoordinatorLayout, text
                                     )
                                 }
                                 closeFragment()
@@ -282,7 +291,8 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     fun checkIfExerciseNameIsEmpty(): Boolean {
         return if (exercise?.exerciseName.isNullOrEmpty() || exercise?.exerciseName.isNullOrBlank()) {
             myUtils.showSnackBar(
-                editExerciseFragmentCoordinatorLayout, R.string.exercise_name_cannot_be_blank
+                binding.editExerciseFragmentCoordinatorLayout,
+                R.string.exercise_name_cannot_be_blank
             )
             true
         } else false
@@ -292,7 +302,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     fun checkIfSeriesListIsEmpty(): Boolean {
         return if (exercise?.seriesList.isNullOrEmpty()) {
             myUtils.showSnackBar(
-                editExerciseFragmentCoordinatorLayout, R.string.sets_cannot_be_empty
+                binding.editExerciseFragmentCoordinatorLayout, R.string.sets_cannot_be_empty
             )
             true
         } else false
@@ -301,10 +311,11 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     //----------------------------------------------------------------------------------
 
     override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.editExerciseFragmentFABAddSeries ->
-                itemSeriesAdapter?.addASeries(editExerciseFragmentRecyclerView)
-            R.id.editExerciseFragmentFABSave -> createOrUpdateExercise()
+        when (v) {
+            binding.editExerciseFragmentFABAddSeries ->
+                itemSeriesAdapter?.addASeries(binding.editExerciseFragmentRecyclerView)
+
+            binding.includedLayout.fabSave -> createOrUpdateExercise()
         }
     }
 }

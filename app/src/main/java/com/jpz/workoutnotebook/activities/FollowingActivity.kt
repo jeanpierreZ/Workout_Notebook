@@ -11,10 +11,10 @@ import androidx.fragment.app.commit
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.EDIT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.SEARCH_FRAGMENT
+import com.jpz.workoutnotebook.databinding.ActivityFollowingBinding
 import com.jpz.workoutnotebook.fragments.followingactivity.FollowingFragment
 import com.jpz.workoutnotebook.fragments.followingactivity.SearchFragment
 import com.jpz.workoutnotebook.models.User
-import kotlinx.android.synthetic.main.toolbar.*
 
 
 class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
@@ -27,9 +27,13 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
         const val FOLLOWING = "FOLLOWING"
     }
 
+    private lateinit var binding: ActivityFollowingBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_following)
+        binding = ActivityFollowingBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         configureToolbar()
 
@@ -53,7 +57,7 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
 
     private fun configureToolbar() {
         // Get the toolbar view inside the activity layout
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.includedLayout.toolbar)
         // Get a support ActionBar corresponding to this toolbar and enable the Up button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }

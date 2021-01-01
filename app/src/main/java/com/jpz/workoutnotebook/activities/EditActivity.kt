@@ -14,15 +14,15 @@ import com.jpz.workoutnotebook.activities.MainActivity.Companion.HISTORICAL_FRAG
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION_FRAGMENT
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.WORKOUTS
+import com.jpz.workoutnotebook.databinding.ActivityEditBinding
 import com.jpz.workoutnotebook.fragments.editactivity.*
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.utils.MyUtils
-import kotlinx.android.synthetic.main.activity_edit.*
-import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
+
 
 class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
@@ -34,11 +34,15 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
         const val IS_FOLLOWING_HISTORICAL = "IS_FOLLOWING_HISTORICAL"
     }
 
+    private lateinit var binding: ActivityEditBinding
+
     private val myUtils: MyUtils by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit)
+        binding = ActivityEditBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         configureToolbar()
 
@@ -62,7 +66,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
 
     private fun configureToolbar() {
         // Get the toolbar view inside the activity layout
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.includedLayout.toolbar)
         // Get a support ActionBar corresponding to this toolbar and enable the Up button
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -122,7 +126,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
             }
 
             else -> myUtils.showSnackBar(
-                editActivityCoordinatorLayout, R.string.user_data_recovery_error
+                binding.editActivityCoordinatorLayout, R.string.user_data_recovery_error
             )
         }
 

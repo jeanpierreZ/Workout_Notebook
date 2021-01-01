@@ -2,6 +2,8 @@ package com.jpz.workoutnotebook.fragments.editactivity
 
 import android.os.Build
 import android.os.Bundle
+import com.google.android.material.textview.MaterialTextView
+import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.EditActivity
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.TimePickerFragment
@@ -84,8 +86,12 @@ class EditCalendarFragmentTest {
 
     @Test
     fun checkIfATextViewIsEmptyTest() {
-        val actual = editCalendarFragment.checkIfATextViewIsEmpty()
-        Assert.assertTrue(actual)
+        val mockedEditCalendarFragment = Mockito.mock(EditCalendarFragment::class.java)
+        val editCalendarFragmentWorkout =
+            mockedEditCalendarFragment.view?.findViewById<MaterialTextView>(R.id.editCalendarFragmentWorkout)
+        editCalendarFragmentWorkout?.text = "workout"
+        val actual = mockedEditCalendarFragment.checkIfATextViewIsEmpty()
+        Assert.assertFalse(actual)
     }
 
     @Test

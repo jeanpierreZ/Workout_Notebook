@@ -2,12 +2,15 @@ package com.jpz.workoutnotebook.fragments.editactivity
 
 import android.os.Build
 import com.jpz.workoutnotebook.activities.EditActivity
+import com.jpz.workoutnotebook.models.Exercise
+import com.jpz.workoutnotebook.models.Workout
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
+import org.mockito.Mockito
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -17,7 +20,10 @@ import org.robolectric.annotation.Config
 class EditWorkoutFragmentTest {
 
     private var editActivity: EditActivity? = null
-    private val editWorkoutFragment = EditWorkoutFragment()
+    private val editCalendarFragment = EditCalendarFragment()
+
+    private val mockedEditWorkoutFragment = Mockito.mock(EditWorkoutFragment::class.java)
+    private val mockedWorkout = Mockito.mock(Workout::class.java)
 
     @Before
     fun setUp() {
@@ -36,15 +42,15 @@ class EditWorkoutFragmentTest {
 
     @Test
     fun checkIfWorkoutNameIsEmptyTest() {
-        val actual = editWorkoutFragment.checkIfWorkoutNameIsEmpty()
-        // Assert true because there are no workoutName, no Workout
-        Assert.assertTrue(actual)
+        Mockito.`when`(mockedWorkout.workoutName).thenReturn("workoutName")
+        val actual = mockedEditWorkoutFragment.checkIfWorkoutNameIsEmpty()
+        Assert.assertFalse(actual)
     }
 
     @Test
     fun checkIfExercisesListIsEmptyTest() {
-        val actual = editWorkoutFragment.checkIfExercisesListIsEmpty()
-        // Assert true because there are no exercisesList, no Workout
-        Assert.assertTrue(actual)
+        Mockito.`when`(mockedWorkout.exercisesList).thenReturn(arrayListOf(Exercise("id")))
+        val actual = mockedEditWorkoutFragment.checkIfExercisesListIsEmpty()
+        Assert.assertFalse(actual)
     }
 }

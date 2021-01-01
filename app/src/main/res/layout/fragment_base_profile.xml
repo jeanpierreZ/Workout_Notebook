@@ -157,7 +157,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <include
-            android:id="@+id/baseProfileFragmentFABSave"
+            android:id="@+id/includedLayout"
             layout="@layout/fab_save" />
 
         <LinearLayout

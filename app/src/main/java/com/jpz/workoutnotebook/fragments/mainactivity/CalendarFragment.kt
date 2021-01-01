@@ -14,10 +14,10 @@ import com.applandeo.materialcalendarview.listeners.OnCalendarPageChangeListener
 import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ItemTrainingSessionAdapter
+import com.jpz.workoutnotebook.databinding.FragmentCalendarBinding
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
-import kotlinx.android.synthetic.main.fragment_calendar.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -30,6 +30,11 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         private val TAG = CalendarFragment::class.java.simpleName
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
+
+    private var _binding: FragmentCalendarBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var userId: String? = null
 
@@ -46,9 +51,9 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false)
+    ): View {
+        _binding = FragmentCalendarBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onResume() {
@@ -63,7 +68,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
         addTrainingSessionsToCalendarView()
 
-        calendarFragmentCalendarView.setOnPreviousPageChangeListener(
+        binding.calendarFragmentCalendarView.setOnPreviousPageChangeListener(
             object : OnCalendarPageChangeListener {
                 override fun onChange() {
                     addTrainingSessionsToCalendarView()
@@ -71,7 +76,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
                 }
             })
 
-        calendarFragmentCalendarView.setOnForwardPageChangeListener(
+        binding.calendarFragmentCalendarView.setOnForwardPageChangeListener(
             object : OnCalendarPageChangeListener {
                 override fun onChange() {
                     addTrainingSessionsToCalendarView()
@@ -79,13 +84,18 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
                 }
             })
 
-        calendarFragmentCalendarView.setOnDayClickListener(object : OnDayClickListener {
+        binding.calendarFragmentCalendarView.setOnDayClickListener(object : OnDayClickListener {
             override fun onDayClick(eventDay: EventDay) {
                 // Get the eventDay from the calendarView
                 val clickedDayCalendar: Calendar = eventDay.calendar
                 trainingSessionsFromOnDayClick(clickedDayCalendar)
             }
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //----------------------------------------------------------------------------------
@@ -95,9 +105,9 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         // Create the adapter by passing the list of training sessions
         itemTrainingSessionAdapter = ItemTrainingSessionAdapter(list, this)
         // Attach the adapter to the recyclerView to populate the training sessions
-        calendarFragmentRecyclerView?.adapter = itemTrainingSessionAdapter
+        binding.calendarFragmentRecyclerView.adapter = itemTrainingSessionAdapter
         // Set layout manager to position the training sessions
-        calendarFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        binding.calendarFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
     //----------------------------------------------------------------------------------
@@ -137,16 +147,18 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     private fun addTrainingSessionsToCalendarView() {
         // Get the first day of month at midnight in SDF format
-        val beginCurrentCalendarDate: Date? = calendarFragmentCalendarView?.currentPageDate?.time
+        val beginCurrentCalendarDate: Date? =
+            binding.calendarFragmentCalendarView.currentPageDate.time
         Log.d(TAG, "beginCurrentCalendarDate = $beginCurrentCalendarDate")
         var beginMonthSDFFormat = ""
         beginCurrentCalendarDate?.let { beginMonthSDFFormat = sdf.format(it) }
 
         // Get the first day of next month at midnight in SDF format
-        val endCurrentCalendarCalendar: Calendar? = calendarFragmentCalendarView?.currentPageDate
+        val endCurrentCalendarCalendar: Calendar =
+            binding.calendarFragmentCalendarView.currentPageDate
         // Add a month to the actual calendar
-        endCurrentCalendarCalendar?.add(Calendar.MONTH, 1)
-        val endCurrentCalendarDate: Date? = endCurrentCalendarCalendar?.time
+        endCurrentCalendarCalendar.add(Calendar.MONTH, 1)
+        val endCurrentCalendarDate: Date? = endCurrentCalendarCalendar.time
         Log.d(TAG, "endCurrentCalendarDate = $endCurrentCalendarDate")
         var endMonthSDFFormat = ""
         endCurrentCalendarDate?.let { endMonthSDFFormat = sdf.format(it) }
@@ -189,7 +201,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
             }
         }
         // Log.d(TAG, " events.size = ${events.size}, events = $events")
-        calendarFragmentCalendarView?.setEvents(events)
+        binding.calendarFragmentCalendarView.setEvents(events)
     }
 
     //--------------------------------------------------------------------------------------

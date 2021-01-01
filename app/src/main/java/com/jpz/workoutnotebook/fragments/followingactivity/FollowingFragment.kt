@@ -15,8 +15,6 @@ import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
 import com.jpz.workoutnotebook.viewmodels.FollowingViewModel
-import kotlinx.android.synthetic.main.fragment_base_profile.*
-import kotlinx.android.synthetic.main.fragment_sports.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -54,20 +52,19 @@ class FollowingFragment : BaseProfileFragment() {
         }
 
         // Disable EditText and counter
-        baseProfileFragmentNickname.editText?.isEnabled = false
-        baseProfileFragmentNickname.isCounterEnabled = false
-        baseProfileFragmentName.editText?.isEnabled = false
-        baseProfileFragmentName.isCounterEnabled = false
-        baseProfileFragmentFirstName.editText?.isEnabled = false
-        baseProfileFragmentFirstName.isCounterEnabled = false
-        baseProfileFragmentAge.editText?.isEnabled = false
-        baseProfileFragmentAge.isCounterEnabled = false
-        baseProfileFragmentSports.editText?.isEnabled = false
-        baseProfileFragmentSports.isCounterEnabled = false
+        binding.baseProfileFragmentNickname.editText?.isEnabled = false
+        binding.baseProfileFragmentNickname.isCounterEnabled = false
+        binding.baseProfileFragmentName.editText?.isEnabled = false
+        binding.baseProfileFragmentName.isCounterEnabled = false
+        binding.baseProfileFragmentFirstName.editText?.isEnabled = false
+        binding.baseProfileFragmentFirstName.isCounterEnabled = false
+        binding.baseProfileFragmentAge.editText?.isEnabled = false
+        binding.baseProfileFragmentAge.isCounterEnabled = false
+        binding.baseProfileFragmentSports.editText?.isEnabled = false
+        binding.baseProfileFragmentSports.isCounterEnabled = false
 
         // Disable FloatingActionButton Save
-        baseProfileFragmentFABSave.isEnabled = false
-        baseProfileFragmentFABSave.visibility = View.GONE
+        binding.includedLayout.fabSave.visibility = View.GONE
 
         // Get current user
         userId = userAuth.getCurrentUser()?.uid
@@ -78,9 +75,9 @@ class FollowingFragment : BaseProfileFragment() {
         binding.user = following
 
         // Make FloatingActionButton Historical visible
-        myUtils.scaleViewAnimation(baseProfileFragmentFABHistorical, START_DELAY)
-        baseProfileFragmentFABHistorical.visibility = View.VISIBLE
-        baseProfileFragmentFABHistorical.setOnClickListener {
+        myUtils.scaleViewAnimation(binding.baseProfileFragmentFABHistorical, START_DELAY)
+        binding.baseProfileFragmentFABHistorical.visibility = View.VISIBLE
+        binding.baseProfileFragmentFABHistorical.setOnClickListener {
             following?.let { callback?.consultHistorical(it) }
         }
 
@@ -88,16 +85,16 @@ class FollowingFragment : BaseProfileFragment() {
 
         if (isFollowed != null && isFollowed) {
             // People already followed, make FloatingActionButton NoFollow visible
-            myUtils.scaleViewAnimation(baseProfileFragmentFABNoFollow, START_DELAY)
-            baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
-            baseProfileFragmentFABNoFollow.setOnClickListener {
+            myUtils.scaleViewAnimation(binding.baseProfileFragmentFABNoFollow, START_DELAY)
+            binding.baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
+            binding.baseProfileFragmentFABNoFollow.setOnClickListener {
                 userId?.let { following?.let { followed -> noLongerFollow(it, followed) } }
             }
         } else {
             // Make FloatingActionButton Follow visible
-            myUtils.scaleViewAnimation(baseProfileFragmentFABFollow, START_DELAY)
-            baseProfileFragmentFABFollow.visibility = View.VISIBLE
-            baseProfileFragmentFABFollow.setOnClickListener {
+            myUtils.scaleViewAnimation(binding.baseProfileFragmentFABFollow, START_DELAY)
+            binding.baseProfileFragmentFABFollow.visibility = View.VISIBLE
+            binding.baseProfileFragmentFABFollow.setOnClickListener {
                 userId?.let { following?.let { followed -> addAPersonToFollow(it, followed) } }
             }
         }
@@ -115,7 +112,8 @@ class FollowingFragment : BaseProfileFragment() {
                     if (document.id == followed.userId) {
                         // Inform the user that the person is already followed
                         myUtils.showSnackBar(
-                            baseProfileFragmentCoordinatorLayout, R.string.person_already_followed
+                            binding.baseProfileFragmentCoordinatorLayout,
+                            R.string.person_already_followed
                         )
                         return@addOnSuccessListener
                     }
@@ -136,7 +134,7 @@ class FollowingFragment : BaseProfileFragment() {
             .addOnSuccessListener {
                 // Inform the user
                 myUtils.showSnackBar(
-                    baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
+                    binding.baseProfileFragmentCoordinatorLayout, R.string.person_to_follow_added
                 )
                 closeFragment()
             }
@@ -148,16 +146,18 @@ class FollowingFragment : BaseProfileFragment() {
                 Log.d(TAG, "DocumentSnapshot successfully deleted!")
                 // Inform the user
                 myUtils.showSnackBar(
-                    baseProfileFragmentCoordinatorLayout, R.string.person_no_longer_followed
+                    binding.baseProfileFragmentCoordinatorLayout, R.string.person_no_longer_followed
                 )
                 closeFragment()
             }
     }
 
     private fun closeFragment() {
-        activity?.let { myUtils.closeFragment(baseProfileFragmentProgressBar, it) }
-        baseProfileFragmentFABFollow?.isEnabled = false
-        baseProfileFragmentFABHistorical?.isEnabled = false
+        activity?.let {
+            myUtils.closeFragment(binding.baseProfileFragmentProgressBar, it)
+            binding.baseProfileFragmentFABFollow.isEnabled = false
+            binding.baseProfileFragmentFABHistorical.isEnabled = false
+        }
     }
 
     //----------------------------------------------------------------------------------

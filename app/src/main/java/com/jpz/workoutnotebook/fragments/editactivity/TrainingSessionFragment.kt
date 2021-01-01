@@ -12,12 +12,14 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity.Companion.TRAINING_SESSION
 import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
+import com.jpz.workoutnotebook.databinding.FragmentTrainingSessionBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
@@ -25,8 +27,6 @@ import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
-import kotlinx.android.synthetic.main.fragment_training_session.*
-import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,6 +37,11 @@ class TrainingSessionFragment : Fragment() {
         private val TAG = TrainingSessionFragment::class.java.simpleName
         private const val COUNTDOWN_INTERVAL = 1000L
     }
+
+    private var _binding: FragmentTrainingSessionBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var trainingSession: TrainingSession? = null
 
@@ -87,9 +92,9 @@ class TrainingSessionFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_training_session, container, false)
+    ): View {
+        _binding = FragmentTrainingSessionBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,7 +104,9 @@ class TrainingSessionFragment : Fragment() {
             // Handle the back button event
             saveBeforeQuit()
         }
-        activity?.toolbar?.setNavigationOnClickListener {
+
+        val toolbar = activity?.findViewById(R.id.includedLayout) as Toolbar
+        toolbar.setNavigationOnClickListener {
             // Handle the toolbar's up button event
             saveBeforeQuit()
         }
@@ -109,29 +116,29 @@ class TrainingSessionFragment : Fragment() {
         trainingSession = arguments?.getParcelable(TRAINING_SESSION)
 
         // Display the workout name
-        trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
+        binding.trainingSessionFragmentWorkoutName.text = trainingSession?.workout?.workoutName
 
         exercisesListSize = trainingSession?.workout?.exercisesList?.size!!
 
         // Display the first exercise name
-        trainingSessionFragmentExerciseName?.text =
+        binding.trainingSessionFragmentExerciseName.text =
             trainingSession?.workout?.exercisesList!![0].exerciseName
 
         // Disabled the countDownTimer button to start rest time
-        trainingSessionFragmentStartRestTime.isEnabled = false
+        binding.trainingSessionFragmentStartRestTime.isEnabled = false
 
         // Go
         trainingSession?.let { trainingSession ->
-            trainingSessionFragmentGo.setOnClickListener {
+            binding.trainingSessionFragmentGo.setOnClickListener {
                 // Display the series, the next series or exercise and get rest time data
                 displaySeries(exercisesListSize, trainingSession)
                 // Enable the countDownTimer button for the rest time
-                trainingSessionFragmentStartRestTime.isEnabled = true
+                binding.trainingSessionFragmentStartRestTime.isEnabled = true
             }
         }
 
         // Start rest time or save the training session
-        trainingSessionFragmentStartRestTime.setOnClickListener {
+        binding.trainingSessionFragmentStartRestTime.setOnClickListener {
             if (isFinished) {
                 // Save the completed data
                 saveWorkoutCompleted()
@@ -144,6 +151,11 @@ class TrainingSessionFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //----------------------------------------------------------------------------------
@@ -159,14 +171,15 @@ class TrainingSessionFragment : Fragment() {
             )
         }
         // Attach the adapter to the recyclerView to populate the series
-        trainingSessionFragmentCurrentRecyclerView?.adapter = currentItemSeriesAdapter
+        binding.trainingSessionFragmentCurrentRecyclerView.adapter = currentItemSeriesAdapter
         // Set layout manager to position the series
-        trainingSessionFragmentCurrentRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        trainingSessionFragmentCurrentRecyclerView?.layoutManager =
+        binding.trainingSessionFragmentCurrentRecyclerView.layoutManager =
+            LinearLayoutManager(activity)
+        binding.trainingSessionFragmentCurrentRecyclerView.layoutManager =
             object : LinearLayoutManager(context) {
                 override fun canScrollVertically(): Boolean = false
             }
-        trainingSessionFragmentCurrentRecyclerView?.hasFixedSize()
+        binding.trainingSessionFragmentCurrentRecyclerView.hasFixedSize()
     }
 
     // RecyclerView for the next series
@@ -180,14 +193,15 @@ class TrainingSessionFragment : Fragment() {
             )
         }
         // Attach the adapter to the recyclerView to populate the series
-        trainingSessionFragmentNextRecyclerView?.adapter = nextItemSeriesAdapter
+        binding.trainingSessionFragmentNextRecyclerView.adapter = nextItemSeriesAdapter
         // Set layout manager to position the series
-        trainingSessionFragmentNextRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        trainingSessionFragmentNextRecyclerView?.layoutManager =
+        binding.trainingSessionFragmentNextRecyclerView.layoutManager =
+            LinearLayoutManager(activity)
+        binding.trainingSessionFragmentNextRecyclerView.layoutManager =
             object : LinearLayoutManager(context) {
                 override fun canScrollVertically(): Boolean = false
             }
-        trainingSessionFragmentNextRecyclerView?.hasFixedSize()
+        binding.trainingSessionFragmentNextRecyclerView.hasFixedSize()
     }
 
     //--------------------------------------------------------------------------------------
@@ -209,19 +223,20 @@ class TrainingSessionFragment : Fragment() {
                 saveWorkoutCompleted()
                 timerRunning = false
                 // Set text button to inform user that he can start again the countDownTimer
-                trainingSessionFragmentStartRestTime?.text = getString(R.string.start_rest_time)
+                binding.trainingSessionFragmentStartRestTime.text =
+                    getString(R.string.start_rest_time)
                 // Display the next series or exercise
                 trainingSession?.let { displaySeries(exercisesListSize, it) }
             }
         }.start()
         timerRunning = true
-        trainingSessionFragmentStartRestTime?.text = getString(R.string.pause)
+        binding.trainingSessionFragmentStartRestTime.text = getString(R.string.pause)
     }
 
     private fun pauseTimer() {
         countDownTimer?.cancel()
         timerRunning = false
-        trainingSessionFragmentStartRestTime?.text = getString(R.string.start_rest_time)
+        binding.trainingSessionFragmentStartRestTime.text = getString(R.string.start_rest_time)
     }
 
     private fun updateCountDownText() {
@@ -229,13 +244,13 @@ class TrainingSessionFragment : Fragment() {
             return
         } else {
             val secondsLeft = (timeLeftInMillis / COUNTDOWN_INTERVAL).toInt()
-            trainingSessionFragmentRestTime?.text = secondsLeft.toString()
+            binding.trainingSessionFragmentRestTime.text = secondsLeft.toString()
         }
     }
 
     private fun restTime(restTime: String) {
         // Display the rest time
-        trainingSessionFragmentRestTime?.text = restTime
+        binding.trainingSessionFragmentRestTime.text = restTime
         // Set the countDownTimer with restTime
         timeLeftInMillis = restTime.toLong().times(COUNTDOWN_INTERVAL)
     }
@@ -278,7 +293,7 @@ class TrainingSessionFragment : Fragment() {
                 getNextSeries()
 
                 // Display this exercise name and series
-                trainingSessionFragmentExerciseName?.text = exercise?.exerciseName
+                binding.trainingSessionFragmentExerciseName.text = exercise?.exerciseName
                 configureCurrentRecyclerView()
             }
 
@@ -312,8 +327,8 @@ class TrainingSessionFragment : Fragment() {
                         exercise?.seriesList?.get(noOfSeriesToCompleteNextTime)?.seriesName
 
                     // Display the next series
-                    if (trainingSessionFragmentNextExerciseName?.visibility == View.VISIBLE) {
-                        trainingSessionFragmentNextExerciseName?.visibility = View.INVISIBLE
+                    if (binding.trainingSessionFragmentNextExerciseName.visibility == View.VISIBLE) {
+                        binding.trainingSessionFragmentNextExerciseName.visibility = View.INVISIBLE
                     }
                     configureNextRecyclerView()
                     // Get rest time from restNextSet
@@ -328,11 +343,11 @@ class TrainingSessionFragment : Fragment() {
                 exercisesSize > noOfExerciseToCompleteNextTime -> {
 
                     // Display the next exercise name
-                    trainingSessionFragmentNextExerciseName.text =
+                    binding.trainingSessionFragmentNextExerciseName.text =
                         trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].exerciseName
 
-                    if (trainingSessionFragmentNextExerciseName.visibility == View.INVISIBLE) {
-                        trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
+                    if (binding.trainingSessionFragmentNextExerciseName.visibility == View.INVISIBLE) {
+                        binding.trainingSessionFragmentNextExerciseName.visibility = View.VISIBLE
                     }
                     // Add the first series of this exercise
                     nextSeriesList.add(trainingSession.workout?.exercisesList!![noOfExerciseToCompleteNextTime].seriesList[0])
@@ -354,7 +369,7 @@ class TrainingSessionFragment : Fragment() {
                 }
             }
         }
-        trainingSessionFragmentGo?.isEnabled = false
+        binding.trainingSessionFragmentGo.isEnabled = false
     }
 
     private fun getNextSeries() {
@@ -366,14 +381,16 @@ class TrainingSessionFragment : Fragment() {
     // End and save the training session
 
     private fun closeFragment() {
-        trainingSessionFragmentProgressBar.visibility = View.VISIBLE
+        activity?.let {
+        binding.trainingSessionFragmentProgressBar.visibility = View.VISIBLE
         Handler(Looper.getMainLooper()).postDelayed({ activity?.finish() }, 2000)
-        trainingSessionFragmentStartRestTime.isEnabled = false
+        binding.trainingSessionFragmentStartRestTime.isEnabled = false
+        }
     }
 
     private fun saveBeforeQuit() {
         // Create an alert dialog to save the training session before exiting
-        if (!trainingSessionFragmentGo.isEnabled) {
+        if (!binding.trainingSessionFragmentGo.isEnabled) {
             activity?.let {
                 AlertDialog.Builder(it)
                     .setMessage(getString(R.string.save_training_session))
@@ -393,25 +410,26 @@ class TrainingSessionFragment : Fragment() {
 
     private fun sessionTrainingEnds() {
         // There is no more series and exercise
-        if (trainingSessionFragmentNextExerciseName.visibility == View.VISIBLE) {
-            trainingSessionFragmentNextExerciseName.visibility = View.INVISIBLE
+        if (binding.trainingSessionFragmentNextExerciseName.visibility == View.VISIBLE) {
+            binding.trainingSessionFragmentNextExerciseName.visibility = View.INVISIBLE
         }
         isFinished = true
         // Set text button to inform user that he can save the training session
         activity?.let { activity ->
-            trainingSessionFragmentStartRestTime.setBackgroundColor(
+            binding.trainingSessionFragmentStartRestTime.setBackgroundColor(
                 ContextCompat.getColor(activity, R.color.colorAccent)
             )
-            trainingSessionFragmentStartRestTime.setTextColor(
+            binding.trainingSessionFragmentStartRestTime.setTextColor(
                 ContextCompat.getColor(activity, R.color.colorTextPrimary)
             )
-            trainingSessionFragmentStartRestTime.icon =
+            binding.trainingSessionFragmentStartRestTime.icon =
                 ContextCompat.getDrawable(activity, R.drawable.ic_baseline_save_24)
-            trainingSessionFragmentStartRestTime.iconTint =
+            binding.trainingSessionFragmentStartRestTime.iconTint =
                 ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.colorTextPrimary))
         }
-        trainingSessionFragmentStartRestTime.text = getString(R.string.save_training_session)
-        trainingSessionFragmentRestTime.visibility = View.INVISIBLE
+        binding.trainingSessionFragmentStartRestTime.text =
+            getString(R.string.save_training_session)
+        binding.trainingSessionFragmentRestTime.visibility = View.INVISIBLE
     }
 
     private fun saveWorkoutCompleted() {
@@ -468,7 +486,7 @@ class TrainingSessionFragment : Fragment() {
             trainingSessionViewModel.updateTrainingSession(it, trainingSessionToSave)
                 ?.addOnSuccessListener {
                     myUtils.showSnackBar(
-                        trainingSessionFragmentCoordinatorLayout,
+                        binding.trainingSessionFragmentCoordinatorLayout,
                         R.string.training_session_completed
                     )
                     Log.d(TAG, "DocumentSnapshot successfully updated!")

@@ -13,11 +13,11 @@ import com.jpz.workoutnotebook.activities.EditActivity
 import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.activities.MainActivity
 import com.jpz.workoutnotebook.adapters.ItemHistoricalAdapter
+import com.jpz.workoutnotebook.databinding.FragmentHistoricalBinding
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
-import kotlinx.android.synthetic.main.fragment_historical.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -32,6 +32,11 @@ class HistoricalFragment : Fragment() {
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
 
+    private var _binding: FragmentHistoricalBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
+
     private var trainingSession: TrainingSession? = null
 
     private var itemHistoricalAdapter: ItemHistoricalAdapter? = null
@@ -44,9 +49,9 @@ class HistoricalFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_historical, container, false)
+    ): View {
+        _binding = FragmentHistoricalBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,6 +73,11 @@ class HistoricalFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     //----------------------------------------------------------------------------------
     // Configure RecyclerView, Adapter & LayoutManager
 
@@ -76,9 +86,9 @@ class HistoricalFragment : Fragment() {
         itemHistoricalAdapter =
             activity?.let { ItemHistoricalAdapter(list, it) }
         // Attach the adapter to the recyclerView to populate the training sessions
-        historicalFragmentRecyclerView?.adapter = itemHistoricalAdapter
+        binding.historicalFragmentRecyclerView.adapter = itemHistoricalAdapter
         // Set layout manager to position the training sessions
-        historicalFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        binding.historicalFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
     private fun getFollowedHistorical(followed: User, list: ArrayList<TrainingSession>) {
@@ -98,7 +108,7 @@ class HistoricalFragment : Fragment() {
                     Log.d(TAG, "documents.isEmpty")
                     // There is no document, inform user
                     myUtils.showSnackBar(
-                        historicalFragmentCoordinatorLayout,
+                        binding.historicalFragmentCoordinatorLayout,
                         R.string.no_historical_training_sessions
                     )
                 } else {

@@ -15,6 +15,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ViewPagerAdapter
+import com.jpz.workoutnotebook.databinding.ActivityMainBinding
 import com.jpz.workoutnotebook.fragments.mainactivity.CalendarFragment
 import com.jpz.workoutnotebook.fragments.mainactivity.CommunityFragment
 import com.jpz.workoutnotebook.fragments.mainactivity.SportsFragment
@@ -22,8 +23,6 @@ import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.utils.ZoomOutPageTransformer
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.toolbar.*
 import org.koin.android.ext.android.inject
 
 
@@ -52,6 +51,8 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         const val IS_FOLLOWED = "IS_FOLLOWED"
     }
 
+    private lateinit var binding: ActivityMainBinding
+
     private var pageSelected = 0
     private val myUtils: MyUtils by inject()
 
@@ -60,7 +61,9 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         configureToolbar()
         configureViewPagerAdapter()
@@ -73,18 +76,18 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
             { result: ActivityResult ->
                 if (result.resultCode == RESULT_OK) {
                     myUtils.showSnackBar(
-                        mainActivityCoordinatorLayout, R.string.user_data_updated
+                        binding.mainActivityCoordinatorLayout, R.string.user_data_updated
                     )
                 } else if (result.resultCode == RESULT_CANCELED) {
                     myUtils.showSnackBar(
-                        mainActivityCoordinatorLayout, R.string.update_data_canceled
+                        binding.mainActivityCoordinatorLayout, R.string.update_data_canceled
                     )
                 }
             }
 
-        mainActivityFABEditProfile.setOnClickListener(this)
-        mainActivityFABAddCalendar.setOnClickListener(this)
-        mainActivityFABSearchCommunity.setOnClickListener(this)
+        binding.mainActivityFABEditProfile.setOnClickListener(this)
+        binding.mainActivityFABAddCalendar.setOnClickListener(this)
+        binding.mainActivityFABSearchCommunity.setOnClickListener(this)
     }
 
     //--------------------------------------------------------------------------------------
@@ -92,20 +95,23 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
 
     private fun configureToolbar() {
         // Get the toolbar view inside the activity layout
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.includedLayout.toolbar)
     }
 
     private fun configureViewPagerAdapter() {
-        mainActivityViewPager.adapter = ViewPagerAdapter(this)
-        mainActivityViewPager.offscreenPageLimit = 1
-        mainActivityViewPager.setPageTransformer(ZoomOutPageTransformer())
+        binding.mainActivityViewPager.adapter = ViewPagerAdapter(this)
+        binding.mainActivityViewPager.offscreenPageLimit = 1
+        binding.mainActivityViewPager.setPageTransformer(ZoomOutPageTransformer())
     }
 
     private fun configureTabLayout() {
         val colorIconWhite: Int =
             ContextCompat.getColor(this@MainActivity, R.color.colorTextSecondary)
 
-        TabLayoutMediator(mainActivityTabLayout, mainActivityViewPager) { tab, position ->
+        TabLayoutMediator(
+            binding.mainActivityTabLayout,
+            binding.mainActivityViewPager
+        ) { tab, position ->
             // Add icons to tabs
             when (position) {
                 Tabs.SPORTS.position -> tab.setIcon(R.drawable.ic_baseline_fitness_center_24)
@@ -117,54 +123,56 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         }.attach()
 
         // Modify color of icon if tab is selected
-        mainActivityTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.icon?.let { DrawableCompat.setTint(it, colorIconWhite) }
-            }
+        binding.mainActivityTabLayout
+            .addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    tab?.icon?.let { DrawableCompat.setTint(it, colorIconWhite) }
+                }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                val colorIconBlack: Int =
-                    ContextCompat.getColor(this@MainActivity, R.color.colorTextPrimary)
-                tab?.icon?.let { DrawableCompat.setTint(it, colorIconBlack) }
-            }
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    val colorIconBlack: Int =
+                        ContextCompat.getColor(this@MainActivity, R.color.colorTextPrimary)
+                    tab?.icon?.let { DrawableCompat.setTint(it, colorIconBlack) }
+                }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
-        })
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                }
+            })
 
         // Then display the tab icon in white for the first page
-        mainActivityTabLayout.getTabAt(Tabs.SPORTS.position)?.icon?.let {
+        binding.mainActivityTabLayout.getTabAt(Tabs.SPORTS.position)?.icon?.let {
             DrawableCompat.setTint(it, colorIconWhite)
         }
     }
 
     override fun onBackPressed() {
-        if (mainActivityViewPager.currentItem == 0) {
+        if (binding.mainActivityViewPager.currentItem == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
-            mainActivityViewPager.currentItem = mainActivityViewPager.currentItem - 1
+            binding.mainActivityViewPager.currentItem =
+                binding.mainActivityViewPager.currentItem - 1
         }
     }
 
     // FAB disappear and appear when a page is scrolled or selected
     private fun animateFAB() {
-        mainActivityViewPager.registerOnPageChangeCallback(object :
+        binding.mainActivityViewPager.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 pageSelected = position
 
                 when (pageSelected) {
-                    Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
-                    Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
-                    Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.show()
+                    Tabs.PROFILE.position -> binding.mainActivityFABEditProfile.show()
+                    Tabs.CALENDAR.position -> binding.mainActivityFABAddCalendar.show()
+                    Tabs.COMMUNITY.position -> binding.mainActivityFABSearchCommunity.show()
                     else -> {
-                        mainActivityFABEditProfile.hide()
-                        mainActivityFABAddCalendar.hide()
-                        mainActivityFABSearchCommunity.hide()
+                        binding.mainActivityFABEditProfile.hide()
+                        binding.mainActivityFABAddCalendar.hide()
+                        binding.mainActivityFABSearchCommunity.hide()
                     }
                 }
             }
@@ -173,23 +181,23 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
                 when (state) {
                     ViewPager2.SCROLL_STATE_IDLE ->
                         when (pageSelected) {
-                            Tabs.PROFILE.position -> mainActivityFABEditProfile.show()
-                            Tabs.CALENDAR.position -> mainActivityFABAddCalendar.show()
-                            Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.show()
+                            Tabs.PROFILE.position -> binding.mainActivityFABEditProfile.show()
+                            Tabs.CALENDAR.position -> binding.mainActivityFABAddCalendar.show()
+                            Tabs.COMMUNITY.position -> binding.mainActivityFABSearchCommunity.show()
                         }
 
                     ViewPager2.SCROLL_STATE_DRAGGING ->
                         when (pageSelected) {
-                            Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
-                            Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
-                            Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.hide()
+                            Tabs.PROFILE.position -> binding.mainActivityFABEditProfile.hide()
+                            Tabs.CALENDAR.position -> binding.mainActivityFABAddCalendar.hide()
+                            Tabs.COMMUNITY.position -> binding.mainActivityFABSearchCommunity.hide()
                         }
 
                     ViewPager2.SCROLL_STATE_SETTLING -> {
                         when (pageSelected) {
-                            Tabs.PROFILE.position -> mainActivityFABEditProfile.hide()
-                            Tabs.CALENDAR.position -> mainActivityFABAddCalendar.hide()
-                            Tabs.COMMUNITY.position -> mainActivityFABSearchCommunity.hide()
+                            Tabs.PROFILE.position -> binding.mainActivityFABEditProfile.hide()
+                            Tabs.CALENDAR.position -> binding.mainActivityFABAddCalendar.hide()
+                            Tabs.COMMUNITY.position -> binding.mainActivityFABSearchCommunity.hide()
                         }
                     }
                 }
@@ -242,7 +250,6 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
         startActivity(intent)
     }
 
-
     private fun startFollowingActivityToDisplayFollow(
         user: User?, viewClicked: View?, isFollowed: Boolean
     ) {
@@ -287,7 +294,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     // Implement listener from CalendarFragment to show a snackBar below the FAB
     override fun cannotUpdatePreviousTrainingSession() {
         myUtils.showSnackBar(
-            mainActivityCoordinatorLayout,
+            binding.mainActivityCoordinatorLayout,
             R.string.cannot_create_update_training_session_with_past_date
         )
     }
@@ -295,7 +302,7 @@ class MainActivity : AppCompatActivity(), SportsFragment.SportsFragmentButtonLis
     // Implement listener from CalendarFragment to show a snackBar below the FAB
     override fun cannotUpdateCompletedTrainingSession() {
         myUtils.showSnackBar(
-            mainActivityCoordinatorLayout, R.string.cannot_update_completed_training_session
+            binding.mainActivityCoordinatorLayout, R.string.cannot_update_completed_training_session
         )
     }
 

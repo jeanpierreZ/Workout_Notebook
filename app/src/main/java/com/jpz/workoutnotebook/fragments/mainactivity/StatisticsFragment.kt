@@ -17,6 +17,7 @@ import com.github.aachartmodel.aainfographics.aachartcreator.AAChartType
 import com.github.aachartmodel.aainfographics.aachartcreator.AASeriesElement
 import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.databinding.FragmentStatisticsBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.repositories.UserAuth
@@ -24,7 +25,6 @@ import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
-import kotlinx.android.synthetic.main.fragment_statistics.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormat
@@ -39,6 +39,11 @@ class StatisticsFragment : Fragment() {
         private const val TRAINING_SESSION_COMPLETED_FIELD = "trainingSessionCompleted"
         private const val TRAINING_SESSION_DATE_FIELD = "trainingSessionDate"
     }
+
+    private var _binding: FragmentStatisticsBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var userId: String? = null
 
@@ -82,14 +87,14 @@ class StatisticsFragment : Fragment() {
         childFragmentManager.setFragmentResultListener(
             DatePickerFragment.REQUEST_KEY_ENTRY_DATE, this
         ) { _, bundle ->
-            fragmentStatisticsEntryDate?.editText?.text =
+            binding.fragmentStatisticsEntryDate.editText?.text =
                 Editable.Factory.getInstance().newEditable(setCalendarEntryDate(bundle))
 
-            if (fragmentStatisticsExerciseChosen.visibility == View.INVISIBLE) {
+            if (binding.fragmentStatisticsExerciseChosen.visibility == View.INVISIBLE) {
                 displayExerciseEditText()
             }
 
-            if (fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
+            if (binding.fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
                 userId?.let { getAllExercises(it) }
             }
         }
@@ -98,14 +103,14 @@ class StatisticsFragment : Fragment() {
         childFragmentManager.setFragmentResultListener(
             DatePickerFragment.REQUEST_KEY_DATE, this
         ) { _, bundle ->
-            fragmentStatisticsEndDate?.editText?.text =
+            binding.fragmentStatisticsEndDate.editText?.text =
                 Editable.Factory.getInstance().newEditable(setCalendarEndDate(bundle))
 
-            if (fragmentStatisticsExerciseChosen.visibility == View.INVISIBLE) {
+            if (binding.fragmentStatisticsExerciseChosen.visibility == View.INVISIBLE) {
                 displayExerciseEditText()
             }
 
-            if (fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
+            if (binding.fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
                 userId?.let { getAllExercises(it) }
             }
         }
@@ -113,9 +118,9 @@ class StatisticsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics, container, false)
+    ): View {
+        _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,17 +132,22 @@ class StatisticsFragment : Fragment() {
         val entryDate = true
         val endDate = false
 
-        fragmentStatisticsEntryDate.editText?.setOnClickListener {
+        binding.fragmentStatisticsEntryDate.editText?.setOnClickListener {
             val datePicker = DatePickerFragment(historical, entryDate, null, null, null)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
 
-        fragmentStatisticsEndDate.editText?.setOnClickListener {
+        binding.fragmentStatisticsEndDate.editText?.setOnClickListener {
             val datePicker = DatePickerFragment(historical, endDate, null, null, null)
             datePicker.show(childFragmentManager, DatePickerFragment::class.java.simpleName)
         }
 
         activity?.let { unitDropDownMenu(it) }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //----------------------------------------------------------------------------------
@@ -146,9 +156,9 @@ class StatisticsFragment : Fragment() {
         val list = arrayListOf(getString(R.string.reps), getString(R.string.unit))
         val adapter =
             ArrayAdapter(context, R.layout.unit_list_item, R.id.unitListItemTextView, list)
-        (fragmentStatisticsUnit?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        (binding.fragmentStatisticsUnit.editText as? AutoCompleteTextView)?.setAdapter(adapter)
         // Get reps or unit
-        fragmentStatisticsUnitAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
+        binding.fragmentStatisticsUnitAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
             isForReps = text.toString() == getString(R.string.reps)
         }
     }
@@ -159,15 +169,15 @@ class StatisticsFragment : Fragment() {
     // Display fragmentStatisticsExerciseChosen if date are sets.
     // Warn the user if entry date is after end date.
     private fun displayExerciseEditText() {
-        if (fragmentStatisticsEntryDate.editText?.text != null && fragmentStatisticsEndDate?.editText?.text != null) {
-            if (fragmentStatisticsEntryDate.editText?.text?.isNotEmpty()!! && fragmentStatisticsEndDate?.editText?.text?.isNotEmpty()!!) {
+        if (binding.fragmentStatisticsEntryDate.editText?.text != null && binding.fragmentStatisticsEndDate.editText?.text != null) {
+            if (binding.fragmentStatisticsEntryDate.editText?.text?.isNotEmpty()!! && binding.fragmentStatisticsEndDate.editText?.text?.isNotEmpty()!!) {
                 if (calendarEntry.time.after(calendarEnd.time)) {
                     myUtils.showSnackBar(
-                        fragmentStatisticsCoordinatorLayout,
+                        binding.fragmentStatisticsCoordinatorLayout,
                         R.string.entry_date_cannot_be_after_end_date
                     )
                 } else {
-                    fragmentStatisticsExerciseChosen.visibility = View.VISIBLE
+                    binding.fragmentStatisticsExerciseChosen.visibility = View.VISIBLE
                 }
             }
         }
@@ -178,7 +188,7 @@ class StatisticsFragment : Fragment() {
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     myUtils.showSnackBar(
-                        fragmentStatisticsCoordinatorLayout, R.string.no_exercise
+                        binding.fragmentStatisticsCoordinatorLayout, R.string.no_exercise
                     )
                 } else {
                     for (document in documents) {
@@ -205,9 +215,10 @@ class StatisticsFragment : Fragment() {
             ArrayAdapter(
                 context, R.layout.unit_list_item, R.id.unitListItemTextView, exerciseNamesList
             )
-        (fragmentStatisticsExerciseChosen?.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        (binding.fragmentStatisticsExerciseChosen.editText as? AutoCompleteTextView)
+            ?.setAdapter(adapter)
         // Get statistics from the exercise chosen in the dropDownMenu
-        fragmentStatisticsExerciseAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
+        binding.fragmentStatisticsExerciseAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
             if (trainingSessionList.isNotEmpty()) {
                 trainingSessionList.clear()
             }
@@ -253,12 +264,13 @@ class StatisticsFragment : Fragment() {
         // Return if entry date is after end date
         if (calendarEntry.time.after(calendarEnd.time)) {
             myUtils.showSnackBar(
-                fragmentStatisticsCoordinatorLayout, R.string.entry_date_cannot_be_after_end_date
+                binding.fragmentStatisticsCoordinatorLayout,
+                R.string.entry_date_cannot_be_after_end_date
             )
             return
         }
 
-        fragmentStatisticsProgressBar.visibility = View.VISIBLE
+        binding.fragmentStatisticsProgressBar.visibility = View.VISIBLE
 
         // Get the string format for each date
         val entryDate: Date = calendarEntry.time
@@ -294,10 +306,10 @@ class StatisticsFragment : Fragment() {
                         if (document != null) {
                             if (document.documents.isEmpty()) {
                                 Log.w(TAG, "documents.isEmpty")
-                                fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+                                binding.fragmentStatisticsProgressBar.visibility = View.INVISIBLE
                                 exerciseChosen.exerciseName?.let { exerciseName ->
                                     myUtils.showSnackBar(
-                                        fragmentStatisticsCoordinatorLayout,
+                                        binding.fragmentStatisticsCoordinatorLayout,
                                         getString(R.string.no_data, exerciseName)
                                     )
                                 }
@@ -316,11 +328,11 @@ class StatisticsFragment : Fragment() {
                                 }
                                 // Then check if the list is not empty and...
                                 if (trainingSessionList.isEmpty()) {
-                                    fragmentStatisticsProgressBar.visibility =
+                                    binding.fragmentStatisticsProgressBar.visibility =
                                         View.INVISIBLE
                                     exerciseChosen.exerciseName?.let { exerciseName ->
                                         myUtils.showSnackBar(
-                                            fragmentStatisticsCoordinatorLayout,
+                                            binding.fragmentStatisticsCoordinatorLayout,
                                             getString(R.string.no_data, exerciseName)
                                         )
                                     }
@@ -410,7 +422,7 @@ class StatisticsFragment : Fragment() {
             arrayListOfAASeriesElement.add(aaSeriesElement)
         }
         // Display the chart with data
-        fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+        binding.fragmentStatisticsProgressBar.visibility = View.INVISIBLE
         yAxis = if (isForReps) {
             getString(R.string.repetitions)
         } else {
@@ -438,6 +450,6 @@ class StatisticsFragment : Fragment() {
             .categories(xDates)
             .series(arrayListOfAASeriesElement)
         // The chart view object calls the instance object of AAChartModel and draws the final graphic
-        fragmentStatisticsChartView.aa_drawChartWithChartModel(aaChartModel)
+        binding.fragmentStatisticsChartView.aa_drawChartWithChartModel(aaChartModel)
     }
 }

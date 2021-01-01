@@ -12,13 +12,12 @@ import com.google.firebase.firestore.Query
 import com.jpz.workoutnotebook.BuildConfig
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity
+import com.jpz.workoutnotebook.databinding.FragmentSportsBinding
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.EspressoIdlingResource
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
-import kotlinx.android.synthetic.main.activity_connection.*
-import kotlinx.android.synthetic.main.fragment_sports.*
 import kotlinx.serialization.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,6 +36,11 @@ class SportsFragment : Fragment() {
         const val ALPHA_VIEW_ANIMATION_DURATION = 500L
     }
 
+    private var _binding: FragmentSportsBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
+
     private var userId: String? = null
 
     private var callback: SportsFragmentButtonListener? = null
@@ -53,9 +57,9 @@ class SportsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sports, container, false)
+    ): View {
+        _binding = FragmentSportsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,19 +69,24 @@ class SportsFragment : Fragment() {
 
         displayNextTrainingSessionDate()
 
-        sportsFragmentTrainingSessionButton.setOnClickListener {
+        binding.sportsFragmentTrainingSessionButton.setOnClickListener {
             trainingSession?.let { callback?.onClickedTrainingSessionButton(it) }
         }
 
-        sportsFragmentExercisesButton.setOnClickListener {
+        binding.sportsFragmentExercisesButton.setOnClickListener {
             callback?.onClickedExerciseOrWorkoutButton(getString(R.string.exercises))
         }
 
-        sportsFragmentWorkoutsButton.setOnClickListener {
+        binding.sportsFragmentWorkoutsButton.setOnClickListener {
             callback?.onClickedExerciseOrWorkoutButton(getString(R.string.workouts))
         }
 
         if (!myUtils.isOnline(requireActivity())) isOnline()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     //----------------------------------------------------------------------------------
@@ -128,36 +137,33 @@ class SportsFragment : Fragment() {
                                     DateFormat.MEDIUM, DateFormat.SHORT
                                 ).format(nextDate)
                                 val workoutName: String? = trainingSession?.workout?.workoutName
-                                sportsFragmentTrainingSession?.let {
-                                    alphaViewAnimation(sportsFragmentTrainingSession)
-                                    sportsFragmentTrainingSession.visibility = View.VISIBLE
-                                    sportsFragmentTrainingSession.text = getString(
-                                        R.string.next_training_session_data,
-                                        workoutName, dateStringFormatted
-                                    )
-                                    sportsFragmentTrainingSessionButton?.isEnabled = true
-                                    myUtils.scaleViewAnimation(
-                                        sportsFragmentTrainingSessionButton, START_DELAY
-                                    )
-                                    sportsFragmentTrainingSessionButton?.visibility = View.VISIBLE
-                                }
+                                alphaViewAnimation(binding.sportsFragmentTrainingSession)
+                                binding.sportsFragmentTrainingSession.visibility = View.VISIBLE
+                                binding.sportsFragmentTrainingSession.text = getString(
+                                    R.string.next_training_session_data,
+                                    workoutName, dateStringFormatted
+                                )
+                                binding.sportsFragmentTrainingSessionButton.isEnabled = true
+                                myUtils.scaleViewAnimation(
+                                    binding.sportsFragmentTrainingSessionButton, START_DELAY
+                                )
+                                binding.sportsFragmentTrainingSessionButton.visibility =
+                                    View.VISIBLE
                             }
                             // Idle Resource for test
                             if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
                         }
                         Log.d(TAG, "Current data: ${snapshot.documents}")
                     } else {
-                        sportsFragmentTrainingSession?.let {
-                            alphaViewAnimation(sportsFragmentTrainingSession)
-                            sportsFragmentTrainingSession.visibility = View.VISIBLE
-                            sportsFragmentTrainingSession.text =
-                                getString(R.string.no_upcoming_training_session)
-                            Log.d(TAG, "Current data: null")
-                            sportsFragmentTrainingSessionButton?.isEnabled = false
-                            sportsFragmentTrainingSessionButton?.visibility = View.INVISIBLE
-                            // Idle Resource for test
-                            if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
-                        }
+                        alphaViewAnimation(binding.sportsFragmentTrainingSession)
+                        binding.sportsFragmentTrainingSession.visibility = View.VISIBLE
+                        binding.sportsFragmentTrainingSession.text =
+                            getString(R.string.no_upcoming_training_session)
+                        Log.d(TAG, "Current data: null")
+                        binding.sportsFragmentTrainingSessionButton.isEnabled = false
+                        binding.sportsFragmentTrainingSessionButton.visibility = View.INVISIBLE
+                        // Idle Resource for test
+                        if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
                     }
                 }
         }

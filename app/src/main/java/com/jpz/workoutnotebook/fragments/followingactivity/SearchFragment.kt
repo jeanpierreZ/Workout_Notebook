@@ -25,10 +25,10 @@ import com.jpz.workoutnotebook.BuildConfig
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
+import com.jpz.workoutnotebook.databinding.FragmentSearchBinding
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -44,6 +44,11 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         private const val USER_NAME_FIELD = "name"
         const val INDEX_NAME = "users"
     }
+
+    private var _binding: FragmentSearchBinding? = null
+
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     private var userId: String? = null
 
@@ -61,9 +66,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
+    ): View {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,6 +82,11 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         getResultFromQuery()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     //--------------------------------------------------------------------------------------
     // UI
 
@@ -85,9 +95,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         // Create the adapter by passing the list of users find from the query
         itemSearchFragment = ItemSearchAdapter(listSorted, this)
         // Attach the adapter to the recyclerView to populate the users
-        searchFragmentRecyclerView?.adapter = itemSearchFragment
+        binding.searchFragmentRecyclerView.adapter = itemSearchFragment
         // Set layout manager to position the users
-        searchFragmentRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        binding.searchFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
     private fun showSearchView() {
@@ -160,7 +170,9 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
                 if (resultList.isNotEmpty()) {
                     configureRecyclerView(resultList)
                 } else {
-                    myUtils.showSnackBar(searchFragmentCoordinatorLayout, R.string.search_no_result)
+                    myUtils.showSnackBar(
+                        binding.searchFragmentCoordinatorLayout, R.string.search_no_result
+                    )
                 }
             }
         }
