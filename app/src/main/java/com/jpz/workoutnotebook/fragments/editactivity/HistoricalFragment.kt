@@ -45,6 +45,8 @@ class HistoricalFragment : Fragment() {
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
+    private val list = arrayListOf<TrainingSession>()
+
     private val numberOfTrainingSessions: Long = 5
 
     override fun onCreateView(
@@ -57,14 +59,12 @@ class HistoricalFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val list = arrayListOf<TrainingSession>()
-
         val isFollowingHistorical = arguments?.getBoolean(EditActivity.IS_FOLLOWING_HISTORICAL)
 
         if (isFollowingHistorical == true) {
             val following = arguments?.getParcelable<User>(FollowingActivity.FOLLOWING)
             Log.d(TAG, "following = $following")
-            following?.let { getFollowedHistorical(it, list) }
+            following?.let { getFollowedHistorical(it) }
         } else {
             trainingSession = arguments?.getParcelable(MainActivity.TRAINING_SESSION)
             Log.d(TAG, "trainingSession = $trainingSession")
@@ -83,15 +83,14 @@ class HistoricalFragment : Fragment() {
 
     private fun configureRecyclerView(list: ArrayList<TrainingSession>) {
         // Create the adapter by passing the list of training sessions
-        itemHistoricalAdapter =
-            activity?.let { ItemHistoricalAdapter(list, it) }
+        itemHistoricalAdapter = activity?.let { ItemHistoricalAdapter(list, it) }
         // Attach the adapter to the recyclerView to populate the training sessions
         binding.historicalFragmentRecyclerView.adapter = itemHistoricalAdapter
         // Set layout manager to position the training sessions
         binding.historicalFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
-    private fun getFollowedHistorical(followed: User, list: ArrayList<TrainingSession>) {
+    private fun getFollowedHistorical(followed: User) {
         val today: Date = Calendar.getInstance().time
         // SimpleDateFormat is used to format today date
         val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())

@@ -23,7 +23,7 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
     companion object {
         private val TAG = FollowingActivity::class.java.simpleName
         const val IS_FOLLOWED = "IS_FOLLOWED"
-        const val HISTORICAL_FROM_FOLLOWER = "HISTORICAL_FROM_FOLLOWER"
+        const val HISTORICAL_FROM_FOLLOWING = "HISTORICAL_FROM_FOLLOWING"
         const val FOLLOWING = "FOLLOWING"
     }
 
@@ -122,7 +122,7 @@ class FollowingActivity : AppCompatActivity(), SearchFragment.FollowListener,
 
     private fun startEditActivityForHistorical(followed: User) {
         val intent = Intent(this, EditActivity::class.java)
-        intent.putExtra(EDIT, HISTORICAL_FROM_FOLLOWER)
+        intent.putExtra(EDIT, HISTORICAL_FROM_FOLLOWING)
         intent.putExtra(FOLLOWING, followed)
         startActivity(intent)
     }

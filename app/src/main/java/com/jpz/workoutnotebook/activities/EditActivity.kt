@@ -119,7 +119,7 @@ class EditActivity : AppCompatActivity(), ListSportsFragment.ItemListener {
                 bundle.putBoolean(IS_AN_EXERCISE, false)
             }
 
-            FollowingActivity.HISTORICAL_FROM_FOLLOWER -> {
+            FollowingActivity.HISTORICAL_FROM_FOLLOWING -> {
                 fragment = HistoricalFragment()
                 bundle.putBoolean(IS_FOLLOWING_HISTORICAL, true)
                 bundle.putParcelable(FollowingActivity.FOLLOWING, following)
