@@ -122,7 +122,7 @@ class EditProfileFragment : BaseProfileFragment() {
         // Upload the picture local file chosen by the user
         if (userId != null && uriPictureSelected != null) {
 
-            val referenceToStorage = userStoragePhoto.storageRef(userId!!)
+            val referenceToStorage = userViewModel.getUserStoragePhoto(userId!!)
 
             val uploadTask = referenceToStorage.putFile(uriPictureSelected!!)
 

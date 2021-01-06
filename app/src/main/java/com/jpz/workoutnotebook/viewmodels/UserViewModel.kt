@@ -4,8 +4,19 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.models.User
 import com.jpz.workoutnotebook.repositories.UserRepository
+import com.jpz.workoutnotebook.repositories.UserStoragePhoto
 
-class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
+class UserViewModel(
+    private val userRepository: UserRepository, private val userStoragePhoto: UserStoragePhoto
+) : ViewModel() {
+    // Class of ViewModel used to access Firestore and Firebase Storage from the repositories
+
+    // --- --- FIREBASE STORAGE --- ---
+
+    // Get storageRef from UserStoragePhoto
+    fun getUserStoragePhoto(userId: String) = userStoragePhoto.storageRef(userId)
+
+    // --- --- FIREBASE FIRESTORE --- ---
 
     // --- CREATE ---
 

@@ -25,7 +25,7 @@ val moduleUserStoragePhoto = module {
 
 val moduleUserViewModel = module {
     // Instance of UserViewModel
-    viewModel { UserViewModel(get()) }
+    viewModel { UserViewModel(get(), get()) }
 }
 
 val moduleTrainingSessionRepository = module {

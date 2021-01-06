@@ -25,7 +25,6 @@ abstract class BaseProfileFragment : Fragment() {
     // Firebase Auth, Firestore and Storage
     protected val userAuth: UserAuth by inject()
     protected val userViewModel: UserViewModel by viewModel()
-    protected val userStoragePhoto: UserStoragePhoto by inject()
 
     protected var userId: String? = null
 
