@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jpz.workoutnotebook.adapters.ItemCommunityAdapter
 import com.jpz.workoutnotebook.databinding.FragmentCommunityBinding
 import com.jpz.workoutnotebook.models.User
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.FollowViewModel
 import com.jpz.workoutnotebook.viewmodels.FollowingViewModel
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -30,13 +28,10 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    // Firebase Auth, Firestore
-    private val userAuth: UserAuth by inject()
+    // Firestore
     private val followViewModel: FollowViewModel by viewModel()
     private val userViewModel: UserViewModel by viewModel()
     private val followingViewModel: FollowingViewModel by viewModel()
-
-    private var userId: String? = null
 
     private var itemCommunityAdapterFollowed: ItemCommunityAdapter? = null
     private var itemCommunityAdapterFollower: ItemCommunityAdapter? = null
@@ -52,15 +47,12 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
-
-        userId?.let { configureRecyclerViews(it) }
+        configureRecyclerViews()
     }
 
     override fun onResume() {
         super.onResume()
-        userId?.let { configureRecyclerViews(it) }
+        configureRecyclerViews()
     }
 
     override fun onDestroyView() {
@@ -71,12 +63,12 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
     //----------------------------------------------------------------------------------
     // Configure RecyclerViews
 
-    private fun configureRecyclerViews(userId: String) {
-        configureRecyclerViewFollowed(userId)
-        configureRecyclerViewFollowers(userId)
+    private fun configureRecyclerViews() {
+        configureRecyclerViewFollowed()
+        configureRecyclerViewFollowers()
     }
 
-    private fun configureRecyclerViewFollowed(userId: String) {
+    private fun configureRecyclerViewFollowed() {
         // Create the adapter by passing the list of people followed by the user
         val list = arrayListOf<User>()
         itemCommunityAdapterFollowed = ItemCommunityAdapter(list, this, true)
@@ -85,12 +77,12 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
         // Set layout manager to position the list data
         binding.communityFragmentFollowRecyclerView.layoutManager = LinearLayoutManager(activity)
 
-        followViewModel.getListOfPeopleFollowed(userId)
+        followViewModel.getListOfPeopleFollowed()
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     Log.d(TAG, "${document.id} => ${document.data}")
-                    userViewModel.getUser(document.id)
+                    userViewModel.getFollow(document.id)
                         .addOnSuccessListener { documentSnapshot ->
                             Log.d(TAG, "documentSnapshot => $documentSnapshot")
                             val followedObject = documentSnapshot.toObject(User::class.java)
@@ -106,7 +98,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
             }
     }
 
-    private fun configureRecyclerViewFollowers(userId: String) {
+    private fun configureRecyclerViewFollowers() {
         // Create the adapter by passing the list of followers of the user
         val listOfFollowers = arrayListOf<User>()
         itemCommunityAdapterFollower = ItemCommunityAdapter(listOfFollowers, this, false)
@@ -115,12 +107,12 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
         // Set layout manager to position the list data
         binding.communityFragmentFollowersRecyclerView.layoutManager = LinearLayoutManager(activity)
 
-        followingViewModel.getListOfFollowers(userId)
+        followingViewModel.getListOfFollowers()
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
                     Log.d(TAG, "${document.id} => ${document.data}")
-                    userViewModel.getUser(document.id)
+                    userViewModel.getFollow(document.id)
                         .addOnSuccessListener { documentSnapshot ->
                             Log.d(TAG, "documentSnapshot => $documentSnapshot")
                             val followerObject = documentSnapshot.toObject(User::class.java)

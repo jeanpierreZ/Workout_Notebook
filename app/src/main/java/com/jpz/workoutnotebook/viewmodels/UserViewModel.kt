@@ -3,18 +3,33 @@ package com.jpz.workoutnotebook.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.jpz.workoutnotebook.models.User
+import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.repositories.UserRepository
 import com.jpz.workoutnotebook.repositories.UserStoragePhoto
 
 class UserViewModel(
-    private val userRepository: UserRepository, private val userStoragePhoto: UserStoragePhoto
+    private val userRepository: UserRepository,
+    private val userStoragePhoto: UserStoragePhoto,
+    private val userAuth: UserAuth
 ) : ViewModel() {
-    // Class of ViewModel used to access Firestore and Firebase Storage from the repositories
+    // Class of ViewModel used to access Firebase Auth, Firebase Storage and Firestore from the repositories
+
+    val userId: String = getUserUid()
+
+    // --- --- FIREBASE AUTH --- ---
+
+    fun getInstanceOfAuthUI() = userAuth.getInstanceOfAuthUI()
+
+    fun getCurrentUser() = userAuth.getCurrentUser()
+
+    fun isCurrentUserLogged() = userAuth.isCurrentUserLogged()
+
+    fun getUserUid() = userAuth.getUserUid()
 
     // --- --- FIREBASE STORAGE --- ---
 
     // Get storageRef from UserStoragePhoto
-    fun getUserStoragePhoto(userId: String) = userStoragePhoto.storageRef(userId)
+    fun storageRef() = userStoragePhoto.storageRef(userId)
 
     // --- --- FIREBASE FIRESTORE --- ---
 
@@ -26,13 +41,17 @@ class UserViewModel(
 
     // --- READ ---
 
-    fun getUser(userId: String) = userRepository.getUser(userId)
+    fun getUser() = userRepository.getUser(userId)
+        .addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
+
+    // Get the followed and follower user
+    fun getFollow(followId: String) = userRepository.getUser(followId)
         .addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
 
     // --- QUERY ---
 
     // Recover data from user in real-time
-    fun getCurrentUser(userId: String) = userRepository.getCurrentUser(userId)
+    fun getCurrentUserData() = userRepository.getCurrentUserData(userId)
 
     // --- UPDATE ---
 

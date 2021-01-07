@@ -28,7 +28,7 @@ class UserRepository {
     // --- QUERY ---
 
     // Recover data from user in real-time
-    fun getCurrentUser(userId: String): Query =
+    fun getCurrentUserData(userId: String): Query =
         getUsersCollection().whereEqualTo(FIELD_USER_ID, userId)
 
     // --- UPDATE ---

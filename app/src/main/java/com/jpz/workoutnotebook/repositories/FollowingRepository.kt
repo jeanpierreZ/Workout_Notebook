@@ -6,6 +6,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 class FollowingRepository {
+    // Class to add the current user as someone's follower and get the list of current user's followers
 
     companion object {
         private const val COLLECTION_FOLLOWINGS_NAME = "followings"

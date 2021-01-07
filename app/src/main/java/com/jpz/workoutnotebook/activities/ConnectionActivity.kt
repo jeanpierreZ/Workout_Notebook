@@ -13,7 +13,6 @@ import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.databinding.ActivityConnectionBinding
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.UserViewModel
 import kotlinx.coroutines.GlobalScope
@@ -32,7 +31,6 @@ class ConnectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityConnectionBinding
 
-    private val userAuth: UserAuth by inject()
     private val userViewModel: UserViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
@@ -56,8 +54,8 @@ class ConnectionActivity : AppCompatActivity() {
 
         GlobalScope.launch {
             delay(MyUtils.DELAY)
-            if (userAuth.isCurrentUserLogged()) {
-                Log.i(TAG, "user logged = " + userAuth.isCurrentUserLogged())
+            if (userViewModel.isCurrentUserLogged()) {
+                Log.i(TAG, "user logged = " + userViewModel.isCurrentUserLogged())
                 startMainActivity()
                 finish()
             } else {
@@ -109,7 +107,7 @@ class ConnectionActivity : AppCompatActivity() {
     // Method to launch Sign-In Activity
     private fun startSignInActivity() {
         // Create and launch sign-in intent
-        val intent = AuthUI.getInstance()
+        val intent = userViewModel.getInstanceOfAuthUI()
             .createSignInIntentBuilder()
             .setTheme(R.style.AppThemeFirebaseAuth)
             .setAvailableProviders(providers)
@@ -134,8 +132,9 @@ class ConnectionActivity : AppCompatActivity() {
 
     // Create the user in Firestore when he is identified
     private fun createUser() {
-        if (userAuth.getCurrentUser() != null) {
-            val userId: String = userAuth.getCurrentUser()!!.uid
+        if (userViewModel.getCurrentUser() != null) {
+            val userId: String = userViewModel.getUserUid()
+            Log.d(TAG, "uid = $userId")
             val data = hashMapOf(AUTH_USER_ID to userId)
             userViewModel.createUser(userId, data)
         }

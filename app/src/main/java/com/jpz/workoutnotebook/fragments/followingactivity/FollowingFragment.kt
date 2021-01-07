@@ -26,7 +26,7 @@ class FollowingFragment : BaseProfileFragment() {
         private const val START_DELAY = 500L
     }
 
-    // Firebase Firestore and utils
+    // Firestore and utils
     private val followViewModel: FollowViewModel by viewModel()
     private val followingViewModel: FollowingViewModel by viewModel()
     private val myUtils: MyUtils by inject()
@@ -66,10 +66,6 @@ class FollowingFragment : BaseProfileFragment() {
         // Disable FloatingActionButton Save
         binding.includedLayout.fabSave.visibility = View.GONE
 
-        // Get current user
-        userId = userAuth.getCurrentUser()?.uid
-        Log.d(TAG, "uid = $userId")
-
         val following = arguments?.getParcelable<User>(FollowingActivity.FOLLOWING)
         Log.d(TAG, "following = $following")
         binding.user = following
@@ -88,14 +84,14 @@ class FollowingFragment : BaseProfileFragment() {
             myUtils.scaleViewAnimation(binding.baseProfileFragmentFABNoFollow, START_DELAY)
             binding.baseProfileFragmentFABNoFollow.visibility = View.VISIBLE
             binding.baseProfileFragmentFABNoFollow.setOnClickListener {
-                userId?.let { following?.let { followed -> noLongerFollow(it, followed) } }
+                following?.let { followed -> noLongerFollow(followed) }
             }
         } else {
             // Make FloatingActionButton Follow visible
             myUtils.scaleViewAnimation(binding.baseProfileFragmentFABFollow, START_DELAY)
             binding.baseProfileFragmentFABFollow.visibility = View.VISIBLE
             binding.baseProfileFragmentFABFollow.setOnClickListener {
-                userId?.let { following?.let { followed -> addAPersonToFollow(it, followed) } }
+                following?.let { followed -> addAPersonToFollow(followed) }
             }
         }
     }
@@ -103,8 +99,8 @@ class FollowingFragment : BaseProfileFragment() {
     //----------------------------------------------------------------------------------
     // Methods to create or delete a person to follow
 
-    private fun addAPersonToFollow(userId: String, followed: User) {
-        followViewModel.getListOfPeopleFollowed(userId)
+    private fun addAPersonToFollow(followed: User) {
+        followViewModel.getListOfPeopleFollowed()
             .get()
             .addOnSuccessListener { documents ->
                 // Check if the person to follow is already added
@@ -119,18 +115,18 @@ class FollowingFragment : BaseProfileFragment() {
                     }
                 }
                 // Else add the person
-                followViewModel.follow(userId, followed.userId)
+                followViewModel.follow(followed.userId)
                     .addOnSuccessListener {
                         Log.d(TAG, "DocumentSnapshot written with id: ${followed.userId}")
                         // Add the user as a follower in followings collection
-                        addUserAsFollower(userId, followed)
+                        addUserAsFollower(followed)
                     }
             }
     }
 
-    private fun addUserAsFollower(userId: String, followed: User) {
+    private fun addUserAsFollower(followed: User) {
         // Add the user as a follower in followings collection
-        followingViewModel.addFollower(userId, followed.userId)
+        followingViewModel.addFollower(followed.userId)
             .addOnSuccessListener {
                 // Inform the user
                 myUtils.showSnackBar(
@@ -140,8 +136,8 @@ class FollowingFragment : BaseProfileFragment() {
             }
     }
 
-    private fun noLongerFollow(userId: String, followed: User) {
-        followViewModel.noLongerFollow(userId, followed.userId)
+    private fun noLongerFollow(followed: User) {
+        followViewModel.noLongerFollow(followed.userId)
             .addOnSuccessListener {
                 Log.d(TAG, "DocumentSnapshot successfully deleted!")
                 // Inform the user

@@ -4,6 +4,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 class FollowRepository {
+    // Class for people the current user follows
 
     companion object {
         private const val COLLECTION_NAME = "follows"

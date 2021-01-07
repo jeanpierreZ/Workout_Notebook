@@ -15,9 +15,7 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.adapters.ItemTrainingSessionAdapter
 import com.jpz.workoutnotebook.databinding.FragmentCalendarBinding
 import com.jpz.workoutnotebook.models.TrainingSession
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,10 +33,7 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private var userId: String? = null
-
-    // Firebase Auth, Firestore
-    private val userAuth: UserAuth by inject()
+    // Firestore
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
 
     private var itemTrainingSessionAdapter: ItemTrainingSessionAdapter? = null
@@ -64,8 +59,6 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         addTrainingSessionsToCalendarView()
 
@@ -132,28 +125,26 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
         var endMonthSDFFormat = ""
         endCurrentCalendarDate?.let { endMonthSDFFormat = sdf.format(it) }
 
-        userId?.let {
-            // Get the list of training sessions of the current month from Firestore in real time
-            trainingSessionViewModel.getListOfTrainingSessions(it)
-                .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endMonthSDFFormat)
-                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, beginMonthSDFFormat)
-                .addSnapshotListener { value, e ->
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e)
-                        return@addSnapshotListener
-                    }
-                    if (value != null && !value.isEmpty) {
-                        trainingSessionList.clear()
-                        for (doc in value) {
-                            // Add each training session to the list
-                            trainingSessionList.add(doc.toObject(TrainingSession::class.java))
-                            Log.d(TAG, "trainingSessionList = $trainingSessionList")
-                        }
-                        // Add an event to each training session in calendarView
-                        addEvent(trainingSessionList)
-                    }
+        // Get the list of training sessions of the current month from Firestore in real time
+        trainingSessionViewModel.getListOfTrainingSessions()
+            .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endMonthSDFFormat)
+            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, beginMonthSDFFormat)
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
                 }
-        }
+                if (value != null && !value.isEmpty) {
+                    trainingSessionList.clear()
+                    for (doc in value) {
+                        // Add each training session to the list
+                        trainingSessionList.add(doc.toObject(TrainingSession::class.java))
+                        Log.d(TAG, "trainingSessionList = $trainingSessionList")
+                    }
+                    // Add an event to each training session in calendarView
+                    addEvent(trainingSessionList)
+                }
+            }
     }
 
     private fun addEvent(trainingSessionList: ArrayList<TrainingSession>) {

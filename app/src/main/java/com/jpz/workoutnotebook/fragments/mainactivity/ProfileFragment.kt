@@ -1,11 +1,13 @@
 package com.jpz.workoutnotebook.fragments.mainactivity
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.firestore.DocumentChange
 import com.jpz.workoutnotebook.R
+import com.jpz.workoutnotebook.activities.ConnectionActivity
 import com.jpz.workoutnotebook.fragments.BaseProfileFragment
 import com.jpz.workoutnotebook.models.User
 
@@ -43,7 +45,6 @@ class ProfileFragment : BaseProfileFragment() {
     //--------------------------------------------------------------------------------------
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         // Disable EditText and counter
         binding.baseProfileFragmentNickname.editText?.isEnabled = false
         binding.baseProfileFragmentNickname.isCounterEnabled = false
@@ -60,18 +61,14 @@ class ProfileFragment : BaseProfileFragment() {
         binding.includedLayout.fabSave.isEnabled = false
         binding.includedLayout.fabSave.visibility = View.GONE
 
-        userId = userAuth.getCurrentUser()?.uid
-        Log.d(TAG, "uid = $userId")
-
-        userId?.let { getCurrentUserDataInRealTime(it) }
+        getCurrentUserDataInRealTime()
     }
 
     //--------------------------------------------------------------------------------------
     // Listener of current user data in real time from Firebase
 
-    private fun getCurrentUserDataInRealTime(userId: String) {
-        userViewModel.getCurrentUser(userId).addSnapshotListener { snapshot, e ->
-
+    private fun getCurrentUserDataInRealTime() {
+        userViewModel.getCurrentUserData().addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w(TAG, "listen:error", e)
                 return@addSnapshotListener
@@ -83,7 +80,7 @@ class ProfileFragment : BaseProfileFragment() {
                         val user: User = dc.document.toObject(User::class.java)
                         Log.d(TAG, "user = $user")
                         // Display user data with binding
-                        binding.user = user
+                        binding?.user = user
                     }
                 }
             }
@@ -92,6 +89,17 @@ class ProfileFragment : BaseProfileFragment() {
 
     //--------------------------------------------------------------------------------------
 
+    // Method to disconnect the user
+    private fun signOut() {
+        userViewModel.getInstanceOfAuthUI()
+            .signOut(requireActivity())
+            .addOnSuccessListener {
+                val intent = Intent(activity, ConnectionActivity::class.java)
+                startActivity(intent, null)
+                activity?.finish()
+            }
+    }
+
     private fun disconnectCurrentUser() {
         // Create an alert dialog to prevent the user
         activity?.let { activity ->
@@ -99,10 +107,9 @@ class ProfileFragment : BaseProfileFragment() {
                 .setMessage(R.string.disconnect)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     // Disconnect the user
-                    userAuth.signOut(activity)
+                    signOut()
                 }
-                .setNegativeButton(android.R.string.cancel) { _, _ ->
-                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> }
                 .show()
         }
     }

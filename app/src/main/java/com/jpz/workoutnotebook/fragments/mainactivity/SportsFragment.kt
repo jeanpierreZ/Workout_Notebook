@@ -14,7 +14,6 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.activities.MainActivity
 import com.jpz.workoutnotebook.databinding.FragmentSportsBinding
 import com.jpz.workoutnotebook.models.TrainingSession
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.EspressoIdlingResource
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
@@ -41,8 +40,6 @@ class SportsFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private var userId: String? = null
-
     private var callback: SportsFragmentButtonListener? = null
 
     private var trainingSession: TrainingSession? = null
@@ -50,8 +47,7 @@ class SportsFragment : Fragment() {
     // SimpleDateFormat is used to compare the dates in the trainingSessionList
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firebase Firestore and utils
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
@@ -64,8 +60,6 @@ class SportsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         displayNextTrainingSessionDate()
 
@@ -111,62 +105,60 @@ class SportsFragment : Fragment() {
         // Parse the date in SimpleDateFormat to compare it with the list of training sessions
         val formattedDate = sdf.format(now)
 
-        userId?.let {
-            trainingSessionViewModel.getListOfTrainingSessions(it)
-                // Filter the list with upcoming parsed dates and training sessions that are not still completed
-                .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
-                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
-                .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-                .limit(1)
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e)
-                        return@addSnapshotListener
-                    }
+        trainingSessionViewModel.getListOfTrainingSessions()
+            // Filter the list with upcoming parsed dates and training sessions that are not still completed
+            .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
+            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+            .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+            .limit(1)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
+                }
 
-                    if (snapshot != null && !snapshot.isEmpty) {
-                        val list = snapshot.documents
-                        // Get the training session object
-                        list[0].reference.get().addOnCompleteListener { document ->
-                            trainingSession = document.result?.toObject(TrainingSession::class.java)
-                            // Get next trainingSessionDate and the workout name
-                            trainingSession?.trainingSessionDate?.let { trainingSessionDate ->
-                                // Format date and display it with the workout name
-                                val nextDate: Date = sdf.parse(trainingSessionDate)!!
-                                val dateStringFormatted: String = DateFormat.getDateTimeInstance(
-                                    DateFormat.MEDIUM, DateFormat.SHORT
-                                ).format(nextDate)
-                                val workoutName: String? = trainingSession?.workout?.workoutName
-                                alphaViewAnimation(binding.sportsFragmentTrainingSession)
-                                binding.sportsFragmentTrainingSession.visibility = View.VISIBLE
-                                binding.sportsFragmentTrainingSession.text = getString(
-                                    R.string.next_training_session_data,
-                                    workoutName, dateStringFormatted
-                                )
-                                binding.sportsFragmentTrainingSessionButton.isEnabled = true
-                                myUtils.scaleViewAnimation(
-                                    binding.sportsFragmentTrainingSessionButton, START_DELAY
-                                )
-                                binding.sportsFragmentTrainingSessionButton.visibility =
-                                    View.VISIBLE
-                            }
-                            // Idle Resource for test
-                            if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
+                if (snapshot != null && !snapshot.isEmpty) {
+                    val list = snapshot.documents
+                    // Get the training session object
+                    list[0].reference.get().addOnCompleteListener { document ->
+                        trainingSession = document.result?.toObject(TrainingSession::class.java)
+                        // Get next trainingSessionDate and the workout name
+                        trainingSession?.trainingSessionDate?.let { trainingSessionDate ->
+                            // Format date and display it with the workout name
+                            val nextDate: Date = sdf.parse(trainingSessionDate)!!
+                            val dateStringFormatted: String =
+                                DateFormat
+                                    .getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                                    .format(nextDate)
+                            val workoutName: String? = trainingSession?.workout?.workoutName
+                            alphaViewAnimation(binding.sportsFragmentTrainingSession)
+                            binding.sportsFragmentTrainingSession.visibility = View.VISIBLE
+                            binding.sportsFragmentTrainingSession.text = getString(
+                                R.string.next_training_session_data,
+                                workoutName, dateStringFormatted
+                            )
+                            binding.sportsFragmentTrainingSessionButton.isEnabled = true
+                            myUtils.scaleViewAnimation(
+                                binding.sportsFragmentTrainingSessionButton, START_DELAY
+                            )
+                            binding.sportsFragmentTrainingSessionButton.visibility = View.VISIBLE
                         }
-                        Log.d(TAG, "Current data: ${snapshot.documents}")
-                    } else {
-                        alphaViewAnimation(binding.sportsFragmentTrainingSession)
-                        binding.sportsFragmentTrainingSession.visibility = View.VISIBLE
-                        binding.sportsFragmentTrainingSession.text =
-                            getString(R.string.no_upcoming_training_session)
-                        Log.d(TAG, "Current data: null")
-                        binding.sportsFragmentTrainingSessionButton.isEnabled = false
-                        binding.sportsFragmentTrainingSessionButton.visibility = View.INVISIBLE
                         // Idle Resource for test
                         if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
                     }
+                    Log.d(TAG, "Current data: ${snapshot.documents}")
+                } else {
+                    alphaViewAnimation(binding.sportsFragmentTrainingSession)
+                    binding.sportsFragmentTrainingSession.visibility = View.VISIBLE
+                    binding.sportsFragmentTrainingSession.text =
+                        getString(R.string.no_upcoming_training_session)
+                    Log.d(TAG, "Current data: null")
+                    binding.sportsFragmentTrainingSessionButton.isEnabled = false
+                    binding.sportsFragmentTrainingSessionButton.visibility = View.INVISIBLE
+                    // Idle Resource for test
+                    if (BuildConfig.DEBUG) EspressoIdlingResource.decrementIdlingResource()
                 }
-        }
+            }
     }
 
     //----------------------------------------------------------------------------------

@@ -21,7 +21,6 @@ import com.jpz.workoutnotebook.adapters.ItemWorkoutAdapter
 import com.jpz.workoutnotebook.databinding.FragmentListSportsBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
@@ -42,8 +41,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firestore and utils
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val workoutViewModel: WorkoutViewModel by viewModel()
     private val myUtils: MyUtils by inject()
@@ -85,8 +83,7 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
             }
         }
 
-        val userId = userAuth.getCurrentUser()?.uid
-        userId?.let { configureRecyclerView(isAnExercise, it) }
+        configureRecyclerView(isAnExercise)
         swipeToDeleteAnItem()
     }
 
@@ -98,19 +95,19 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
     //----------------------------------------------------------------------------------
 
     // Configure RecyclerView with a Query
-    private fun configureRecyclerView(isAnExercise: Boolean, userId: String) {
+    private fun configureRecyclerView(isAnExercise: Boolean) {
         val list: Query?
 
         if (isAnExercise) {
             // Create the adapter by passing the list of exercises of the user
-            list = exerciseViewModel.getOrderedListOfExercises(userId)
+            list = exerciseViewModel.getOrderedListOfExercises()
             itemExerciseAdapter = ItemExerciseAdapter(generateOptionsForExerciseAdapter(list), this)
             // Attach the adapter to the recyclerView to populate the exercises
             binding.listSportsFragmentRecyclerView.adapter = itemExerciseAdapter
 
         } else {
             // Create the adapter by passing the list of workouts of the user
-            list = workoutViewModel.getOrderedListOfWorkouts(userId)
+            list = workoutViewModel.getOrderedListOfWorkouts()
             itemWorkoutAdapter = ItemWorkoutAdapter(generateOptionsForWorkoutAdapter(list), this)
             // Attach the adapter to the recyclerView to populate the workouts
             binding.listSportsFragmentRecyclerView.adapter = itemWorkoutAdapter

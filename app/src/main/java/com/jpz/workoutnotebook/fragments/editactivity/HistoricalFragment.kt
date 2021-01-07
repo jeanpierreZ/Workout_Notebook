@@ -64,7 +64,7 @@ class HistoricalFragment : Fragment() {
         if (isFollowingHistorical == true) {
             val following = arguments?.getParcelable<User>(FollowingActivity.FOLLOWING)
             Log.d(TAG, "following = $following")
-            following?.let { getFollowedHistorical(it) }
+            following?.let { getFollowHistorical(it) }
         } else {
             trainingSession = arguments?.getParcelable(MainActivity.TRAINING_SESSION)
             Log.d(TAG, "trainingSession = $trainingSession")
@@ -90,13 +90,13 @@ class HistoricalFragment : Fragment() {
         binding.historicalFragmentRecyclerView.layoutManager = LinearLayoutManager(activity)
     }
 
-    private fun getFollowedHistorical(followed: User) {
+    private fun getFollowHistorical(follow: User) {
         val today: Date = Calendar.getInstance().time
         // SimpleDateFormat is used to format today date
         val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
         val todaySDFString = sdf.format(today)
 
-        trainingSessionViewModel.getListOfTrainingSessions(followed.userId)
+        trainingSessionViewModel.getListOfTrainingSessionsOfFollow(follow.userId)
             .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
             .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, todaySDFString)
             .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.DESCENDING)

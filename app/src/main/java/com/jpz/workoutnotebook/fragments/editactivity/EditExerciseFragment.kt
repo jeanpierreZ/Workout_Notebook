@@ -21,7 +21,6 @@ import com.jpz.workoutnotebook.adapters.ItemSeriesAdapter
 import com.jpz.workoutnotebook.databinding.FragmentEditExerciseBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
@@ -49,12 +48,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
     private val mapper = jacksonObjectMapper()
     private var jsonPreviousExercise: String? = null
 
-    private var userId: String? = null
     private var exerciseNameToUpdate: String? = null
     private var toUpdate = false
 
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firestore and utils
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
@@ -70,8 +67,6 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         exercise = arguments?.getParcelable(EXERCISE)
         Log.d(TAG, "exercise = $exercise")
@@ -207,40 +202,38 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         }
 
         Log.d(TAG, "exercise = $exercise")
-        userId?.let {
-            // If it is an update and it is the same name, update the exercise
-            if (exerciseNameToUpdate == exercise?.exerciseName && toUpdate) {
-                createOrUpdateToFirestore(it)
-            } else {
-                // If the name is different and it is not an update,
-                // check if an exerciseName already exists
-                exerciseViewModel.getListOfExercises(it)
-                    .whereEqualTo(EXERCISE_NAME_FIELD, exercise?.exerciseName)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        if (documents.isEmpty) {
-                            // There is no document with this exerciseName so create the exercise
-                            Log.d(TAG, "documents.isEmpty")
-                            createOrUpdateToFirestore(it)
-                        } else {
-                            // The same exercise name exists, choose another name
-                            myUtils.showSnackBar(
-                                binding.editExerciseFragmentCoordinatorLayout,
-                                R.string.exercise_name_already_exists
-                            )
-                            for (document in documents) {
-                                Log.d(TAG, "${document.id} => ${document.data}")
-                            }
+        // If it is an update and it is the same name, update the exercise
+        if (exerciseNameToUpdate == exercise?.exerciseName && toUpdate) {
+            createOrUpdateToFirestore()
+        } else {
+            // If the name is different and it is not an update,
+            // check if an exerciseName already exists
+            exerciseViewModel.getListOfExercises()
+                .whereEqualTo(EXERCISE_NAME_FIELD, exercise?.exerciseName)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        // There is no document with this exerciseName so create the exercise
+                        Log.d(TAG, "documents.isEmpty")
+                        createOrUpdateToFirestore()
+                    } else {
+                        // The same exercise name exists, choose another name
+                        myUtils.showSnackBar(
+                            binding.editExerciseFragmentCoordinatorLayout,
+                            R.string.exercise_name_already_exists
+                        )
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} => ${document.data}")
                         }
                     }
-                    .addOnFailureListener { exception ->
-                        Log.w(TAG, "Error getting documents: ", exception)
-                    }
-            }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
         }
     }
 
-    private fun createOrUpdateToFirestore(userId: String) {
+    private fun createOrUpdateToFirestore() {
         if (toUpdate) {
             // Update the exercise
             exercise?.let {
@@ -248,7 +241,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 previousExercise = jsonPreviousExercise?.let { json -> mapper.readValue(json) }
                 previousExercise?.let { previousExercise ->
                     Log.d(TAG, "previousExercise = $previousExercise")
-                    exerciseViewModel.updateExercise(userId, previousExercise, it)
+                    exerciseViewModel.updateExercise(previousExercise, it)
                         ?.addOnSuccessListener {
                             context?.getString(R.string.exercise_updated, exercise?.exerciseName)
                                 ?.let { text ->
@@ -264,10 +257,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
         } else {
             // Create the exercise
             exercise?.let {
-                exerciseViewModel.createExercise(userId, it)
+                exerciseViewModel.createExercise(it)
                     .addOnSuccessListener { documentReference ->
                         // Set exerciseId
-                        exerciseViewModel.updateExerciseIdAfterCreate(userId, documentReference)
+                        exerciseViewModel.updateExerciseIdAfterCreate(documentReference)
                             .addOnSuccessListener {
                                 Log.d(
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"

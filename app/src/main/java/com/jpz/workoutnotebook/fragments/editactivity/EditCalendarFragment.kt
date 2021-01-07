@@ -18,7 +18,6 @@ import com.jpz.workoutnotebook.databinding.FragmentEditCalendarBinding
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
 import com.jpz.workoutnotebook.notifications.NotificationReceiver
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.DatePickerFragment.Companion.BUNDLE_KEY_DAY
 import com.jpz.workoutnotebook.utils.DatePickerFragment.Companion.BUNDLE_KEY_MONTH
@@ -65,8 +64,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     // SimpleDateFormat is used to get the format of the trainingSessionDate
     private val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm", Locale.getDefault())
 
-    private var userId: String? = null
-
     // TrainingSession properties
     private var workoutIdChosen: String? = null
     private var trainingSessionId: String? = null
@@ -75,8 +72,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private var trainingSession: TrainingSession? = null
     private var toUpdate = false
 
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firestore and utils
     private val workoutViewModel: WorkoutViewModel by viewModel()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
@@ -120,7 +116,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.menu_delete) {
-            userId?.let { trainingSession?.let { it1 -> deleteATrainingSession(it, it1) } }
+            trainingSession?.let { deleteATrainingSession(it) }
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -128,8 +124,6 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         // Get TrainingSession data
         trainingSession?.let { getTrainingSessionData(it) }
@@ -224,29 +218,27 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
     private fun getAllWorkouts() {
         val allWorkouts = arrayListOf<Workout>()
 
-        userId?.let { it ->
-            // Get the workouts from Firestore Query
-            workoutViewModel.getOrderedListOfWorkouts(it).get()
-                .addOnSuccessListener { documents ->
-                    if (documents.isEmpty) {
-                        myUtils.showSnackBar(
-                            binding.editCalendarFragmentCoordinatorLayout, R.string.no_workout
-                        )
-                    } else {
-                        for (document in documents) {
-                            Log.d(TAG, "${document.id} => ${document.data}")
-                            val workoutToAdd = document.toObject(Workout::class.java)
-                            // Add the workouts to the list
-                            allWorkouts.add(workoutToAdd)
-                        }
-                        // Then show the AlertDialog
-                        addAWorkoutAlertDialog(allWorkouts)
+        // Get the workouts from Firestore Query
+        workoutViewModel.getOrderedListOfWorkouts().get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    myUtils.showSnackBar(
+                        binding.editCalendarFragmentCoordinatorLayout, R.string.no_workout
+                    )
+                } else {
+                    for (document in documents) {
+                        Log.d(TAG, "${document.id} => ${document.data}")
+                        val workoutToAdd = document.toObject(Workout::class.java)
+                        // Add the workouts to the list
+                        allWorkouts.add(workoutToAdd)
                     }
+                    // Then show the AlertDialog
+                    addAWorkoutAlertDialog(allWorkouts)
                 }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
     }
 
     // Display the AlertDialog with the list of the workouts, in order to add one to the training session
@@ -289,44 +281,39 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             return
         }
 
-        userId?.let {
-            // If it is an update and it is the same date, update the training session
-            if (trainingDateToUpdate == getTrainingSessionDateInSDFFormat(dateToRegister) && toUpdate) {
-                createOrUpdateToFirestore(it, dateToRegister)
-            } else {
-                // If the date is different and it is not an update,
-                // check if a trainingSession on this date (and time) already exists
-                trainingSessionViewModel.getListOfTrainingSessions(it)
-                    .whereEqualTo(
-                        TRAINING_SESSION_DATE_FIELD,
-                        getTrainingSessionDateInSDFFormat(dateToRegister)
-                    )
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        if (documents.isEmpty) {
-                            // There is no document with this trainingSessionDate so create or update it
-                            Log.d(TAG, "documents.isEmpty")
-                            createOrUpdateToFirestore(it, dateToRegister)
-                        } else {
-                            // The same trainingSessionDate exists, choose another time
-                            myUtils.showSnackBar(
-                                binding.editCalendarFragmentCoordinatorLayout,
-                                R.string.training_session_time_already_exists
-                            )
-                            for (document in documents) {
-                                Log.d(TAG, "${document.id} => ${document.data}")
-                            }
+        // If it is an update and it is the same date, update the training session
+        if (trainingDateToUpdate == getTrainingSessionDateInSDFFormat(dateToRegister) && toUpdate) {
+            createOrUpdateToFirestore(dateToRegister)
+        } else {
+            // If the date is different and it is not an update,
+            // check if a trainingSession on this date (and time) already exists
+            trainingSessionViewModel.getListOfTrainingSessions()
+                .whereEqualTo(
+                    TRAINING_SESSION_DATE_FIELD, getTrainingSessionDateInSDFFormat(dateToRegister)
+                )
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        // There is no document with this trainingSessionDate so create or update it
+                        Log.d(TAG, "documents.isEmpty")
+                        createOrUpdateToFirestore(dateToRegister)
+                    } else {
+                        // The same trainingSessionDate exists, choose another time
+                        myUtils.showSnackBar(
+                            binding.editCalendarFragmentCoordinatorLayout,
+                            R.string.training_session_time_already_exists
+                        )
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} => ${document.data}")
                         }
                     }
-            }
+                }
         }
     }
 
-    private fun createOrUpdateToFirestore(userId: String, dateToRegister: Date) {
+    private fun createOrUpdateToFirestore(dateToRegister: Date) {
         // Retrieve the workout from its id
-        workoutIdChosen?.let { workoutIdChosen ->
-            workoutViewModel.getWorkout(userId, workoutIdChosen)
-        }
+        workoutIdChosen?.let { workoutIdChosen -> workoutViewModel.getWorkout(workoutIdChosen) }
             ?.addOnSuccessListener { documentSnapshot ->
                 val thisWorkout = documentSnapshot.toObject(Workout::class.java)
                 thisWorkout?.let { _ ->
@@ -336,7 +323,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             trainingSessionId, getTrainingSessionDateInSDFFormat(dateToRegister),
                             false, thisWorkout
                         )
-                        trainingSessionViewModel.updateTrainingSession(userId, trainingSession)
+                        trainingSessionViewModel.updateTrainingSession(trainingSession)
                             ?.addOnSuccessListener {
                                 Log.d(TAG, "DocumentSnapshot successfully updated!")
                                 context?.getString(R.string.training_session_updated)?.let { text ->
@@ -354,11 +341,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             null, getTrainingSessionDateInSDFFormat(dateToRegister),
                             false, thisWorkout
                         )
-                        trainingSessionViewModel.createTrainingSession(userId, trainingSession)
+                        trainingSessionViewModel.createTrainingSession(trainingSession)
                             .addOnSuccessListener { documentReference ->
                                 // Set trainingSessionId
                                 trainingSessionViewModel.updateTrainingSessionIdAfterCreate(
-                                    userId, documentReference
+                                    documentReference
                                 )
                                     .addOnSuccessListener {
                                         Log.d(
@@ -421,35 +408,35 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         // Parse the date in SimpleDateFormat to compare it with the list of training sessions
         val formattedDate = sdf.format(now)
 
-        userId?.let {
-            trainingSessionViewModel.getListOfTrainingSessions(it)
-                // Filter the list with upcoming parsed dates and training sessions that are not still completed
-                .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
-                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
-                .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-                .limit(1)
-                .addSnapshotListener { snapshot, e ->
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e)
-                        return@addSnapshotListener
-                    }
+        trainingSessionViewModel.getListOfTrainingSessions()
+            // Filter the list with upcoming parsed dates and training sessions that are not still completed
+            .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
+            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+            .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+            .limit(1)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
+                }
 
-                    if (snapshot != null && !snapshot.isEmpty) {
-                        Log.d(TAG, "Current data: ${snapshot.documents}")
-                        val list = snapshot.documents
-                        // Get the training session object
-                        list[0].reference.get().addOnCompleteListener { document ->
-                            trainingSession = document.result?.toObject(TrainingSession::class.java)
-                            // Get next trainingSessionDate with its workout name to schedule a notification
-                            val date = trainingSession?.trainingSessionDate!!
-                            val workoutName: String = trainingSession?.workout?.workoutName!!
+                if (snapshot != null && !snapshot.isEmpty) {
+                    Log.d(TAG, "Current data: ${snapshot.documents}")
+                    val list = snapshot.documents
+                    // Get the training session object
+                    list[0].reference.get().addOnCompleteListener { document ->
+                        trainingSession = document.result?.toObject(TrainingSession::class.java)
+                        // Get next trainingSessionDate with its workout name to schedule a notification
+                        val date = trainingSession?.trainingSessionDate
+                        val workoutName: String? = trainingSession?.workout?.workoutName
+                        if (workoutName != null && date != null) {
                             scheduleNotification(workoutName, date)
                         }
-                    } else {
-                        Log.d(TAG, "Current data: null")
                     }
+                } else {
+                    Log.d(TAG, "Current data: null")
                 }
-        }
+            }
     }
 
     private fun scheduleNotification(workoutName: String, date: String) {
@@ -485,14 +472,14 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
     //--------------------------------------------------------------------------------------
 
-    private fun deleteATrainingSession(userId: String, trainingSession: TrainingSession) {
+    private fun deleteATrainingSession(trainingSession: TrainingSession) {
         // Create an alert dialog to prevent the user
         activity?.let { it ->
             AlertDialog.Builder(it)
                 .setMessage(getString(R.string.delete_this_training_session))
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     // Delete the training session
-                    trainingSessionViewModel.deleteATrainingSession(userId, trainingSession)
+                    trainingSessionViewModel.deleteATrainingSession(trainingSession)
                         ?.addOnSuccessListener {
                             context?.getString(R.string.training_session_deleted)
                                 ?.let { text ->

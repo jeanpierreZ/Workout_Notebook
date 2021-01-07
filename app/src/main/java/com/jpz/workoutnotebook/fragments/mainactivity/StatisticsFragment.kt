@@ -20,7 +20,6 @@ import com.jpz.workoutnotebook.R
 import com.jpz.workoutnotebook.databinding.FragmentStatisticsBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.TrainingSession
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.DatePickerFragment
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
@@ -45,10 +44,7 @@ class StatisticsFragment : Fragment() {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private var userId: String? = null
-
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firestore and utils
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
@@ -58,12 +54,6 @@ class StatisticsFragment : Fragment() {
 
     // List of all exercises
     private val allExercises = arrayListOf<Exercise>()
-
-    // List of all exercise names to display in the dropDownMenu
-    private val exerciseNamesList = arrayListOf<String>()
-
-    // List of all training sessions that contain the exercise chosen
-    private val trainingSessionList = arrayListOf<TrainingSession>()
 
     // Number of series from the exercise chosen
     private var seriesListSize = 0
@@ -95,7 +85,7 @@ class StatisticsFragment : Fragment() {
             }
 
             if (binding.fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
-                userId?.let { getAllExercises(it) }
+                getAllExercises()
             }
         }
 
@@ -111,7 +101,7 @@ class StatisticsFragment : Fragment() {
             }
 
             if (binding.fragmentStatisticsExerciseChosen.visibility == View.VISIBLE && allExercises.isEmpty()) {
-                userId?.let { getAllExercises(it) }
+                getAllExercises()
             }
         }
     }
@@ -125,8 +115,6 @@ class StatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         val historical = true
         val entryDate = true
@@ -183,14 +171,16 @@ class StatisticsFragment : Fragment() {
         }
     }
 
-    private fun getAllExercises(userId: String) {
-        exerciseViewModel.getOrderedListOfExercises(userId).get()
+    private fun getAllExercises() {
+        exerciseViewModel.getOrderedListOfExercises().get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     myUtils.showSnackBar(
                         binding.fragmentStatisticsCoordinatorLayout, R.string.no_exercise
                     )
                 } else {
+                    // List of all exercise names to display in the dropDownMenu
+                    val exerciseNamesList = arrayListOf<String>()
                     for (document in documents) {
                         Log.d(TAG, "${document.id} => ${document.data}")
                         val exerciseToAdd = document.toObject(Exercise::class.java)
@@ -202,7 +192,7 @@ class StatisticsFragment : Fragment() {
                         }
                     }
                     // Then show the exerciseDropDownMenu
-                    activity?.let { activity -> exerciseDropDownMenu(activity) }
+                    activity?.let { activity -> exerciseDropDownMenu(activity, exerciseNamesList) }
                 }
             }
             .addOnFailureListener { exception ->
@@ -210,18 +200,14 @@ class StatisticsFragment : Fragment() {
             }
     }
 
-    private fun exerciseDropDownMenu(context: Context) {
-        val adapter =
-            ArrayAdapter(
-                context, R.layout.unit_list_item, R.id.unitListItemTextView, exerciseNamesList
-            )
+    private fun exerciseDropDownMenu(context: Context, exerciseNamesList: ArrayList<String>) {
+        val adapter = ArrayAdapter(
+            context, R.layout.unit_list_item, R.id.unitListItemTextView, exerciseNamesList
+        )
         (binding.fragmentStatisticsExerciseChosen.editText as? AutoCompleteTextView)
             ?.setAdapter(adapter)
         // Get statistics from the exercise chosen in the dropDownMenu
         binding.fragmentStatisticsExerciseAutoCompleteTextView.doAfterTextChanged { text: Editable? ->
-            if (trainingSessionList.isNotEmpty()) {
-                trainingSessionList.clear()
-            }
             getStatisticsFromExerciseNameChosen(text.toString())
         }
     }
@@ -260,13 +246,23 @@ class StatisticsFragment : Fragment() {
     //----------------------------------------------------------------------------------
     // Methods to get statistics and display the chart
 
-    private fun getStatisticsFromExerciseNameChosen(exerciseName: String) {
-        // Return if entry date is after end date
-        if (calendarEntry.time.after(calendarEnd.time)) {
+    private fun checkIfEntryDateIsAfterEndDate(): Boolean {
+        // Return true if entry date is after end date
+        return if (calendarEntry.time.after(calendarEnd.time)) {
             myUtils.showSnackBar(
                 binding.fragmentStatisticsCoordinatorLayout,
                 R.string.entry_date_cannot_be_after_end_date
             )
+            true
+        } else false
+    }
+
+    private fun getStatisticsFromExerciseNameChosen(exerciseName: String) {
+        // List of all training sessions that contain the exercise chosen
+        val trainingSessionList = arrayListOf<TrainingSession>()
+
+        // Return if entry date is after end date
+        if (checkIfEntryDateIsAfterEndDate()) {
             return
         }
 
@@ -291,21 +287,42 @@ class StatisticsFragment : Fragment() {
         seriesListSize = exerciseChosen.seriesList.size
         Log.d(TAG, "seriesListSize = $seriesListSize")
 
-        userId?.let {
-            // Get all training sessions that are completed and according to dates
-            trainingSessionViewModel.getListOfTrainingSessions(it)
-                .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
-                .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
-                .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
-                .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-                .get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful && task.isComplete) {
-                        val document = task.result
-                        Log.d(TAG, "document.size = ${document?.size()}")
-                        if (document != null) {
-                            if (document.documents.isEmpty()) {
-                                Log.w(TAG, "documents.isEmpty")
+        // Get all training sessions that are completed and according to dates
+        trainingSessionViewModel.getListOfTrainingSessions()
+            .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
+            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
+            .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
+            .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && task.isComplete) {
+                    val document = task.result
+                    Log.d(TAG, "document.size = ${document?.size()}")
+                    if (document != null) {
+                        if (document.documents.isEmpty()) {
+                            Log.w(TAG, "documents.isEmpty")
+                            binding.fragmentStatisticsProgressBar.visibility = View.INVISIBLE
+                            exerciseChosen.exerciseName?.let { exerciseName ->
+                                myUtils.showSnackBar(
+                                    binding.fragmentStatisticsCoordinatorLayout,
+                                    getString(R.string.no_data, exerciseName)
+                                )
+                            }
+                        } else {
+                            document.documents.forEach { eachDocument ->
+                                // For each training session, get the TrainingSession object
+                                val trainingSession =
+                                    eachDocument.toObject(TrainingSession::class.java)
+                                // Search if the exercise is in the list
+                                trainingSession?.workout?.exercisesList?.forEach { exercise ->
+                                    if (exercise.exerciseId == exerciseChosen.exerciseId) {
+                                        // Add the training session to the list
+                                        trainingSessionList.add(trainingSession)
+                                    }
+                                }
+                            }
+                            // Then check if the list is not empty and...
+                            if (trainingSessionList.isEmpty()) {
                                 binding.fragmentStatisticsProgressBar.visibility = View.INVISIBLE
                                 exerciseChosen.exerciseName?.let { exerciseName ->
                                     myUtils.showSnackBar(
@@ -314,40 +331,16 @@ class StatisticsFragment : Fragment() {
                                     )
                                 }
                             } else {
-                                document.documents.forEach { eachDocument ->
-                                    // For each training session, get the TrainingSession object
-                                    val trainingSession =
-                                        eachDocument.toObject(TrainingSession::class.java)
-                                    // Search if the exercise is in the list
-                                    trainingSession?.workout?.exercisesList?.forEach { exercise ->
-                                        if (exercise.exerciseId == exerciseChosen.exerciseId) {
-                                            // Add the training session to the list
-                                            trainingSessionList.add(trainingSession)
-                                        }
-                                    }
-                                }
-                                // Then check if the list is not empty and...
-                                if (trainingSessionList.isEmpty()) {
-                                    binding.fragmentStatisticsProgressBar.visibility =
-                                        View.INVISIBLE
-                                    exerciseChosen.exerciseName?.let { exerciseName ->
-                                        myUtils.showSnackBar(
-                                            binding.fragmentStatisticsCoordinatorLayout,
-                                            getString(R.string.no_data, exerciseName)
-                                        )
-                                    }
-                                } else {
-                                    // ...display the chart with the list
-                                    sortDataToDisplay(trainingSessionList)
-                                }
+                                // ...display the chart with the list
+                                sortDataToDisplay(trainingSessionList)
                             }
                         }
-                    } else {
-                        Log.d(TAG, "Task get failed: ", task.exception)
                     }
+                } else {
+                    Log.d(TAG, "Task get failed: ", task.exception)
                 }
-                .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
-        }
+            }
+            .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
     }
 
     private fun sortDataToDisplay(trainingSessionList: ArrayList<TrainingSession>) {

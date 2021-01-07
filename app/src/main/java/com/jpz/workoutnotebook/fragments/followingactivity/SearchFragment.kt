@@ -27,7 +27,6 @@ import com.jpz.workoutnotebook.activities.FollowingActivity
 import com.jpz.workoutnotebook.adapters.ItemSearchAdapter
 import com.jpz.workoutnotebook.databinding.FragmentSearchBinding
 import com.jpz.workoutnotebook.models.User
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -50,10 +49,6 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
-    private var userId: String? = null
-
-    // Firebase Auth and utils
-    private val userAuth: UserAuth by inject()
     private val myUtils: MyUtils by inject()
 
     private var searchView: SearchView? = null
@@ -75,8 +70,6 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         searchView = (context as FollowingActivity).findViewById(R.id.toolbarSearchView)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         showSearchView()
         getResultFromQuery()
@@ -102,13 +95,11 @@ class SearchFragment : Fragment(), ItemSearchAdapter.Listener {
 
     private fun showSearchView() {
         // Change the colors of the search icon and the close icon ; make searchView visible
-        val searchIcon: ImageView? =
-            searchView?.findViewById(androidx.appcompat.R.id.search_mag_icon)
+        val searchIcon: ImageView? = searchView?.findViewById(R.id.search_mag_icon)
         searchIcon?.colorFilter = BlendModeColorFilterCompat
             .createBlendModeColorFilterCompat(Color.BLACK, BlendModeCompat.SRC_ATOP)
 
-        val closeIcon: ImageView? =
-            searchView?.findViewById(androidx.appcompat.R.id.search_close_btn)
+        val closeIcon: ImageView? = searchView?.findViewById(R.id.search_close_btn)
         closeIcon?.colorFilter = BlendModeColorFilterCompat
             .createBlendModeColorFilterCompat(Color.BLACK, BlendModeCompat.SRC_ATOP)
 

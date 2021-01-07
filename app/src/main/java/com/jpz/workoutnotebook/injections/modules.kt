@@ -25,7 +25,7 @@ val moduleUserStoragePhoto = module {
 
 val moduleUserViewModel = module {
     // Instance of UserViewModel
-    viewModel { UserViewModel(get(), get()) }
+    viewModel { UserViewModel(get(), get(), get()) }
 }
 
 val moduleTrainingSessionRepository = module {
@@ -35,7 +35,7 @@ val moduleTrainingSessionRepository = module {
 
 val moduleTrainingSessionViewModel = module {
     // Instance of TrainingSessionViewModel
-    viewModel { TrainingSessionViewModel(get()) }
+    viewModel { TrainingSessionViewModel(get(), get()) }
 }
 
 val moduleWorkoutRepository = module {
@@ -45,7 +45,7 @@ val moduleWorkoutRepository = module {
 
 val moduleWorkoutViewModel = module {
     // Instance of WorkoutViewModel
-    viewModel { WorkoutViewModel(get()) }
+    viewModel { WorkoutViewModel(get(), get()) }
 }
 
 val moduleExerciseRepository = module {
@@ -55,7 +55,7 @@ val moduleExerciseRepository = module {
 
 val moduleExerciseViewModel = module {
     // Instance of ExerciseViewModel
-    viewModel { ExerciseViewModel(get()) }
+    viewModel { ExerciseViewModel(get(), get()) }
 }
 
 val moduleFollowRepository = module {
@@ -65,7 +65,7 @@ val moduleFollowRepository = module {
 
 val moduleFollowViewModel = module {
     // Instance of FollowViewModel
-    viewModel { FollowViewModel(get()) }
+    viewModel { FollowViewModel(get(), get()) }
 }
 
 val moduleFollowingRepository = module {
@@ -75,7 +75,7 @@ val moduleFollowingRepository = module {
 
 val moduleFollowingViewModel = module {
     // Instance of FollowingViewModel
-    viewModel { FollowingViewModel(get()) }
+    viewModel { FollowingViewModel(get(), get()) }
 }
 
 val moduleMyUtils = module {

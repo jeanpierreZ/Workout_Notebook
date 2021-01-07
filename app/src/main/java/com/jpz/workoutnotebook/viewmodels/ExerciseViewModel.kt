@@ -6,38 +6,39 @@ import com.google.firebase.firestore.DocumentReference
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.repositories.ExerciseRepository
 
-class ExerciseViewModel(private val exerciseRepository: ExerciseRepository) : ViewModel() {
+class ExerciseViewModel(
+    private val exerciseRepository: ExerciseRepository, userViewModel: UserViewModel
+) : ViewModel() {
 
     companion object {
         private val TAG = ExerciseViewModel::class.java.simpleName
     }
 
+    val userId: String = userViewModel.getUserUid()
+
     // --- CREATE ---
 
-    fun createExercise(userId: String, exercise: Exercise) =
-        exerciseRepository.createExercise(userId, exercise)
-            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    fun createExercise(exercise: Exercise) = exerciseRepository.createExercise(userId, exercise)
+        .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
 
     // --- READ ---
 
-    fun getExercise(userId: String, exerciseId: String) =
-        exerciseRepository.getExercise(userId, exerciseId)
-            .addOnFailureListener { e -> Log.e(TAG, "get failed with ", e) }
+    fun getExercise(exerciseId: String) = exerciseRepository.getExercise(userId, exerciseId)
+        .addOnFailureListener { e -> Log.e(TAG, "get failed with ", e) }
 
     // --- QUERY ---
 
-    fun getOrderedListOfExercises(userId: String) =
-        exerciseRepository.getOrderedListOfExercises(userId)
+    fun getOrderedListOfExercises() = exerciseRepository.getOrderedListOfExercises(userId)
 
-    fun getListOfExercises(userId: String) = exerciseRepository.getListOfExercises(userId)
+    fun getListOfExercises() = exerciseRepository.getListOfExercises(userId)
 
     // --- UPDATE ---
 
-    fun updateExercise(userId: String, previousExercise: Exercise, exercise: Exercise) =
+    fun updateExercise(previousExercise: Exercise, exercise: Exercise) =
         exerciseRepository.updateExercise(userId, previousExercise, exercise)
             ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
 
-    fun updateExerciseIdAfterCreate(userId: String, documentReference: DocumentReference) =
+    fun updateExerciseIdAfterCreate(documentReference: DocumentReference) =
         exerciseRepository.updateExerciseIdAfterCreate(userId, documentReference)
             .addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
 }

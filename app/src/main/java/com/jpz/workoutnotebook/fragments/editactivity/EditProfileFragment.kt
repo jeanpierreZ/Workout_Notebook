@@ -82,10 +82,7 @@ class EditProfileFragment : BaseProfileFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userId = userAuth.getCurrentUser()?.uid
-        Log.d(TAG, "uid = $userId")
-
-        getUserDataToObject(userId)
+        getUserDataToObject()
 
         binding.baseProfileFragmentPhoto.setOnClickListener {
             permissionsRequester.launch()
@@ -101,12 +98,10 @@ class EditProfileFragment : BaseProfileFragment() {
     //--------------------------------------------------------------------------------------
     // Get the user data to User Object from Firestore
 
-    private fun getUserDataToObject(userId: String?) {
-        userId?.let {
-            userViewModel.getUser(it).addOnSuccessListener { documentSnapshot ->
-                user = documentSnapshot.toObject(User::class.java)
-                user?.let { binding.user = user }
-            }
+    private fun getUserDataToObject() {
+        userViewModel.getUser().addOnSuccessListener { documentSnapshot ->
+            user = documentSnapshot.toObject(User::class.java)
+            user?.let { binding.user = user }
         }
     }
 
@@ -120,9 +115,8 @@ class EditProfileFragment : BaseProfileFragment() {
 
     private fun uploadPhotoInFirebaseAndUpdateUser() {
         // Upload the picture local file chosen by the user
-        if (userId != null && uriPictureSelected != null) {
-
-            val referenceToStorage = userViewModel.getUserStoragePhoto(userId!!)
+        if (uriPictureSelected != null) {
+            val referenceToStorage = userViewModel.storageRef()
 
             val uploadTask = referenceToStorage.putFile(uriPictureSelected!!)
 

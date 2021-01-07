@@ -23,7 +23,6 @@ import com.jpz.workoutnotebook.adapters.ItemExerciseFromWorkoutAdapter
 import com.jpz.workoutnotebook.databinding.FragmentEditWorkoutBinding
 import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Workout
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.ExerciseViewModel
 import com.jpz.workoutnotebook.viewmodels.WorkoutViewModel
@@ -52,12 +51,10 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     private val mapper = jacksonObjectMapper()
     private var jsonPreviousWorkout: String? = null
 
-    private var userId: String? = null
     private var workoutNameToUpdate: String? = null
     private var toUpdate = false
 
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firestore and utils
     private val workoutViewModel: WorkoutViewModel by viewModel()
     private val exerciseViewModel: ExerciseViewModel by viewModel()
     private val myUtils: MyUtils by inject()
@@ -74,8 +71,6 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userId = userAuth.getCurrentUser()?.uid
 
         // If it is to update, get a workout object from ListSportsFragment / EditActivity
         workout = arguments?.getParcelable(WORKOUT)
@@ -188,28 +183,26 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     private fun getAllExercises() {
         val allExercises = arrayListOf<Exercise>()
 
-        userId?.let {
-            exerciseViewModel.getOrderedListOfExercises(it).get()
-                .addOnSuccessListener { documents ->
-                    if (documents.isEmpty) {
-                        myUtils.showSnackBar(
-                            binding.editWorkoutFragmentCoordinatorLayout, R.string.no_exercise
-                        )
-                    } else {
-                        for (document in documents) {
-                            Log.d(TAG, "${document.id} => ${document.data}")
-                            val exerciseToAdd = document.toObject(Exercise::class.java)
-                            // Add the exercises to the list
-                            allExercises.add(exerciseToAdd)
-                        }
-                        // Then show the AlertDialog
-                        addAnExerciseAlertDialog(allExercises)
+        exerciseViewModel.getOrderedListOfExercises().get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    myUtils.showSnackBar(
+                        binding.editWorkoutFragmentCoordinatorLayout, R.string.no_exercise
+                    )
+                } else {
+                    for (document in documents) {
+                        Log.d(TAG, "${document.id} => ${document.data}")
+                        val exerciseToAdd = document.toObject(Exercise::class.java)
+                        // Add the exercises to the list
+                        allExercises.add(exerciseToAdd)
                     }
+                    // Then show the AlertDialog
+                    addAnExerciseAlertDialog(allExercises)
                 }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-        }
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents: ", exception)
+            }
     }
 
     // Display the AlertDialog with the list of the exercises, in order to add one to the workout
@@ -224,26 +217,21 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.setTitle(getString(R.string.add_an_exercise))
-                .setNeutralButton(android.R.string.cancel) { dialog, _ ->
-                    dialog.dismiss()
-                }
+                .setNeutralButton(android.R.string.cancel) { dialog, _ -> dialog.dismiss() }
                 .setItems(exerciseNamesToDisplay.toTypedArray()) { _, which ->
-                    userId?.let { userId ->
-                        // Retrieve the exercise from the list position
-                        val exerciseId = exercises[which].exerciseId
-                        exerciseId?.let {
-                            exerciseViewModel.getExercise(userId, exerciseId)
-                                .addOnSuccessListener { documentSnapshot ->
-                                    val exerciseToAdd =
-                                        documentSnapshot.toObject(Exercise::class.java)
-                                    exerciseToAdd?.let {
-                                        // Add the exercise to the adapter and the workout
-                                        itemExerciseFromWorkoutAdapter?.addAnExercise(
-                                            exerciseToAdd, binding.editWorkoutFragmentRecyclerView
-                                        )
-                                    }
+                    // Retrieve the exercise from the list position
+                    val exerciseId = exercises[which].exerciseId
+                    exerciseId?.let {
+                        exerciseViewModel.getExercise(exerciseId)
+                            .addOnSuccessListener { documentSnapshot ->
+                                val exerciseToAdd = documentSnapshot.toObject(Exercise::class.java)
+                                exerciseToAdd?.let {
+                                    // Add the exercise to the adapter and the workout
+                                    itemExerciseFromWorkoutAdapter?.addAnExercise(
+                                        exerciseToAdd, binding.editWorkoutFragmentRecyclerView
+                                    )
                                 }
-                        }
+                            }
                     }
                 }
                 .create()
@@ -272,40 +260,38 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         }
 
         Log.d(TAG, "workout = $workout")
-        userId?.let {
-            // If it is an update and it is the same name, update the workout
-            if (workoutNameToUpdate == workout?.workoutName && toUpdate) {
-                createOrUpdateToFirestore(it)
-            } else {
-                // If the name is different and it is not an update,
-                // check if a workoutName already exists
-                workoutViewModel.getListOfWorkouts(it)
-                    .whereEqualTo(WORKOUT_NAME_FIELD, workout?.workoutName)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        if (documents.isEmpty) {
-                            // There is no document with this workoutName so create or update it
-                            Log.d(TAG, "documents.isEmpty")
-                            createOrUpdateToFirestore(it)
-                        } else {
-                            // The same exercise name exists, choose another name
-                            myUtils.showSnackBar(
-                                binding.editWorkoutFragmentCoordinatorLayout,
-                                R.string.workout_name_already_exists
-                            )
-                            for (document in documents) {
-                                Log.d(TAG, "${document.id} => ${document.data}")
-                            }
+        // If it is an update and it is the same name, update the workout
+        if (workoutNameToUpdate == workout?.workoutName && toUpdate) {
+            createOrUpdateToFirestore()
+        } else {
+            // If the name is different and it is not an update,
+            // check if a workoutName already exists
+            workoutViewModel.getListOfWorkouts()
+                .whereEqualTo(WORKOUT_NAME_FIELD, workout?.workoutName)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        // There is no document with this workoutName so create or update it
+                        Log.d(TAG, "documents.isEmpty")
+                        createOrUpdateToFirestore()
+                    } else {
+                        // The same exercise name exists, choose another name
+                        myUtils.showSnackBar(
+                            binding.editWorkoutFragmentCoordinatorLayout,
+                            R.string.workout_name_already_exists
+                        )
+                        for (document in documents) {
+                            Log.d(TAG, "${document.id} => ${document.data}")
                         }
                     }
-                    .addOnFailureListener { exception ->
-                        Log.w(TAG, "Error getting documents: ", exception)
-                    }
-            }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
         }
     }
 
-    private fun createOrUpdateToFirestore(userId: String) {
+    private fun createOrUpdateToFirestore() {
         if (toUpdate) {
             // Update the workout
             workout?.let {
@@ -313,7 +299,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 previousWorkout = jsonPreviousWorkout?.let { json -> mapper.readValue(json) }
                 previousWorkout?.let { previousWorkout ->
                     Log.d(TAG, "previousWorkout = $previousWorkout")
-                    workoutViewModel.updateWorkout(userId, previousWorkout, it)
+                    workoutViewModel.updateWorkout(previousWorkout, it)
                         ?.addOnSuccessListener {
                             context?.getString(R.string.workout_updated, workout?.workoutName)
                                 ?.let { text ->
@@ -329,10 +315,10 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
         } else {
             // Create the workout
             workout?.let {
-                workoutViewModel.createWorkout(userId, it)
+                workoutViewModel.createWorkout(it)
                     .addOnSuccessListener { documentReference ->
                         // Set workoutId
-                        workoutViewModel.updateWorkoutIdAfterCreate(userId, documentReference)
+                        workoutViewModel.updateWorkoutIdAfterCreate(documentReference)
                             .addOnSuccessListener {
                                 Log.d(
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"

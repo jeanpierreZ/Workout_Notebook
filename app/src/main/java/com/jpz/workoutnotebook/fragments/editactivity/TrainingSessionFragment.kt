@@ -24,7 +24,6 @@ import com.jpz.workoutnotebook.models.Exercise
 import com.jpz.workoutnotebook.models.Series
 import com.jpz.workoutnotebook.models.TrainingSession
 import com.jpz.workoutnotebook.models.Workout
-import com.jpz.workoutnotebook.repositories.UserAuth
 import com.jpz.workoutnotebook.utils.MyUtils
 import com.jpz.workoutnotebook.viewmodels.TrainingSessionViewModel
 import org.koin.android.ext.android.inject
@@ -77,10 +76,7 @@ class TrainingSessionFragment : Fragment() {
     private val workoutToComplete = Workout()
     private var exerciseToComplete = Exercise()
 
-    private var userId: String? = null
-
-    // Firebase Auth, Firestore and utils
-    private val userAuth: UserAuth by inject()
+    // Firestore and utils
     private val trainingSessionViewModel: TrainingSessionViewModel by viewModel()
     private val myUtils: MyUtils by inject()
 
@@ -110,8 +106,6 @@ class TrainingSessionFragment : Fragment() {
             // Handle the toolbar's up button event
             saveBeforeQuit()
         }
-
-        userId = userAuth.getCurrentUser()?.uid
 
         trainingSession = arguments?.getParcelable(TRAINING_SESSION)
 
@@ -382,9 +376,9 @@ class TrainingSessionFragment : Fragment() {
 
     private fun closeFragment() {
         activity?.let {
-        binding.trainingSessionFragmentProgressBar.visibility = View.VISIBLE
-        Handler(Looper.getMainLooper()).postDelayed({ activity?.finish() }, 2000)
-        binding.trainingSessionFragmentStartRestTime.isEnabled = false
+            binding.trainingSessionFragmentProgressBar.visibility = View.VISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({ activity?.finish() }, 2000)
+            binding.trainingSessionFragmentStartRestTime.isEnabled = false
         }
     }
 
@@ -454,14 +448,12 @@ class TrainingSessionFragment : Fragment() {
 
     private fun addCurrentExerciseAndSeriesToComplete() {
         // Get the current exercise data
-        exerciseToComplete = exercise?.restNextSet?.let { restNextSet ->
-            exercise?.restNextExercise?.let { restNextExercise ->
-                Exercise(
-                    exercise?.exerciseId, exercise?.exerciseName,
-                    restNextSet, restNextExercise, true
-                )
-            }
-        }!!
+        if (exercise?.restNextSet != null && exercise?.restNextExercise != null) {
+            exerciseToComplete = Exercise(
+                exercise?.exerciseId, exercise?.exerciseName,
+                exercise?.restNextSet!!, exercise?.restNextExercise!!, true
+            )
+        }
         // Add the first series to complete with the current series
         exerciseToComplete.seriesList.add(currentSeriesList[0])
     }
@@ -482,16 +474,14 @@ class TrainingSessionFragment : Fragment() {
         Log.d(TAG, "TrainingSessionToSave = $trainingSessionToSave")
 
         // Update the training session on Firestore
-        userId?.let {
-            trainingSessionViewModel.updateTrainingSession(it, trainingSessionToSave)
-                ?.addOnSuccessListener {
-                    myUtils.showSnackBar(
-                        binding.trainingSessionFragmentCoordinatorLayout,
-                        R.string.training_session_completed
-                    )
-                    Log.d(TAG, "DocumentSnapshot successfully updated!")
-                    closeFragment()
-                }
-        }
+        trainingSessionViewModel.updateTrainingSession(trainingSessionToSave)
+            ?.addOnSuccessListener {
+                myUtils.showSnackBar(
+                    binding.trainingSessionFragmentCoordinatorLayout,
+                    R.string.training_session_completed
+                )
+                Log.d(TAG, "DocumentSnapshot successfully updated!")
+                closeFragment()
+            }
     }
 }
