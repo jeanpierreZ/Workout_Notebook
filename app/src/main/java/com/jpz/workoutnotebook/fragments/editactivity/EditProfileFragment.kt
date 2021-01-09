@@ -149,7 +149,8 @@ class EditProfileFragment : BaseProfileFragment() {
             userViewModel.updateUser(it).addOnSuccessListener {
                 activity?.setResult(Activity.RESULT_OK)
                 activity?.finish()
-            }.addOnFailureListener {
+            }.addOnFailureListener { e ->
+                Log.e("updateUser", "Error updating document", e)
                 activity?.setResult(Activity.RESULT_CANCELED)
                 activity?.finish()
             }

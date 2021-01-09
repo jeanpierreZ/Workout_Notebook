@@ -56,5 +56,4 @@ class UserViewModel(
     // --- UPDATE ---
 
     fun updateUser(user: User) = userRepository.updateUser(user)
-        .addOnFailureListener { e -> Log.e("updateUser", "Error updating document", e) }
 }
