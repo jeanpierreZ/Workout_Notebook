@@ -68,7 +68,7 @@ class ProfileFragment : BaseProfileFragment() {
     // Listener of current user data in real time from Firebase
 
     private fun getCurrentUserDataInRealTime() {
-        userViewModel.getCurrentUserData().addSnapshotListener { snapshot, e ->
+        userViewModel.getCurrentUserData()?.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w(TAG, "listen:error", e)
                 return@addSnapshotListener
@@ -80,7 +80,8 @@ class ProfileFragment : BaseProfileFragment() {
                         val user: User = dc.document.toObject(User::class.java)
                         Log.d(TAG, "user = $user")
                         // Display user data with binding
-                        binding?.user = user
+                        binding
+                            ?.user = user
                     }
                 }
             }

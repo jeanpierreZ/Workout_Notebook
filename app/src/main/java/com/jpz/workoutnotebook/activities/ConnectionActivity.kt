@@ -133,10 +133,12 @@ class ConnectionActivity : AppCompatActivity() {
     // Create the user in Firestore when he is identified
     private fun createUser() {
         if (userViewModel.getCurrentUser() != null) {
-            val userId: String = userViewModel.getUserUid()
+            val userId: String? = userViewModel.getUserUid()
             Log.d(TAG, "uid = $userId")
-            val data = hashMapOf(AUTH_USER_ID to userId)
-            userViewModel.createUser(userId, data)
+            userId?.let {
+                val data: HashMap<String, String> = hashMapOf(AUTH_USER_ID to it)
+                userViewModel.createUser(userId, data)
+            }
         }
     }
 }

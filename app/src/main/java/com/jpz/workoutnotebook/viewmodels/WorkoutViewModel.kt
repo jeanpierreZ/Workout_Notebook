@@ -14,31 +14,37 @@ class WorkoutViewModel(
         private val TAG = WorkoutViewModel::class.java.simpleName
     }
 
-    val userId: String = userViewModel.getUserUid()
+    val userId: String? = userViewModel.getUserUid()
 
     // --- CREATE ---
 
-    fun createWorkout(workout: Workout) = workoutRepository.createWorkout(userId, workout)
-        .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    fun createWorkout(workout: Workout) = userId?.let {
+        workoutRepository.createWorkout(it, workout)
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    }
 
     // --- READ ---
 
-    fun getWorkout(workoutId: String) = workoutRepository.getWorkout(userId, workoutId)
-        .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+    fun getWorkout(workoutId: String) = userId?.let {
+        workoutRepository.getWorkout(it, workoutId)
+            .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+    }
 
     // --- QUERY ---
 
-    fun getOrderedListOfWorkouts() = workoutRepository.getOrderedListOfWorkouts(userId)
+    fun getOrderedListOfWorkouts() = userId?.let { workoutRepository.getOrderedListOfWorkouts(it) }
 
-    fun getListOfWorkouts() = workoutRepository.getListOfWorkouts(userId)
+    fun getListOfWorkouts() = userId?.let { workoutRepository.getListOfWorkouts(it) }
 
     // --- UPDATE ---
 
-    fun updateWorkoutIdAfterCreate(documentReference: DocumentReference) =
-        workoutRepository.updateWorkoutIdAfterCreate(userId, documentReference)
+    fun updateWorkoutIdAfterCreate(documentReference: DocumentReference) = userId?.let {
+        workoutRepository.updateWorkoutIdAfterCreate(it, documentReference)
             .addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
+    }
 
-    fun updateWorkout(previousWorkout: Workout, workout: Workout) =
-        workoutRepository.updateWorkout(userId, previousWorkout, workout)
+    fun updateWorkout(previousWorkout: Workout, workout: Workout) = userId?.let {
+        workoutRepository.updateWorkout(it, previousWorkout, workout)
             ?.addOnFailureListener { e -> Log.e(TAG, "Error updating document", e) }
+    }
 }

@@ -13,20 +13,25 @@ class FollowViewModel(
         private val TAG = FollowViewModel::class.java.simpleName
     }
 
-    val userId: String = userViewModel.getUserUid()
+    val userId: String? = userViewModel.getUserUid()
 
     // --- CREATE ---
 
-    fun follow(followedId: String) = followRepository.follow(userId, followedId)
-        .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    fun follow(followedId: String) = userId?.let {
+        followRepository.follow(it, followedId)
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    }
 
     // --- QUERY ---
 
     // Recover the list of people followed by the user
-    fun getListOfPeopleFollowed(): Query = followRepository.getListOfPeopleFollowed(userId)
+    fun getListOfPeopleFollowed(): Query? =
+        userId?.let { followRepository.getListOfPeopleFollowed(it) }
 
     // --- DELETE ---
 
-    fun noLongerFollow(followedId: String) = followRepository.noLongerFollow(userId, followedId)
-        .addOnFailureListener { e -> Log.e(TAG, "Error deleted document", e) }
+    fun noLongerFollow(followedId: String) = userId?.let {
+        followRepository.noLongerFollow(it, followedId)
+            .addOnFailureListener { e -> Log.e(TAG, "Error deleted document", e) }
+    }
 }

@@ -172,8 +172,8 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun getAllExercises() {
-        exerciseViewModel.getOrderedListOfExercises().get()
-            .addOnSuccessListener { documents ->
+        exerciseViewModel.getOrderedListOfExercises()?.get()
+            ?.addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     myUtils.showSnackBar(
                         binding.fragmentStatisticsCoordinatorLayout, R.string.no_exercise
@@ -195,7 +195,7 @@ class StatisticsFragment : Fragment() {
                     activity?.let { activity -> exerciseDropDownMenu(activity, exerciseNamesList) }
                 }
             }
-            .addOnFailureListener { exception ->
+            ?.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
             }
     }
@@ -289,12 +289,12 @@ class StatisticsFragment : Fragment() {
 
         // Get all training sessions that are completed and according to dates
         trainingSessionViewModel.getListOfTrainingSessions()
-            .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
-            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
-            .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
-            .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-            .get()
-            .addOnCompleteListener { task ->
+            ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, true)
+            ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, entryDateString)
+            ?.whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endDateString)
+            ?.orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+            ?.get()
+            ?.addOnCompleteListener { task ->
                 if (task.isSuccessful && task.isComplete) {
                     val document = task.result
                     Log.d(TAG, "document.size = ${document?.size()}")
@@ -340,7 +340,7 @@ class StatisticsFragment : Fragment() {
                     Log.d(TAG, "Task get failed: ", task.exception)
                 }
             }
-            .addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
+            ?.addOnFailureListener { e -> Log.d(TAG, "get failed with ", e) }
     }
 
     private fun sortDataToDisplay(trainingSessionList: ArrayList<TrainingSession>) {

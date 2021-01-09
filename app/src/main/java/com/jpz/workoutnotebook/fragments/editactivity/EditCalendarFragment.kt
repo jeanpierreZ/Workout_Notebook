@@ -219,8 +219,8 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
         val allWorkouts = arrayListOf<Workout>()
 
         // Get the workouts from Firestore Query
-        workoutViewModel.getOrderedListOfWorkouts().get()
-            .addOnSuccessListener { documents ->
+        workoutViewModel.getOrderedListOfWorkouts()?.get()
+            ?.addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     myUtils.showSnackBar(
                         binding.editCalendarFragmentCoordinatorLayout, R.string.no_workout
@@ -236,7 +236,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                     addAWorkoutAlertDialog(allWorkouts)
                 }
             }
-            .addOnFailureListener { exception ->
+            ?.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
             }
     }
@@ -288,11 +288,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
             // If the date is different and it is not an update,
             // check if a trainingSession on this date (and time) already exists
             trainingSessionViewModel.getListOfTrainingSessions()
-                .whereEqualTo(
+                ?.whereEqualTo(
                     TRAINING_SESSION_DATE_FIELD, getTrainingSessionDateInSDFFormat(dateToRegister)
                 )
-                .get()
-                .addOnSuccessListener { documents ->
+                ?.get()
+                ?.addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         // There is no document with this trainingSessionDate so create or update it
                         Log.d(TAG, "documents.isEmpty")
@@ -342,12 +342,12 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                             false, thisWorkout
                         )
                         trainingSessionViewModel.createTrainingSession(trainingSession)
-                            .addOnSuccessListener { documentReference ->
+                            ?.addOnSuccessListener { documentReference ->
                                 // Set trainingSessionId
                                 trainingSessionViewModel.updateTrainingSessionIdAfterCreate(
                                     documentReference
                                 )
-                                    .addOnSuccessListener {
+                                    ?.addOnSuccessListener {
                                         Log.d(
                                             TAG,
                                             "DocumentSnapshot written with id: ${documentReference.id}"
@@ -361,7 +361,7 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
                                                 binding.editCalendarFragmentCoordinatorLayout, text
                                             )
                                         }
-                                    }.continueWith {
+                                    }?.continueWith {
                                         // For notification
                                         getNextTrainingSession()
                                     }
@@ -410,11 +410,11 @@ class EditCalendarFragment : Fragment(), View.OnClickListener {
 
         trainingSessionViewModel.getListOfTrainingSessions()
             // Filter the list with upcoming parsed dates and training sessions that are not still completed
-            .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
-            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
-            .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-            .limit(1)
-            .addSnapshotListener { snapshot, e ->
+            ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
+            ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+            ?.orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+            ?.limit(1)
+            ?.addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.w(TAG, "Listen failed.", e)
                     return@addSnapshotListener

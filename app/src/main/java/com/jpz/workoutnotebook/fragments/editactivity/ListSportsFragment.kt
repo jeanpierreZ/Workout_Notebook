@@ -101,14 +101,18 @@ class ListSportsFragment : Fragment(), ItemExerciseAdapter.Listener, ItemWorkout
         if (isAnExercise) {
             // Create the adapter by passing the list of exercises of the user
             list = exerciseViewModel.getOrderedListOfExercises()
-            itemExerciseAdapter = ItemExerciseAdapter(generateOptionsForExerciseAdapter(list), this)
+            itemExerciseAdapter = list?.let {
+                generateOptionsForExerciseAdapter(it)
+            }?.let { ItemExerciseAdapter(it, this) }
             // Attach the adapter to the recyclerView to populate the exercises
             binding.listSportsFragmentRecyclerView.adapter = itemExerciseAdapter
 
         } else {
             // Create the adapter by passing the list of workouts of the user
             list = workoutViewModel.getOrderedListOfWorkouts()
-            itemWorkoutAdapter = ItemWorkoutAdapter(generateOptionsForWorkoutAdapter(list), this)
+            itemWorkoutAdapter = list?.let {
+                generateOptionsForWorkoutAdapter(it)
+            }?.let { ItemWorkoutAdapter(it, this) }
             // Attach the adapter to the recyclerView to populate the workouts
             binding.listSportsFragmentRecyclerView.adapter = itemWorkoutAdapter
         }

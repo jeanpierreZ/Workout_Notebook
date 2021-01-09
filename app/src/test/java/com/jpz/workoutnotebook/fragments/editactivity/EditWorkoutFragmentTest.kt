@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config
 class EditWorkoutFragmentTest {
 
     private var editActivity: EditActivity? = null
-    private val editCalendarFragment = EditCalendarFragment()
 
     private val mockedEditWorkoutFragment = Mockito.mock(EditWorkoutFragment::class.java)
     private val mockedWorkout = Mockito.mock(Workout::class.java)

@@ -107,11 +107,11 @@ class SportsFragment : Fragment() {
 
         trainingSessionViewModel.getListOfTrainingSessions()
             // Filter the list with upcoming parsed dates and training sessions that are not still completed
-            .whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
-            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
-            .orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
-            .limit(1)
-            .addSnapshotListener { snapshot, e ->
+            ?.whereEqualTo(TRAINING_SESSION_COMPLETED_FIELD, false)
+            ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, formattedDate)
+            ?.orderBy(TRAINING_SESSION_DATE_FIELD, Query.Direction.ASCENDING)
+            ?.limit(1)
+            ?.addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.w(TAG, "Listen failed.", e)
                     return@addSnapshotListener

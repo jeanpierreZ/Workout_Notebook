@@ -127,9 +127,9 @@ class CalendarFragment : Fragment(), ItemTrainingSessionAdapter.Listener {
 
         // Get the list of training sessions of the current month from Firestore in real time
         trainingSessionViewModel.getListOfTrainingSessions()
-            .whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endMonthSDFFormat)
-            .whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, beginMonthSDFFormat)
-            .addSnapshotListener { value, e ->
+            ?.whereLessThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, endMonthSDFFormat)
+            ?.whereGreaterThanOrEqualTo(TRAINING_SESSION_DATE_FIELD, beginMonthSDFFormat)
+            ?.addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.w(TAG, "Listen failed.", e)
                     return@addSnapshotListener

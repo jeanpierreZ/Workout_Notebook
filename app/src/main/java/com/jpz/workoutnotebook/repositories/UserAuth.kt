@@ -16,5 +16,5 @@ class UserAuth {
     fun isCurrentUserLogged(): Boolean = getCurrentUser() != null
 
     // Method to get the user uid
-    fun getUserUid(): String = getCurrentUser()?.uid ?: ""
+    fun getUserUid(): String? = getCurrentUser()?.uid
 }

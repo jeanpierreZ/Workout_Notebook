@@ -14,7 +14,7 @@ class UserViewModel(
 ) : ViewModel() {
     // Class of ViewModel used to access Firebase Auth, Firebase Storage and Firestore from the repositories
 
-    val userId: String = getUserUid()
+    val userId: String? = getUserUid()
 
     // --- --- FIREBASE AUTH --- ---
 
@@ -29,7 +29,7 @@ class UserViewModel(
     // --- --- FIREBASE STORAGE --- ---
 
     // Get storageRef from UserStoragePhoto
-    fun storageRef() = userStoragePhoto.storageRef(userId)
+    fun storageRef() = userId?.let { userStoragePhoto.storageRef(it) }
 
     // --- --- FIREBASE FIRESTORE --- ---
 
@@ -41,8 +41,10 @@ class UserViewModel(
 
     // --- READ ---
 
-    fun getUser() = userRepository.getUser(userId)
-        .addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
+    fun getUser() = userId?.let {
+        userRepository.getUser(it)
+            .addOnFailureListener { e -> Log.d("getUser", "get failed with ", e) }
+    }
 
     // Get the followed and follower user
     fun getFollow(followId: String) = userRepository.getUser(followId)
@@ -51,7 +53,7 @@ class UserViewModel(
     // --- QUERY ---
 
     // Recover data from user in real-time
-    fun getCurrentUserData() = userRepository.getCurrentUserData(userId)
+    fun getCurrentUserData() = userId?.let { userRepository.getCurrentUserData(it) }
 
     // --- UPDATE ---
 

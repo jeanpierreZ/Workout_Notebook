@@ -78,8 +78,8 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
         binding.communityFragmentFollowRecyclerView.layoutManager = LinearLayoutManager(activity)
 
         followViewModel.getListOfPeopleFollowed()
-            .get()
-            .addOnSuccessListener { documents ->
+            ?.get()
+            ?.addOnSuccessListener { documents ->
                 for (document in documents) {
                     Log.d(TAG, "${document.id} => ${document.data}")
                     userViewModel.getFollow(document.id)
@@ -93,7 +93,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
                         }
                 }
             }
-            .addOnFailureListener { exception ->
+            ?.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
             }
     }
@@ -108,8 +108,8 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
         binding.communityFragmentFollowersRecyclerView.layoutManager = LinearLayoutManager(activity)
 
         followingViewModel.getListOfFollowers()
-            .get()
-            .addOnSuccessListener { documents ->
+            ?.get()
+            ?.addOnSuccessListener { documents ->
                 for (document in documents) {
                     Log.d(TAG, "${document.id} => ${document.data}")
                     userViewModel.getFollow(document.id)
@@ -123,7 +123,7 @@ class CommunityFragment : Fragment(), ItemCommunityAdapter.FollowListener {
                         }
                 }
             }
-            .addOnFailureListener { exception ->
+            ?.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
             }
     }

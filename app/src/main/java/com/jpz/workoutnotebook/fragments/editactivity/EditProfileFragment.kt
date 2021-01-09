@@ -99,7 +99,7 @@ class EditProfileFragment : BaseProfileFragment() {
     // Get the user data to User Object from Firestore
 
     private fun getUserDataToObject() {
-        userViewModel.getUser().addOnSuccessListener { documentSnapshot ->
+        userViewModel.getUser()?.addOnSuccessListener { documentSnapshot ->
             user = documentSnapshot.toObject(User::class.java)
             user?.let { binding.user = user }
         }
@@ -118,15 +118,15 @@ class EditProfileFragment : BaseProfileFragment() {
         if (uriPictureSelected != null) {
             val referenceToStorage = userViewModel.storageRef()
 
-            val uploadTask = referenceToStorage.putFile(uriPictureSelected!!)
+            val uploadTask = referenceToStorage?.putFile(uriPictureSelected!!)
 
             // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener { exception ->
+            uploadTask?.addOnFailureListener { exception ->
                 val errorCode = (exception as StorageException).errorCode
                 val errorMessage = exception.message
                 Log.e(TAG, "Unsuccessful upload: $errorCode $errorMessage")
             }
-                .addOnSuccessListener { taskSnapshot ->
+                ?.addOnSuccessListener { taskSnapshot ->
                     referenceToStorage.downloadUrl.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             // Download uri from Firebase Storage

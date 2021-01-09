@@ -183,8 +183,8 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
     private fun getAllExercises() {
         val allExercises = arrayListOf<Exercise>()
 
-        exerciseViewModel.getOrderedListOfExercises().get()
-            .addOnSuccessListener { documents ->
+        exerciseViewModel.getOrderedListOfExercises()?.get()
+            ?.addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     myUtils.showSnackBar(
                         binding.editWorkoutFragmentCoordinatorLayout, R.string.no_exercise
@@ -200,7 +200,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                     addAnExerciseAlertDialog(allExercises)
                 }
             }
-            .addOnFailureListener { exception ->
+            ?.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
             }
     }
@@ -223,7 +223,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                     val exerciseId = exercises[which].exerciseId
                     exerciseId?.let {
                         exerciseViewModel.getExercise(exerciseId)
-                            .addOnSuccessListener { documentSnapshot ->
+                            ?.addOnSuccessListener { documentSnapshot ->
                                 val exerciseToAdd = documentSnapshot.toObject(Exercise::class.java)
                                 exerciseToAdd?.let {
                                     // Add the exercise to the adapter and the workout
@@ -267,9 +267,9 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             // If the name is different and it is not an update,
             // check if a workoutName already exists
             workoutViewModel.getListOfWorkouts()
-                .whereEqualTo(WORKOUT_NAME_FIELD, workout?.workoutName)
-                .get()
-                .addOnSuccessListener { documents ->
+                ?.whereEqualTo(WORKOUT_NAME_FIELD, workout?.workoutName)
+                ?.get()
+                ?.addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         // There is no document with this workoutName so create or update it
                         Log.d(TAG, "documents.isEmpty")
@@ -285,7 +285,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                         }
                     }
                 }
-                .addOnFailureListener { exception ->
+                ?.addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }
@@ -316,10 +316,10 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
             // Create the workout
             workout?.let {
                 workoutViewModel.createWorkout(it)
-                    .addOnSuccessListener { documentReference ->
+                    ?.addOnSuccessListener { documentReference ->
                         // Set workoutId
                         workoutViewModel.updateWorkoutIdAfterCreate(documentReference)
-                            .addOnSuccessListener {
+                            ?.addOnSuccessListener {
                                 Log.d(
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"
                                 )

@@ -12,15 +12,17 @@ class FollowingViewModel(
         private val TAG = FollowViewModel::class.java.simpleName
     }
 
-    val userId: String = userViewModel.getUserUid()
+    val userId: String? = userViewModel.getUserUid()
 
     // --- CREATE ---
 
-    fun addFollower(followedId: String) = followingRepository.addFollower(userId, followedId)
-        .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    fun addFollower(followedId: String) = userId?.let {
+        followingRepository.addFollower(it, followedId)
+            .addOnFailureListener { e -> Log.e(TAG, "Error writing document", e) }
+    }
 
     // --- QUERY ---
 
     // Recover the list of followers
-    fun getListOfFollowers() = followingRepository.getListOfFollowers(userId)
+    fun getListOfFollowers() = userId?.let { followingRepository.getListOfFollowers(it) }
 }

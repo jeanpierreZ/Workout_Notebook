@@ -209,9 +209,9 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             // If the name is different and it is not an update,
             // check if an exerciseName already exists
             exerciseViewModel.getListOfExercises()
-                .whereEqualTo(EXERCISE_NAME_FIELD, exercise?.exerciseName)
-                .get()
-                .addOnSuccessListener { documents ->
+                ?.whereEqualTo(EXERCISE_NAME_FIELD, exercise?.exerciseName)
+                ?.get()
+                ?.addOnSuccessListener { documents ->
                     if (documents.isEmpty) {
                         // There is no document with this exerciseName so create the exercise
                         Log.d(TAG, "documents.isEmpty")
@@ -227,7 +227,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                         }
                     }
                 }
-                .addOnFailureListener { exception ->
+                ?.addOnFailureListener { exception ->
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
         }
@@ -258,10 +258,10 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
             // Create the exercise
             exercise?.let {
                 exerciseViewModel.createExercise(it)
-                    .addOnSuccessListener { documentReference ->
+                    ?.addOnSuccessListener { documentReference ->
                         // Set exerciseId
                         exerciseViewModel.updateExerciseIdAfterCreate(documentReference)
-                            .addOnSuccessListener {
+                            ?.addOnSuccessListener {
                                 Log.d(
                                     TAG, "DocumentSnapshot written with id: ${documentReference.id}"
                                 )
