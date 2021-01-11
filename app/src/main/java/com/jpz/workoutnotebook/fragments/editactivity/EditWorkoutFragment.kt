@@ -300,7 +300,7 @@ class EditWorkoutFragment : Fragment(), View.OnClickListener {
                 previousWorkout?.let { previousWorkout ->
                     Log.d(TAG, "previousWorkout = $previousWorkout")
                     workoutViewModel.updateWorkout(previousWorkout, it)
-                        ?.addOnSuccessListener {
+                        ?.addOnCompleteListener {
                             context?.getString(R.string.workout_updated, workout?.workoutName)
                                 ?.let { text ->
                                     myUtils.showSnackBar(

@@ -45,7 +45,7 @@ val moduleWorkoutRepository = module {
 
 val moduleWorkoutViewModel = module {
     // Instance of WorkoutViewModel
-    viewModel { WorkoutViewModel(get(), get()) }
+    viewModel { WorkoutViewModel(get(), get(), get()) }
 }
 
 val moduleExerciseRepository = module {
@@ -55,7 +55,7 @@ val moduleExerciseRepository = module {
 
 val moduleExerciseViewModel = module {
     // Instance of ExerciseViewModel
-    viewModel { ExerciseViewModel(get(), get()) }
+    viewModel { ExerciseViewModel(get(), get(), get()) }
 }
 
 val moduleFollowRepository = module {

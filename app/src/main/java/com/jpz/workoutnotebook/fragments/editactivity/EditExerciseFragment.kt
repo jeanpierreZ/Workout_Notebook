@@ -242,7 +242,7 @@ class EditExerciseFragment : Fragment(), View.OnClickListener {
                 previousExercise?.let { previousExercise ->
                     Log.d(TAG, "previousExercise = $previousExercise")
                     exerciseViewModel.updateExercise(previousExercise, it)
-                        ?.addOnSuccessListener {
+                        ?.addOnCompleteListener {
                             context?.getString(R.string.exercise_updated, exercise?.exerciseName)
                                 ?.let { text ->
                                     myUtils.showSnackBar(
