@@ -1,21 +1,24 @@
 # Workout_Notebook
 
-Enregistrez et partagez vos séances d'entraînement
+Save and share your workouts
 
-OpenClassrooms Développeur d'application - Android 11ème projet
+OpenClassrooms Application Developer - Android 11th project
 
-Workout Notebook est une application mobile sous Android qui permet d'effectuer, enregistrer, consulter et partager ses séances d'entraînement.
+Workout Notebook is an Android mobile application that simplifies the management of your bodybuilding, fitness, endurance training, etc.
+You can program, perform and save your session directly on your smartphone. You have easy access to the history of a training session and its progress in a given exercise.
+In addition, it is a network that allows everyone to follow the workouts of other people.
 
-### Les fonctionnalités :
-- Se connecter avec une adresse mail, par Google ou Facebook.
-- Créer son profil.
-- Créer des exercices, incluant un nombre de séries, de répétitions avec ou sans unité (km, kg...) ainsi que des workouts types composés des exercices choisis.
-- Ajouter ou modifier une session d'entraînement sur le calendrier.
-- Consulter l'historique d'un entraînement sur le calendrier.
-- Effectuer et enregistrer sa séance d'entraînement directement depuis son smartphone. Affichage de la série de l'exercise en cours et de celle à venir, ainsi que d'un compte à rebours pour les temps de repos.
-- Consulter l'historique d'un exercise, sur une période de temps choisie, sous forme de graphique.
-- Rechercher et suivre d'autres utilisateurs, voir ses followers et consulter leurs 5 dernières séances d'entraînement.
-- Recevoir une notification une heure avant le début de la séance.
+### Features: 
+
+- Connect with an email, by Google or Facebook.
+- Create your profile.
+- Create exercises, including a number of sets, repetitions with or without a unit (km, kg…) as well as types of workouts made up of the chosen exercises.
+- Add or edit a training session on the calendar.
+- View workout history on the calendar.
+- Perform and record your training session directly from your smartphone. Display of the current exercise series and the next one, as well as a countdown for the rest times.
+- Consult the progress of an exercise, over a chosen period of time, in the form of a graph.
+- Find and follow other users, see your followers and view their last 5 workouts.
+- Receive a notification one hour before the start of the session.
 
 ### Tech
 
@@ -28,8 +31,6 @@ Workout Notebook est une application mobile sous Android qui permet d'effectuer,
 Splash screen image by David Mark from Pixabay.
 
 Icon launcher made by Nikita Golubev from www.flaticon.com.
-
-Jean-Pierre Zingraff
 
 ### Screenshots
 
