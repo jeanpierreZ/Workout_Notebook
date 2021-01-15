@@ -28,7 +28,7 @@ In addition, it is a network that allows everyone to follow the workouts of othe
 - Algolia for the search implementation.
 - Facebook login support also for Auth.
 
-Splash screen image by David Mark from Pixabay.
+Splash screen image by Oscar Söderlund from Unsplash.
 
 Icon launcher made by Nikita Golubev from www.flaticon.com.
 

@@ -80,8 +80,7 @@ class ProfileFragment : BaseProfileFragment() {
                         val user: User = dc.document.toObject(User::class.java)
                         Log.d(TAG, "user = $user")
                         // Display user data with binding
-                        binding
-                            ?.user = user
+                        binding?.user = user
                     }
                 }
             }
